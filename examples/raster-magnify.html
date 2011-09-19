@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OpenLayers Raster Magnification Example</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <script src="../OpenLayers.js"></script>
+        <style>
+            .olControlZoomPanel {
+                top: 20px;
+            }
+            .olControlAttribution {
+                bottom: 3px;
+                font-size: 9px;
+            }
+            div.docs p {
+                padding-top: 1em;
+                width: 512px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="title">Magnify Raster</h1>
+        <div id="tags">
+            Raster, Grid, Resample
+        </div>
+        <p id="shortdesc">This demo shows how raster data can be resampled.</p>
+        <div id="map" class="smallmap"></div>
+        <div class="docs">
+            <p>
+                This example uses a <code>OpenLayers.Raster.Composite</code>
+                to resample data from a WMS layer.  Move your mouse over the 
+                map to change the center of the magnification lens.
+            </p>
+            <p>
+                See the <a href="raster-magnify.js" target="_blank">raster-magnify.js</a> 
+                source for details on how this is done.
+            </p>
+        </div>
+        <script src="raster-magnify.js"></script>
+    </body>
+</html>

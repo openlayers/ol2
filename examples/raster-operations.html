@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OpenLayers Raster Operations Example</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" type="text/css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+        <script src="../OpenLayers.js"></script>
+        <style>
+            .olControlZoomPanel {
+                top: 20px;
+            }
+            .widget-wrapper {
+                width: 492px;
+                background-color: #f9f9f9;
+                border: solid 1px #ddd;
+                padding: 10px;
+                margin: 10px 0;
+            }
+            .slider {
+                margin-top: 5px;
+                float: right;
+                width: 80%;
+            }
+            #reset {
+                margin-bottom: 1em;
+            }
+            div.docs p {
+                padding-top: 1em;
+                width: 512px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="title">Raster Operations</h1>
+        <div id="tags">
+            Raster, Grid, Operation
+        </div>
+        <p id="shortdesc">This demo uses raster operations to manipulate layer based data.</p>
+        <div id="map" class="smallmap"></div>
+        <div class="widget-wrapper ui-widget ui-corner-all">
+            <span>hue:</span>
+            <div id="hue-slider" class="slider"></div>
+        </div>
+        <div class="widget-wrapper ui-widget ui-corner-all">
+            <span>saturation:</span>
+            <div id="sat-slider" class="slider"></div>
+        </div>
+        <div class="widget-wrapper ui-widget ui-corner-all">
+            <span>lightness:</span>
+            <div id="lit-slider" class="slider"></div>
+        </div>
+        <a href="#" id="reset">reset</a>
+        <div class="docs">
+            <p>
+                This example manipulates data in a <code>OpenLayers.Raster.Composite</code>
+                using a series of <code>OpenLayers.Raster.Operation</code> methods.
+                RGB data from the WMS layer is translated to HSL, modified using
+                user supplied values, and translated back to RGB.  The resulting
+                composite is displayed on the map with a <code>OpenLayers.Layer.Raster</code>.
+            </p>
+            <p>
+                See the <a href="raster-operations.js" target="_blank">raster-operations.js</a> 
+                source for details on how this is done.
+            </p>
+        </div>
+        <script src="raster-operations.js"></script>
+    </body>
+</html>

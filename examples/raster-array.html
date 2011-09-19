@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OpenLayers Raster from Array Example</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" type="text/css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+        <script src="../OpenLayers.js"></script>
+        <style>
+            .olControlZoomPanel {
+                top: 20px;
+            }
+            .widget-wrapper {
+                width: 492px;
+                background-color: #f9f9f9;
+                border: solid 1px #ddd;
+                padding: 10px;
+                margin: 10px 0;
+            }
+            .slider {
+                margin-top: 5px;
+                float: right;
+                width: 80%;
+            }
+            #reset {
+                padding-left: 1em;
+                font-size: 1.2em;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="title">Array as Raster Data</h1>
+        <div id="tags">
+            Raster, Grid, Array
+        </div>
+        <p id="shortdesc">This demo generates a raster grid from array data.</p>
+        <div id="map" class="smallmap"></div>
+        <div class="widget-wrapper ui-widget ui-corner-all">
+            <span>hue:</span>
+            <div id="slider" class="slider"></div>
+        </div>
+        <p>See the <a href="raster-array.js" target="_blank">raster-array.js</a> source for details on how this is done.</p>
+        <script src="raster-array.js"></script>
+    </body>
+</html>

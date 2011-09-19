@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OpenLayers Raster Grid Layer Example</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <script src="../OpenLayers.js"></script>
+        <style>
+            .olControlZoomPanel {
+                top: 20px;
+            }
+            div.docs p {
+                padding-top: 1em;
+                width: 512px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="title">Raster Layer from Grid Data</h1>
+        <div id="tags">
+            Raster, Grid, Layer
+        </div>
+        <p id="shortdesc">This demo generates a raster layer based on modified data from another layer.</p>
+        <div id="map" class="smallmap"></div>
+        <div id="view" class="smallmap"></div>
+        <div class="docs">
+            <p>
+                This example generates a <code>OpenLayers.Raster.Composite</code>
+                from a WMS layer.  The composite data is a luminosity calculation
+                from a <code>OpenLayers.Raster.Operation</code> that works with
+                the source RGBA data.  The resulting luminosity data is displayed
+                on a second map with a <code>OpenLayers.Layer.Raster</code>.
+            </p>
+            <p>
+                See the <a href="raster-grid-layer.js" target="_blank">raster-grid-layer.js</a> 
+                source for details on how this is done.
+            </p>
+        <script src="raster-grid-layer.js"></script>
+    </body>
+</html>
