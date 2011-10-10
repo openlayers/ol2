@@ -31,6 +31,12 @@
             {isBaseLayer: false}
         );
 
+        var world = new OpenLayers.Layer.WMS("World",
+            "http://demo.opengeo.org/geoserver/wms", 
+            {'layers': 'topp:world', transparent: true, format: 'image/gif'},
+            {isBaseLayer: false}
+        );
+
         var cities = new OpenLayers.Layer.WMS("Cities",
             "http://demo.opengeo.org/geoserver/wms", 
             {'layers': 'topp:tasmania_cities', transparent: true, format: 'image/gif'},
@@ -48,7 +54,12 @@
             isBaseLayer: false 
         });
         
-        map.addLayers([political, roads, cities, water, highlight]); 
+        var group = [world, water];
+        for (var i=0; i < group.length; i++) { group[i].group = 'World + Water'; }
+        group = [cities, roads];
+        for (var i=0; i < group.length; i++) { group[i].group = 'Cities + Roads'; }
+
+        map.addLayers([political, roads, world, cities, water, highlight]); 
 
         info = new OpenLayers.Control.WMSGetFeatureInfo({
             url: 'http://demo.opengeo.org/geoserver/wms', 
@@ -70,71 +81,14 @@
         map.addControl(info);
         info.activate();
 
-        map.addControl(new OpenLayers.Control.LayerSwitcher());
+        map.addControl(new OpenLayers.Control.LayerSwitcherGroups());
         map.zoomToMaxExtent();
-
-      // grouping of layers
-      var group = [roads, cities];
-      for (var i=0; i < group.length; i++) { group[i].group = 'Drogi i miasta'; }
-      group = [water];
-      for (var i=0; i < group.length; i++) { group[i].group = 'Miasta i wody'; }
-
-      function addGroupSwitcher(doc, map) {
-        function checkbox(label) {
-          var lb = doc.createElement("label");
-          var cb = doc.createElement("input");
-          cb.setAttribute("type", "checkbox");
-          cb.setAttribute("checked", true);
-          lb.appendChild(cb);
-          lb.appendChild(doc.createTextNode(label));
-          return [lb, cb];
-        }
-        var groups = {};
-        for (var i=0; i<map.layers.length; i++) {
-          var layer = map.layers[i];
-          if (!layer.displayInLayerSwitcher || layer.isBaseLayer) continue;
-          groups[layer.group] = (groups[layer.group] || []);
-          groups[layer.group].push(layer);
-        }
-        var div = doc.createElement("div");
-        for (var key in groups) {
-          var ul = doc.createElement("ul");
-          var cb_main = checkbox(key);
-          ul.appendChild(cb_main[0]);
-          var group = groups[key];
-          var sub_cb = [];
-          for (var i=0; i<group.length; i++) {
-            var layer = group[i];
-            var li = doc.createElement("li");
-            var cb = checkbox(layer.name);
-            li.appendChild(cb[0]);
-            cb[1].layer = layer;
-            cb[1].onchange = function() {
-              this.layer.display(this.checked);
-            }
-            sub_cb.push(cb[1]);
-            ul.appendChild(li);
-          }
-          div.appendChild(ul);
-          cb_main[1].onclick = function(checkboxes) { 
-            return function(me) {
-              var state = me.target.checked;
-              for (var i = 0; i<checkboxes.length; i++) {
-                checkboxes[i].checked = state;
-                checkboxes[i].onchange();
-              }
-            }
-          }(sub_cb);
-        }
-        doc.body.appendChild(div);
-      }
-      addGroupSwitcher(document, map);
     }
 
   </script>
   </head>
   <body onload="load()">
-      <h1 id="title">Feature Info in Popup</h1>
+      <h1 id="title">LayerSwitcherGroups</h1>
 
       <div id="tags">
         WMS, GetFeatureInfo, popup
