@@ -10,7 +10,7 @@
     <script type="text/javascript">
         function parseData(req) {
           g =  new OpenLayers.Format.KML({extractStyles: true});
-          html = ""
+          html = "";
           features = g.read(req.responseText);
           for(var feat in features) {
             html += "Feature: Geometry: "+ features[feat].geometry+",";
