@@ -334,6 +334,32 @@
         t.ok(tile.imgDiv == null, "image reference removed from tile");
         map.destroy();
     }
+
+    function test_olImageLoadError(t) {
+        t.plan(2);
+        var map = new OpenLayers.Map('map');
+        var layer = new OpenLayers.Layer.WMS("invalid",  "", {layers: 'basic'});
+        map.addLayer(layer);
+
+        var size = new OpenLayers.Size(5, 6);
+        var position = new OpenLayers.Pixel(20, 30);
+        var bounds = new OpenLayers.Bounds(1, 2, 3, 4);
+
+        var tile = new OpenLayers.Tile.Image(layer, position, bounds, null, size);
+        tile.draw();
+
+        t.delay_call(0.1, function() {
+            t.ok(OpenLayers.Element.hasClass(tile.imgDiv, 'olImageLoadError'), "");
+
+            layer.setVisibility(false);
+            layer.setVisibility(true);
+
+            t.delay_call(0.1, function() {
+                t.ok(OpenLayers.Element.hasClass(tile.imgDiv, 'olImageLoadError'), "");
+                map.destroy();
+            });
+        });
+    }
     
   </script>
 </head>
