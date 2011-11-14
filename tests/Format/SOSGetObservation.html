@@ -4,7 +4,7 @@
     <script type="text/javascript">
 
     function test_read_SOSGetObservation(t) {
-        t.plan(13);
+        t.plan(28);
 
         var parser = new OpenLayers.Format.SOSGetObservation();
         var text =
@@ -132,6 +132,24 @@
         t.eq(feature.attributes.id, "urn:ogc:object:feature:OSIRIS-HWS:efeb807b-bd24-4128-a920-f6729bcdd111", "Foi id correctly parsed");
         t.eq(feature.attributes.name, "waether @ roof of the FH Kaernten, Villach, Austria", "Foi name correctly parsed");
         t.ok(feature.geometry instanceof OpenLayers.Geometry.Point, "Geometry correctly parsed");
+        var dataArray = observation.result.dataArray;
+        t.ok(dataArray, "DataArray correctly parsed");
+        t.eq(dataArray.count, 1, "One element parsed for the data array");
+        t.eq(dataArray.elementType, "Components", "ElementType correctly parsed");
+        var dataRecord = dataArray.dataRecord;
+        t.eq(dataRecord[0].name, "Time", "DataRecord time correctly parsed");
+        t.eq(dataRecord[0].def, "urn:ogc:data:time:iso8601", "DataRecord time definition correctly parsed");
+        t.eq(dataRecord[1].name, "feature", "DataRecord feature correctly parsed");
+        t.eq(dataRecord[1].def, "urn:ogc:data:feature", "DataRecord feature definition correctly parsed");
+        t.eq(dataRecord[2].name, "urn:ogc:def:property:OGC::Precipitation1Hour", "DataRecord precipitation correctly parsed");
+        t.eq(dataRecord[2].def, "urn:ogc:def:property:OGC::Precipitation1Hour", "DataRecord precipitation definition correctly parsed");
+        t.eq(dataRecord[2].uom, "mm", "Unit of measure correctly parsed");
+        var encoding = dataArray.encoding;
+        t.eq(encoding.decimalSeparator, ".", "Decimal separator correctly parsed");
+        t.eq(encoding.tokenSeparator, ",", "Token separator correctly parsed");
+        t.eq(encoding.blockSeparator, ";", "Block separator correctly parsed");
+        t.eq(dataArray.values.length, 1, "Number of values parsed is correct");
+        t.eq(dataArray.values, [["2009-09-28T13:45:00.000+02:00","urn:ogc:object:feature:OSIRIS-HWS:efeb807b-bd24-4128-a920-f6729bcdd111","0.0"]], "Values parsed correctly");
     }
 
     function test_write_SOSGetObservation(t) {
