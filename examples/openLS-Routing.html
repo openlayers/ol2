@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    		<meta name="apple-mobile-web-app-capable" content="yes"/>
+   		<link rel="stylesheet" href="../theme/default/style.css" type="text/css"/>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+    <title>OpenLS: Geocoding Example</title>
+    <script type="text/javascript" src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../lib/OpenLayers/Format/XLS/v1_2_0.js"></script>
+    <script type="text/javascript">
+        var map, vectors, layer, controls, lineLayer;
+
+	function aoi(circle, polig, env){
+		this.circleByCenterPoint = circle;
+		this.polygon = polig;
+		this.envelope = env;
+	}
+
+	function avoidList(){
+		this.aoi = [new aoi("loquesea", null, null),
+			new aoi(null, "loquesea", null),
+			new aoi(null, null, "loquesea")];
+		this._location = [null, null];
+		this.avoidFeature = ["","",""];
+	}
+
+	function wayPoint(point, geom){
+		this.stop = point;
+		this._location =  geom;
+		this.geocodeMatchCode = null;
+	}
+
+	function routePlan(points){
+		this.useRealTimeTraffic = null;
+		this.expectedStartTime= "";
+		this.expectedEndTime= "";
+		this.routePreference= "Fastest";
+		this.wayPointList = [];
+		for(var i = 0; i<points.length; i++){
+			this.wayPointList[i] = new wayPoint(false, points[i]);
+		}
+		this.avoidList= null;
+	}
+	
+	// RouteGeometryRequestType:
+	// -- BoundinBox: gml:EnvelopeType
+	// -- scale: positiveInteger (optional, default:1)
+	// -- provideStartPosition: boolean (optional, default: false)
+	// -- maxPoints: positiveInteger (optional, default: 100)
+
+	function routeGeometryRequest(s, psp, mp, bbox){
+		if(s>0){
+			this.scale = s;		
+		}
+		this.provideStartingPortion = psp;
+		this.maxPoints = mp;
+		this.boundingBox = bbox;
+	}
+
+	function routeInstructionsRequest(pg, pbb, f){
+		this.provideGeometry = pg;
+		this.provideBoundingBox = pbb;
+		this.format = f;
+	}
+
+	// RouteMapStyleType
+	// -- value: string (enumeration: {Overview, Maneuver})
+	function routeMapStyleType(value){
+		this.style = value;
+	}
+	
+	// RouteMapOutputType:
+	// -- BBoxContext: gml:EnvelopeType
+	// -- width: nonNegativeInteger
+	// -- height: nonNegativeInteger
+	// -- format: string
+	// -- BGcolor: string (optional)
+	// -- transparent: boolean (optional)
+	// -- style: RouteMapStyleType (optional)
+
+	function routeMapOutputType(bbox, w, h, f, bgc, t, st){
+		if(w>=0){this.width = w;}
+		if(h>0){this.height = h;}
+		this.format = f;
+		this.BGcolor = bgc;
+		this.transparent = t;
+		this.boundingBox = bbox;
+		this.style = st;
+	}
+
+	// DetermineRouteRequestType:
+	// -- routeHandle: xls:RouteHandle
+	// -- routePlan: xls:RoutePlan
+	// -- routeInstructionsRequest: xls:RouteInstructionsRequest
+	// -- routeGeometryRequest: xls:RouteGeometryRequest
+	// -- routeMapRequest: xls:RouteMapRequest
+	// -- provideRouteHandle: boolean (optional, default: false)
+	// -- distanceUnit: xls:DistanceUnitType --> based string (values: KM/M/DM/MI/YD/FT) (optional, default:false)
+
+	function routeParameters(points){
+		this.provideRouteHandle = null;
+		this.distanceUnit = null;
+		this.routeHandle = "";
+		this.routePlan = new routePlan(points);
+		this.routeInstructionsRequest = null;
+		this.routeGeometryRequest = null;
+		this.routeMapRequest = null;
+	}
+
+	// Request:
+	// -- methodName: string (value: GeocodeRequest/RouteRequest)
+	// -- requestID: string (optional)
+	// -- routeParameters: xls:DetermineRouteRequestType
+
+	function objetoJS(points){
+		// Fabricamos los atributos necesarios para el writer del xls.
+		this.methodName = "RouteRequest";
+		this.requestID = null;
+		this.routeParameters = new routeParameters(points);
+	}
+
+        function init() {
+		var osm = new OpenLayers.Layer.OSM( "Simple OSM Map");                  
+		var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
+                renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
+
+		vectors = new OpenLayers.Layer.Vector("Vector Layer", {
+                    renderers: renderer
+                });
+		lineLayer = new OpenLayers.Layer.Vector("Line Layer", {
+                    renderers: renderer
+                });
+		OpenLayers.ProxyHost = "http://localhost/cgi-bin/proxy.cgi?url=";
+		map = new OpenLayers.Map('map');
+		map.addLayers([osm, vectors, lineLayer]);
+		map.addControl(new OpenLayers.Control.LayerSwitcher());
+                map.addControl(new OpenLayers.Control.MousePosition());
+		controls = {
+			point: new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point),
+			line: new OpenLayers.Control.DrawFeature(lineLayer, OpenLayers.Handler.Path)
+                };
+
+		for(var key in controls) {
+                    map.addControl(controls[key]);
+                }
+
+                map.setCenter(new OpenLayers.LonLat(-667320, 4493450),14);
+   
+        }
+        function submitform() {
+		//  Recuperamos los puntos introducidos en  el mapa
+		var points = [];
+		var layersMap = map.layers;
+		var featuresMap;
+		for(var l=0; l<layersMap.length; l++){
+			if(layersMap[l].name == "Vector Layer"){
+				featuresMap = layersMap[l].features;		
+			}
+		}
+		//var points = [
+		//	new OpenLayers.Geometry.Point(-5.93142, 37.40709),
+		//	new OpenLayers.Geometry.Point(-5.89972, 37.42268),
+		//	new OpenLayers.Geometry.Point(-5.97659, 37.39100)
+		//];
+		for(var f=0; f<featuresMap.length; f++){
+			points[f] = featuresMap[f].geometry.transform(map.baseLayer.projection, new OpenLayers.Projection("EPSG:4326"));
+		}	
+		
+		var paramInput = new objetoJS(points);
+            	var format = new OpenLayers.Format.XLS();
+		var inputData = format.write(paramInput);
+
+		var url = 'http://openrouteservice.org/php/OpenLSRS_DetermineRoute.php';
+		//url = "http://localhost:8080/openLS/services/OpenLS/openLS";
+		//url = "http://192.168.1.175:8080/openLS/services/OpenLS/openLS";
+//		url = "http://192.168.1.120:8080/openLS/services/OpenLS/openLS";
+		url = "http://gofre:8080/openLS/services/OpenLS/openLS";
+
+            OpenLayers.Request.POST({
+                url: url,
+                scope: this,
+                failure: this.requestFailure,
+                success: this.requestSuccess,
+                data: inputData
+            });
+	}
+
+        function requestSuccess(response) {
+            var format = new OpenLayers.Format.XLS();
+	   // var resText = replaceNSByXSL(response.responseText);
+	//	var parser=new DOMParser();
+	//	var xmlDoc=parser.parseFromString(resText,"text/xml");
+            var output = format.read(response.responseXML);
+	
+		format.parser.readers["ns1"] = format.parser.readers["xls"];
+		format.parser.readers["ns2"] = format.parser.readers["gml"];
+            var output = format.read(response.responseXML);
+            if (output.responseLists[0]) {
+		
+                var geometry = output.responseLists[0].components[0];                                     
+                var style = { strokeColor: '#0000ff', 
+                            strokeOpacity: 0.5,
+                            strokeWidth: 5
+                };
+		var arrayPoints = [];
+		for (var p=0; p<geometry.components.length; p++){
+			arrayPoints[p] = geometry.components[p].transform(new OpenLayers.Projection("EPSG:4326"), map.baseLayer.projection);
+		}
+		geometry.components = arrayPoints;
+                var lineFeature = new OpenLayers.Feature.Vector(geometry, null, style);
+		
+                lineLayer.addFeatures([lineFeature]);
+                map.setCenter(geometry.components[0], 12);
+            } else {
+                alert("Sorry, no address found");
+            }
+        }
+        function requestFailure(response) {
+            alert("An error occurred while communicating with the OpenLS service. Please try again.");
+        }
+	function toggleControl(element) {
+		for(key in controls) {
+			var control = controls[key];
+			if(element.value == key && element.checked) {
+				control.activate();
+			} else {
+				control.deactivate();
+			}
+		}
+	}
+
+    </script>
+</head>
+<body onload="init()">
+<h1 id="title">OpenLS Geocoding Example</h1>
+
+<div id="tags">
+    OpenLS, XLS, Geocoding
+</div>
+
+<p id="shortdesc">
+    Show how to use an OpenLS service.
+</p>
+
+<form name="input" action="javascript: submitform();" method="post">
+    <label for="query">Search for address:</label> <input type="text" id="query" size=50 name="query"
+                                                          value="Rue des Berges 37 Payerne"/>
+    <input type="submit" value="Submit"/>
+</form>
+
+<br>
+
+<div id="map" class="smallmap"></div>
+
+
+<div id="docs">
+    <p>
+        Geocoding example using the http://www.openrouteservice.org/ OpenLS service. Recenter to the first item of the results.
+    </p>
+</div>
+
+<div id="controls">
+	<ul id="controlToggle">
+                <li>
+			<input type="radio" name="type" value="point" id="pointToggle" onclick="toggleControl(this);" />
+			<label for="pointToggle">draw point</label>
+                </li>
+	</ul>
+</div>
+
+</body>
+</html>
