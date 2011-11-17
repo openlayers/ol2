@@ -6,11 +6,19 @@
     		<meta name="apple-mobile-web-app-capable" content="yes"/>
    		<link rel="stylesheet" href="../theme/default/style.css" type="text/css"/>
     <link rel="stylesheet" href="style.css" type="text/css"/>
-    <title>OpenLS: Geocoding Example</title>
+    <title>OpenLS: Routing Example</title>
     <script type="text/javascript" src="../lib/OpenLayers.js"></script>
     <script type="text/javascript" src="../lib/OpenLayers/Format/XLS/v1_2_0.js"></script>
+	<style type="text/css">
+      html, body, #map {
+          width: 100%;
+          height: 95%;
+          margin: 0;
+      }
+    </style>
     <script type="text/javascript">
-        var map, vectors, layer, controls, lineLayer;
+	var osm;
+        var map, points, layer, controls, lineLayer, markLayer;
 
 	function aoi(circle, polig, env){
 		this.circleByCenterPoint = circle;
@@ -122,52 +130,66 @@
 	}
 
         function init() {
-		var osm = new OpenLayers.Layer.OSM( "Simple OSM Map");                  
+		// Capa base de OSM
+		osm = new OpenLayers.Layer.OSM("Simple OSM Map");                  
 		var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
-                renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
-
-		vectors = new OpenLayers.Layer.Vector("Vector Layer", {
+                renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.rendeers;
+		// Capa de puntos
+		pointsLayer = new OpenLayers.Layer.Vector("Points Layer", {
                     renderers: renderer
                 });
+		// Capa para una linea
 		lineLayer = new OpenLayers.Layer.Vector("Line Layer", {
                     renderers: renderer
                 });
+		// Capa para las marcas de los puntos
+		markLayer = new OpenLayers.Layer.Markers("Mark Layer", {
+			renderers: renderer
+		});
+		// Dirección del proxy
 		OpenLayers.ProxyHost = "http://localhost/cgi-bin/proxy.cgi?url=";
+		// Creamos mapa
 		map = new OpenLayers.Map('map');
-		map.addLayers([osm, vectors, lineLayer]);
+		// Añadimos capas
+		map.addLayers([osm, 
+				pointsLayer, 
+				lineLayer,
+				markLayer]);
+		// Añadimos controles
 		map.addControl(new OpenLayers.Control.LayerSwitcher());
                 map.addControl(new OpenLayers.Control.MousePosition());
+		// Creamos controles para las capas
 		controls = {
-			point: new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point),
-			line: new OpenLayers.Control.DrawFeature(lineLayer, OpenLayers.Handler.Path)
+			point: new OpenLayers.Control.DrawFeature(pointsLayer, OpenLayers.Handler.Point)
                 };
-
 		for(var key in controls) {
                     map.addControl(controls[key]);
                 }
-
-                map.setCenter(new OpenLayers.LonLat(-667320, 4493450),14);
+                map.setCenter(new OpenLayers.LonLat(-667320, 4493450),16);
    
         }
         function submitform() {
-		//  Recuperamos los puntos introducidos en  el mapa
+		// Recuperamos los puntos introducidos en  el mapa
 		var points = [];
 		var layersMap = map.layers;
 		var featuresMap;
 		for(var l=0; l<layersMap.length; l++){
-			if(layersMap[l].name == "Vector Layer"){
-				featuresMap = layersMap[l].features;		
+			if(layersMap[l].name == "Points Layer"){
+				featuresMap = layersMap[l].features;	
 			}
 		}
-		//var points = [
-		//	new OpenLayers.Geometry.Point(-5.93142, 37.40709),
-		//	new OpenLayers.Geometry.Point(-5.89972, 37.42268),
-		//	new OpenLayers.Geometry.Point(-5.97659, 37.39100)
-		//];
 		for(var f=0; f<featuresMap.length; f++){
 			points[f] = featuresMap[f].geometry.transform(map.baseLayer.projection, new OpenLayers.Projection("EPSG:4326"));
-		}	
-		
+		}
+		for(var i=0; i<points.length; i++){
+			//  Fabricar una etiqueta a partir del punto
+			var size = new OpenLayers.Size(25,28);
+			var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+			var icon = new OpenLayers.Icon('http://maps.gstatic.com/mapfiles/ms2/micons/green-dot.png',size,offset);
+			var point = points[i].transform(new OpenLayers.Projection("EPSG:4326"), map.baseLayer.projection);
+			markLayer.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(point.x, point.y),icon));
+			points[i].transform(map.baseLayer.projection, new OpenLayers.Projection("EPSG:4326"));
+		}
 		var paramInput = new objetoJS(points);
             	var format = new OpenLayers.Format.XLS();
 		var inputData = format.write(paramInput);
@@ -175,7 +197,7 @@
 		var url = 'http://openrouteservice.org/php/OpenLSRS_DetermineRoute.php';
 		//url = "http://localhost:8080/openLS/services/OpenLS/openLS";
 		//url = "http://192.168.1.175:8080/openLS/services/OpenLS/openLS";
-//		url = "http://192.168.1.120:8080/openLS/services/OpenLS/openLS";
+		//url = "http://192.168.1.120:8080/openLS/services/OpenLS/openLS";
 		url = "http://gofre:8080/openLS/services/OpenLS/openLS";
 
             OpenLayers.Request.POST({
@@ -188,10 +210,8 @@
 	}
 
         function requestSuccess(response) {
+		pointsLayer.destroyFeatures();
             var format = new OpenLayers.Format.XLS();
-	   // var resText = replaceNSByXSL(response.responseText);
-	//	var parser=new DOMParser();
-	//	var xmlDoc=parser.parseFromString(resText,"text/xml");
             var output = format.read(response.responseXML);
 	
 		format.parser.readers["ns1"] = format.parser.readers["xls"];
@@ -212,13 +232,14 @@
                 var lineFeature = new OpenLayers.Feature.Vector(geometry, null, style);
 		
                 lineLayer.addFeatures([lineFeature]);
-                map.setCenter(geometry.components[0], 12);
+                map.setCenter(geometry.components[0], 16);
             } else {
                 alert("Sorry, no address found");
             }
         }
         function requestFailure(response) {
             alert("An error occurred while communicating with the OpenLS service. Please try again.");
+		pointsLayer.destroyFeatures();
         }
 	function toggleControl(element) {
 		for(key in controls) {
@@ -231,44 +252,37 @@
 		}
 	}
 
+	function removeLayer(element){
+		var lineToRemove = map.getLayersByName("Line Layer");
+		var pointToRemove = map.getLayersByName("Points Layer");
+		var markToRemove = map.getLayersByName("Mark Layer");
+		if(lineToRemove.length != 0 && lineToRemove[0].features.length !=0){
+			lineToRemove[0].destroyFeatures();
+		}
+		if(pointToRemove.length != 0 && pointToRemove[0].features.length !=0){
+			pointToRemove[0].destroyFeatures();
+		}
+		if(markToRemove.length != 0 && markToRemove[0].markers.length !=0){
+			markToRemove[0].destroy();
+		}
+		map.setCenter(new OpenLayers.LonLat(-667320, 4493450),14);
+	}
+
     </script>
 </head>
 <body onload="init()">
-<h1 id="title">OpenLS Geocoding Example</h1>
+<h1 id="title">OpenLS Routing Example</h1>
 
 <div id="tags">
-    OpenLS, XLS, Geocoding
+    OpenLS, XLS, Routing
 </div>
-
-<p id="shortdesc">
-    Show how to use an OpenLS service.
-</p>
-
-<form name="input" action="javascript: submitform();" method="post">
-    <label for="query">Search for address:</label> <input type="text" id="query" size=50 name="query"
-                                                          value="Rue des Berges 37 Payerne"/>
-    <input type="submit" value="Submit"/>
-</form>
-
+<div id="map"></div>
 <br>
-
-<div id="map" class="smallmap"></div>
-
-
-<div id="docs">
-    <p>
-        Geocoding example using the http://www.openrouteservice.org/ OpenLS service. Recenter to the first item of the results.
-    </p>
-</div>
-
-<div id="controls">
-	<ul id="controlToggle">
-                <li>
-			<input type="radio" name="type" value="point" id="pointToggle" onclick="toggleControl(this);" />
-			<label for="pointToggle">draw point</label>
-                </li>
-	</ul>
-</div>
-
+<form name="input" method="post">
+	<input type="button" value="Submit" onClick="submitform();"/>
+	<input type="button" value="Clear" onclick="removeLayer(this);"/>
+	<input type="checkbox" name="type" value="point" id="pointToggle" onclick="toggleControl(this);" />
+	<label for="pointToggle">Draw point</label>
+</form>
 </body>
 </html>
