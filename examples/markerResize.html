@@ -21,7 +21,7 @@
             var markers = new OpenLayers.Layer.Markers( "Markers" );
             map.addLayer(markers);
 
-            size = new OpenLayers.Size(21, 25);
+            size = { w: 21, h: 25 };
             calculateOffset = function(size) {
                         return new OpenLayers.Pixel(-(size.w/2), -size.h); };
             icon = new OpenLayers.Icon(
@@ -35,10 +35,8 @@
         }
 
         function resize() {
-         
-            size = new OpenLayers.Size(size.w + 10, size.h + 10);
+            size = { w: size.w + 10, h: size.h + 10 };
             icon.setSize(size);   
-            
         }
     </script>
   </head>
