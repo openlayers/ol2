@@ -26,8 +26,8 @@
         t.eq( bounds.getHeight(), 2, "bounds.getHeight() returns correct value" );
         
         var sz = bounds.getSize();
-        var size = new OpenLayers.Size(10,2);
-        t.ok(sz.equals(size),"bounds.getSize() has correct value" );
+        var size = { w: 10, h: 2 };
+        t.ok(size.w == sz.w && size.h == sz.h, "bounds.getSize() has correct value" );
     
         var center = new OpenLayers.Pixel(5,3);
         var boundsCenter = bounds.getCenterPixel();
@@ -197,8 +197,8 @@
     function test_Bounds_getSize(t) {
         t.plan( 1 );
         var bounds = new OpenLayers.Bounds(0,10,100,120);
-
-        t.ok( bounds.getSize().equals(new OpenLayers.Size(100, 110)), "getCenterPixel() works correctly");
+        var size = bounds.getSize();
+        t.ok(size.w == 100 && size.h == 110, "getCenterPixel() works correctly");
     }
     
     function test_Bounds_clone(t) {
@@ -431,7 +431,7 @@
        
        var height = 15;
        var width = 16;
-       var size = new OpenLayers.Size(width, height);
+       var size = { w: width, h: height };
        bounds = OpenLayers.Bounds.fromSize(size);
        t.ok( bounds instanceof OpenLayers.Bounds, "new OpenLayers.Bounds returns Bounds object" );
        t.eq( bounds.left, 0, "bounds.left is set correctly" );

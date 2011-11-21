@@ -13,7 +13,6 @@
         "OpenLayers/BaseTypes/Element.js",
         "OpenLayers/BaseTypes/LonLat.js",
         "OpenLayers/BaseTypes/Pixel.js",
-        "OpenLayers/BaseTypes/Size.js",
         "OpenLayers/Lang.js",
         "OpenLayers/Console.js"
     ];
@@ -119,7 +118,7 @@
 
         var id = "boo";
         var px = new OpenLayers.Pixel(5,5);
-        var sz = new OpenLayers.Size(10,10);
+        var sz = { w: 10, h: 10 };
         var img = "http://www.openlayers.org/images/OpenLayers.trac.png";
         var position = "absolute";
         var border = "13px solid";
@@ -197,7 +196,7 @@
         t.plan( 22 );
 
         var img = "http://www.openlayers.org/images/OpenLayers.trac.png";
-        var sz = new OpenLayers.Size(10,10);
+        var sz = { w: 10, h: 10 };
         var xy = new OpenLayers.Pixel(5,5);
         var position = "absolute";
         var id = "boo";
@@ -375,7 +374,7 @@
         t.plan( 19 );
 
         var img = "http://www.openlayers.org/images/OpenLayers.trac.png";
-        var sz = new OpenLayers.Size(10,10);
+        var sz = { w: 10, h: 10 };
         var xy = new OpenLayers.Pixel(5,5);
         var position = "absolute";
         var id = "boo";
@@ -518,7 +517,7 @@
 
         var id = "boo";
         var px = new OpenLayers.Pixel(5,5);
-        var sz = new OpenLayers.Size(10,10);
+        var sz = { w: 10, h: 10 };
         var position = "absolute";
         var border = "1px solid";
         var overflow = "hidden";
@@ -560,7 +559,7 @@
         var imageDiv = OpenLayers.Util.createAlphaImageDiv();
 
         var img = "http://www.openlayers.org/images/OpenLayers.trac.png";
-        var sz = new OpenLayers.Size(10,10);
+        var sz = { w: 10, h: 10 };
         var xy = new OpenLayers.Pixel(5,5);
         var position = "absolute";
         var id = "boo";
