@@ -57,6 +57,7 @@
         }
         layer1.drawFeature = drawFeature;
         layer2.drawFeature = drawFeature;
+        control.handlers.feature.evt = {};
         control.select(feature1);
         t.eq(feature1.renderIntent, "select", "render intent is set to select");
         control.select(feature2);
@@ -68,19 +69,21 @@
     }
 
     function test_Control_SelectFeature_clickFeature(t) {
-        t.plan(6);
+        t.plan(5);
         // mock up layer
         var layer = {
             selectedFeatures: [],
             drawFeature: function() {},
             events: {
-                triggerEvent: function() {}
+                triggerEvent: function(type, evt) {
+                    if (listeners[type]) { listeners[type](evt); }
+                }
             }
         };
         // mock up active control
         var control = new OpenLayers.Control.SelectFeature(layer);
         control.handlers.feature = {
-            evt: {}
+            evt: {xy: "foo"}
         };
         // mock up features
         var features = new Array(4);
@@ -92,28 +95,31 @@
                 layer: layer
             };
         }
+        
+        var listeners = {
+            // test that featureselected gets triggered properly
+            featureselected: function(evt) {
+                var feature = evt.feature;
+                feature.tested += 1;
+                t.eq(feature.id, features[feature.index].id,
+                     "onSelect called with proper feature (" + feature.index + ")");
+                t.eq(feature.tested, feature.test,
+                     "onSelect called only once for feature (" + feature.index + ")");
+                t.eq(evt.xy, "foo", "xy from feature handler passed to evt.xy");
+            },
 
-        // test that onSelect gets called properly
-        control.onSelect = function(feature) {
-            feature.tested += 1;
-            t.eq(feature.id, features[feature.index].id,
-                 "onSelect called with proper feature (" + feature.index + ")");
-            t.eq(feature.tested, feature.test,
-                 "onSelect called only once for feature (" + feature.index + ")");
-            t.ok(this == control, "onSelect called in the scope of the control if control.scope is not provided");
-        }
+            // test that featureunselected gets triggered properly
+            featureunselected: function(evt) {
+                var feature = evt.feature;
+                feature.tested += 1;
+                t.eq(feature.id, features[feature.index].id,
+                     "onUnselect called with proper feature (" + feature.index + ")");
+                t.eq(feature.tested, feature.test,
+                     "onUnselect called only once for feature (" + feature.index + ")");
+            }
+        };
 
-        // test that onUnselect gets called properly
-        control.onUnselect = function(feature) {
-            feature.tested += 1;
-            t.eq(feature.id, features[feature.index].id,
-                 "onUnselect called with proper feature (" + feature.index + ")");
-            t.eq(feature.tested, feature.test,
-                 "onUnselect called only once for feature (" + feature.index + ")");
-            t.ok(this == control, "onUnselect called in the scope of the control if control.scope is not provided");
-        }
-
-        // mock up first click on first feature (runs 3 tests from onSelect)
+        // mock up first click on first feature (runs 3 tests from featureselected)
         var feature = features[0];
         feature.index = 0;
         feature.test = 1;
@@ -123,7 +129,7 @@
         control.toggle = false;
         control.clickFeature(feature);
 
-        // mock up second click on first feature (runs 3 tests from onUnselect)
+        // mock up second click on first feature (runs 2 tests from featureunselected)
         control.toggle = true;
         feature.test = 2;
         control.clickFeature(feature);
@@ -132,9 +138,14 @@
     }
 
     function test_box(t) {
-        t.plan(5);
+        t.plan(6);
+        var log = [];
         var map = new OpenLayers.Map("map");
-        var layer = new OpenLayers.Layer.Vector();
+        var layer = new OpenLayers.Layer.Vector("vector", {eventListeners: {
+            "featureselected": function(evt) {
+                log.push(evt);
+            }
+        }});
         map.addLayer(layer);
         map.setBaseLayer(layer);
         map.setCenter(new OpenLayers.LonLat(1,1));
@@ -150,7 +161,9 @@
         map.getLonLatFromPixel = function(arg) {
             return new OpenLayers.LonLat(arg.x, arg.y);
         }
-        control.selectBox(new OpenLayers.Bounds(-1, -1, 2, 2));
+        var box = new OpenLayers.Bounds(-1, -1, 2, 2);
+        control.selectBox(box);
+        t.eq(log[0].xy, map.getPixelFromLonLat(box.getCenterLonLat()), "evt.xy properly set to center of box.");
         t.eq(layer.selectedFeatures.length, 3, "box around all features selects 3 features");
 
         control.selectBox(new OpenLayers.Bounds(-3, -3, -1, -1));
