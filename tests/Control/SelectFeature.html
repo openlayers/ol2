@@ -69,17 +69,14 @@
     }
 
     function test_Control_SelectFeature_clickFeature(t) {
-        t.plan(5);
+        t.plan(7);
         // mock up layer
         var layer = {
             selectedFeatures: [],
             drawFeature: function() {},
-            events: {
-                triggerEvent: function(type, evt) {
-                    if (listeners[type]) { listeners[type](evt); }
-                }
-            }
         };
+        layer.events = new OpenLayers.Events(layer);
+        
         // mock up active control
         var control = new OpenLayers.Control.SelectFeature(layer);
         control.handlers.feature = {
@@ -96,11 +93,17 @@
             };
         }
         
-        var listeners = {
+        layer.events.on({
+            beforefeatureselected: function(evt) {
+                t.eq(evt.xy, "foo", 
+                    "beforefeatureselected: xy from feature handler passed to evt.xy");
+            },
             // test that featureselected gets triggered properly
             featureselected: function(evt) {
                 var feature = evt.feature;
                 feature.tested += 1;
+                t.eq(evt.type, "featureselected",
+                     "featureselected: evt.type is proper set.");
                 t.eq(feature.id, features[feature.index].id,
                      "onSelect called with proper feature (" + feature.index + ")");
                 t.eq(feature.tested, feature.test,
@@ -117,7 +120,7 @@
                 t.eq(feature.tested, feature.test,
                      "onUnselect called only once for feature (" + feature.index + ")");
             }
-        };
+        });
 
         // mock up first click on first feature (runs 3 tests from featureselected)
         var feature = features[0];
