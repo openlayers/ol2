@@ -229,13 +229,17 @@
     }
 
     function test_highlighyOnly(t) {
-        t.plan(23);
+        t.plan(30);
 
         /*
          * setup
          */
 
         var map, layer, ctrl1, ctrl2, _feature, feature, evt, _style;
+        var log = [];
+        var logListener = function (evt) {
+            log.push(evt);
+        };
 
         map = new OpenLayers.Map("map");
         layer = new OpenLayers.Layer.Vector("name", {isBaseLayer: true});
@@ -249,7 +253,12 @@
 
         ctrl2 = new OpenLayers.Control.SelectFeature(layer, {
             highlightOnly: true,
-            hover: true
+            hover: true,
+            eventListeners: {
+                    beforefeaturehighlighted: logListener,
+                    featurehighlighted: logListener,
+                    featureunhighlighted: logListener
+                }
         });
         map.addControl(ctrl2);
 
@@ -286,6 +295,17 @@
              "feature._lastHighlighter properly set after \"mouseover\"");
         t.eq(feature._prevHighlighter, undefined,
              "feature._prevHighlighter properly set after \"mouseover\"");
+        t.eq(log.length, 2,"only two events have called.");
+        if (log.length >= 1) {
+            t.eq(log[0].type, "beforefeaturehighlighted", "beforefeaturehighlighted: evt.type properly set.");
+            t.eq(log[0].xy && log[0].xy.x, evt.xy.x,"beforefeaturehighlighted: evt.xy properly set.");
+            t.ok(log[0].feature === _feature, "beforefeaturehighlighted: evt.feature properly set.");
+        }
+        if (log.length >= 2) {
+            t.eq(log[1].type, "featurehighlighted", "featurehighlighted: evt.type properly set.");
+            t.eq(log[1].xy && log[1].xy.x, evt.xy.x, "featurehighlighted: evt.xy properly set.");
+            t.ok(log[1].feature === _feature, "featurehighlighted: evt.feature properly set.");
+        }
 
         // click in feature, feature is drawn with "select"
         _feature = feature;
