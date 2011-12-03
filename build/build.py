@@ -85,7 +85,6 @@ def build(config_file = None, output_file = None, options = None):
             jscompilerJar, 
             sourceFiles, [
                 "--externs", "closure-compiler/Externs.js",
-                "--externs", "closure-compiler/errors-pending-to-fix.js",
                 "--jscomp_warning", "checkVars",   # To enable "undefinedVars"
                 "--jscomp_error",   "checkRegExp", # Also necessary to enable "undefinedVars"
                 "--jscomp_error",   "undefinedVars"
