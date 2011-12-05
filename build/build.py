@@ -81,7 +81,15 @@ def build(config_file = None, output_file = None, options = None):
         if not os.path.isfile(jscompilerJar):
             print "\nNo closure-compiler.jar; read README.txt!"
             sys.exit("ERROR: Closure Compiler \"%s\" does not exist! Read README.txt" % jscompilerJar)
-        minimized = closureCompiler.Compile(jscompilerJar, sourceFiles)
+        minimized = closureCompiler.Compile(
+            jscompilerJar, 
+            sourceFiles, [
+                "--externs", "closure-compiler/Externs.js",
+                "--jscomp_warning", "checkVars",   # To enable "undefinedVars"
+                "--jscomp_error",   "checkRegExp", # Also necessary to enable "undefinedVars"
+                "--jscomp_error",   "undefinedVars"
+            ]
+        )
         if minimized is None:
             print "\nAbnormal termination due to compilation errors." 
             sys.exit("ERROR: Closure Compilation failed! See compilation errors.") 
