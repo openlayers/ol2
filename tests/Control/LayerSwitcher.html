@@ -179,14 +179,14 @@
         t.eq(control.div.childNodes[1].childNodes[0].style.display, "none" , "Base layer display off when no visble base layer");
         
         map = new OpenLayers.Map('map');
-        var layer = new OpenLayers.Layer.WMS("WMS", 
+        var layer = new OpenLayers.Layer.WMS("WMS",
             "http://octo.metacarta.com/cgi-bin/mapserv?",
             {map: "/mapdata/vmap_wms.map", layers: "basic"});
         map.addLayer(layer);
 
         control = new OpenLayers.Control.LayerSwitcher();
         map.addControl(control);
-        t.eq(control.div.childNodes[1].childNodes[0].style.display, "" , "Base layer display on when visble base layer");
+        t.eq(control.div.childNodes[1].childNodes[0].style.display, "" , "Base layer display on when visible base layer");
     }
 
 
