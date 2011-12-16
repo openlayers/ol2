@@ -95,7 +95,7 @@
             output = output.replace(/<\?[^>]*\?>/, '');
             t.eq(output, osm_serialized_data[key], key + " serialized correctly");
         }
-    }   
+    }
     function test_Format_OSM_write_reproject(t) {
         t.plan(1);
         var f = new OpenLayers.Format.OSM({'internalProjection': new OpenLayers.Projection("EPSG:900913")});
@@ -105,9 +105,52 @@
         var data = f.write([feat]);
         var f = new OpenLayers.Format.OSM();
         var features = f.read(data);
-
         t.eq(OpenLayers.Util.toFloat(features[0].geometry.x, 3), .898, "exported to lonlat and re-read as lonlat correctly")
-    }    
+    }
+    
+    function test_Format_OSM_route(t) {
+        t.plan(8)
+        var f = new OpenLayers.Format.OSM({relationsParsers: {route: OpenLayers.Format.OSM.routeParser}});
+        var features = f.read(osm_test_data['route_simple']);
+        t.eq(features.length, 3, "Nb features");
+        var feat = features[0];
+        t.eq(feat.osm_id, -1131, "OSM ID set correctly");
+        t.eq(feat.attributes.type, "route", "type is correct."); 
+        t.eq(feat.attributes.route, "bicycle", "highway is correct."); 
+        t.eq(feat.geometry.CLASS_NAME, "OpenLayers.Geometry.MultiLineString", "returned as linestring");
+        t.eq(feat.geometry.components.length, 2, "correct number of lines");
+        t.eq(feat.geometry.components[0].components.length, 2, "correct number of componemt");
+        t.eq(feat.geometry.components[1].components.length, 3, "correct number of componemt");
+    }
+
+    function test_Format_OSM_boundary(t) {
+        t.plan(7)
+        var f = new OpenLayers.Format.OSM({relationsParsers: {boundary: OpenLayers.Format.OSM.multipolygonParser}});
+        var features = f.read(osm_test_data['boundary']);
+        t.eq(features.length, 4, "Nb features");
+        var feat = features[0];
+        t.eq(feat.osm_id, 365555, "OSM ID set correctly");
+        t.eq(feat.attributes.name, "Name", "name is correct."); 
+        t.eq(feat.attributes.type, "boundary", "type is correct."); 
+        t.eq(feat.attributes.admin_level, "8", "admin_level is correct."); 
+        t.eq(feat.geometry.CLASS_NAME, "OpenLayers.Geometry.MultiPolygon", "returned as MultiPolygon");
+        t.eq(feat.geometry.components.length, 1, "correct number of componemt");
+    }
+
+    function test_Format_OSM_multipolygon(t) {
+        t.plan(8)
+        var f = new OpenLayers.Format.OSM({relationsParsers: {multipolygon: OpenLayers.Format.OSM.multipolygonParser}});
+        var features = f.read(osm_test_data['multipolygon']);
+        t.eq(features.length, 6, "Nb features");
+        var feat = features[0];
+        t.eq(feat.osm_id, -1131, "OSM ID set correctly");
+        t.eq(feat.attributes.name, "Name", "name is correct."); 
+        t.eq(feat.attributes.type, "multipolygon", "type is correct."); 
+        t.eq(feat.attributes.landuse, "forest", "landuse is correct."); 
+        t.eq(feat.geometry.CLASS_NAME, "OpenLayers.Geometry.MultiPolygon", "returned as multipolygon");
+        t.eq(feat.geometry.components.length, 1, "correct number of componemt");
+        t.eq(feat.geometry.components[0].components.length, 2, "correct number of sub componemt");
+    }
     </script> 
 </head> 
 <body> 
