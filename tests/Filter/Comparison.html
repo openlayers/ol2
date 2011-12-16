@@ -192,6 +192,22 @@
             }),
             context: {prop: 0},
             expect: false
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.LIKE,
+                property: "prop",
+                value: ".+"
+            }),
+            context: {prop: "FOO"},
+            expect: true
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.LIKE,
+                property: "prop",
+                value: ".+"
+            }),
+            context: {},
+            expect: false
         }];
         
         t.plan(cases.length);
@@ -304,6 +320,7 @@
             expect: false
         }, {
             filter: new OpenLayers.Filter.Comparison({
+<<<<<<< HEAD
                 type: OpenLayers.Filter.Comparison.IS_NULL,
                 property: "prop"
             }),
@@ -330,6 +347,22 @@
             }),
             context: new OpenLayers.Feature.Vector(null, {prop: 0}),
             expect: false
+=======
+                type: OpenLayers.Filter.Comparison.LIKE,
+                property: "prop",
+                value: ".+"
+            }),
+            context: new OpenLayers.Feature.Vector(null, {prop: "FOO"}),
+            expect: true
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.LIKE,
+                property: "prop",
+                value: ".+"
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: false
+>>>>>>> #2938: [patch] Comparason type like with null (property not present)
         }];
         
         t.plan(cases.length);
