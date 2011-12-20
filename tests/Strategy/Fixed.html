@@ -235,6 +235,28 @@
 
         map.destroy();
     }
+
+    function test_callback(t) {
+        t.plan(1);
+
+        var layer_failure = new OpenLayers.Layer.Vector("KML", {
+            strategies: [new OpenLayers.Strategy.Fixed()],
+            protocol: new OpenLayers.Protocol.HTTP({
+                url: "foo",
+                callback: function(response) {
+                    t.ok(resp.code = OpenLayers.Protocol.Response.FAILURE,
+                         'protocol.callback called on failure')
+                }
+            })
+        });
+
+        var map = new OpenLayers.Map('map', {
+            controls: [],
+            layers: [new OpenLayers.Layer.OSM(), layer_failure]
+        });
+        map.zoomToMaxExtent();
+    }
+
   </script>
 </head>
 <body>
