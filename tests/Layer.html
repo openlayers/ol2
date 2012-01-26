@@ -76,8 +76,26 @@
         layer = new OpenLayers.Layer('Test Layer');
         layer.setName("chicken");
         
-        t.eq(layer.name, "chicken", "setName() works")
+        t.eq(layer.name, "chicken", "setName() works");
         
+    }
+    
+    function test_Layer_setMap(t) {
+        t.plan(3);
+        var map = new OpenLayers.Map({
+            layers: [new OpenLayers.Layer("base", {
+                maxExtent: [-1,-1,1,1],
+                projection: "EPSG:3857",
+                units: "m",
+                isBaseLayer: true
+            })],
+            center: [0,0]
+        });
+        var layer = new OpenLayers.Layer("overlay");
+        map.addLayer(layer);
+        t.eq(layer.maxExtent.toString(), map.getMaxExtent().toString(), "maxExtent defaults to map's maxExtent");
+        t.eq(layer.projection.getCode(), map.getProjectionObject().getCode(), "projection defaults to map's projection");
+        t.eq(layer.units, map.getUnits(), "units defaults to map's units");
     }
 
     function test_Layer_addOptions (t) {
