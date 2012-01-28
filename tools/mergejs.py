@@ -121,10 +121,19 @@ class Config:
     
     """
 
-    def __init__(self, filename):
+    def __init__(self, filename, sourceDirectory):
         """
         Parses the content of the named file and stores the values.
         """
+        self.sourceDirectory = sourceDirectory
+        self.configFile = filename
+        if not filename:
+            self.configFile = "(none)"
+            self.forceFirst = []
+            self.forceLast = []
+            self.include = []
+            self.exclude = []
+
         lines = [re.sub("#.*?$", "", line).strip() # Assumes end-of-line character is present
                  for line in open(filename)
                  if line.strip() and not line.strip().startswith("#")] # Skip blank lines and comments
@@ -155,23 +164,7 @@ def getNames (sourceDirectory, configFile = None):
 
 def run (sourceDirectory, outputFilename = None, configFile = None,
                                                 returnAsListOfNames = False):
-    cfg = None
-    if configFile:
-        cfg = Config(configFile)
-
-    allFiles = []
-
-    ## Find all the Javascript source files
-    for root, dirs, files in os.walk(sourceDirectory):
-        for filename in files:
-            if filename.endswith(SUFFIX_JAVASCRIPT) and not filename.startswith("."):
-                filepath = os.path.join(root, filename)[len(sourceDirectory)+1:]
-                filepath = filepath.replace("\\", "/")
-                if cfg and cfg.include:
-                    if filepath in cfg.include or filepath in cfg.forceFirst:
-                        allFiles.append(filepath)
-                elif (not cfg) or (not undesired(filepath, cfg.exclude)):
-                    allFiles.append(filepath)
+    cfg = Config(configFile, sourceDirectory)
 
     ## Header inserted at the start of each file in the output
     HEADER = "/* " + "=" * 70 + "\n    %s\n" + "   " + "=" * 70 + " */\n\n"
@@ -179,54 +172,44 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
     files = {}
 
     ## Import file source code
-    ## TODO: Do import when we walk the directories above?
-    for filepath in allFiles:
-        print "Importing: %s" % filepath
-        fullpath = os.path.join(sourceDirectory, filepath).strip()
-        content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF?
-        files[filepath] = SourceFile(filepath, content, cfg.exclude) # TODO: Chop path?
+    cfg.forceLast = importFiles("[last]", cfg.forceLast, cfg, files) 
+    cfg.forceFirst = importFiles("[first]", cfg.forceFirst, cfg, files) 
+    if len(cfg.include) == 0:
+        importFiles("[include]", ["."], cfg, files)
+    else:
+        importFiles("[include]", cfg.include, cfg, files) 
 
-    print
-
-    from toposort import toposort
-
+    print "\nImport required files:"
     complete = False
     resolution_pass = 1
-
     while not complete:
         complete = True
-
         ## Resolve the dependencies
         print "Resolution pass %s... " % resolution_pass
         resolution_pass += 1 
-
         for filepath, info in files.items():
             for path in info.requires:
                 if not files.has_key(path):
                     complete = False
-                    fullpath = os.path.join(sourceDirectory, path).strip()
-                    if os.path.exists(fullpath):
-                        print "Importing: %s" % path
-                        content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF?
-                        files[path] = SourceFile(path, content, cfg.exclude) # TODO: Chop path?
-                    else:
+                    try:
+                        importFile("", path, cfg, files)
+                    except MissingImport:
                         raise MissingImport("File '%s' not found (required by '%s')." % (path, filepath))
         
     # create dictionary of dependencies
+    print "\nSorting..."
     dependencies = {}
     for filepath, info in files.items():
         dependencies[filepath] = info.requires
-
-    print "Sorting..."
+    from toposort import toposort
     order = toposort(dependencies) #[x for x in toposort(dependencies)]
 
     ## Move forced first and last files to the required position
-    if cfg:
-        print "Re-ordering files..."
-        order = cfg.forceFirst + [item
-                     for item in order
-                     if ((item not in cfg.forceFirst) and
-                         (item not in cfg.forceLast))] + cfg.forceLast
+    print "\nRe-ordering files..."
+    order = cfg.forceFirst + [item
+                 for item in order
+                 if ((item not in cfg.forceFirst) and
+                     (item not in cfg.forceLast))] + cfg.forceLast
     
     print
     ## Output the files in the determined order
@@ -262,6 +245,54 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
         print "\nGenerating: %s" % (outputFilename)
         open(outputFilename, "w").write("".join(result))
     return "".join(result)
+
+def importFiles(sectionName, inputFiles, cfg, files): 
+    print "\nImport \"%s\" files:" % sectionName
+    outputFiles = [] 
+    for filepath in inputFiles: 
+        if filepath.endswith(SUFFIX_JAVASCRIPT):
+            outputFiles += importFile(sectionName, filepath, cfg, files)
+        else:
+            outputFiles += importDirectory(sectionName, filepath, cfg, files)
+    return outputFiles
+    
+def importDirectory(sectionName, directoryName, cfg, files):
+    # Normalize directory name
+    directoryName = directoryName.replace("\\", "/")
+    if directoryName.startswith("./"):
+        directoryName = directoryName[2:]
+    elif directoryName == ".":
+        directoryName = ""
+
+    fullpath = os.path.join(cfg.sourceDirectory, directoryName).strip().replace("\\", "/") 
+    if not os.path.isdir(fullpath):
+        raise MissingImport("Directory '%s' not found. Check %s in config file '%s'" % 
+                            (fullpath, sectionName, cfg.configFile))
+
+    print "Import from directory \"%s\":" % fullpath 
+    outputFiles = []
+    for root, dirs, directoryFiles in os.walk(fullpath):
+        for filename in directoryFiles:
+            if filename.endswith(SUFFIX_JAVASCRIPT) and not filename.startswith("."):
+                filepath = os.path.join(root, filename)[len(cfg.sourceDirectory)+1:]
+                outputFiles += importFile(sectionName, filepath, cfg, files)
+    print "End of directory"
+    return outputFiles
+
+def importFile(sectionName, filepath, cfg, files):
+    # Normalize file name
+    filepath = filepath.replace("\\", "/")
+    if filepath in files or undesired(filepath, cfg.exclude):
+        return []
+    else:
+        fullpath = os.path.join(cfg.sourceDirectory, filepath).strip().replace("\\","/")
+        if not os.path.isfile(fullpath):
+            raise MissingImport("File '%s' not found. Check %s in config file '%s'" % 
+                                (fullpath, sectionName, cfg.configFile))
+        print "Importing: %s" % filepath 
+        content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF? 
+        files[filepath] = SourceFile(filepath, content, cfg.exclude)
+        return [filepath]
 
 if __name__ == "__main__":
     import getopt
