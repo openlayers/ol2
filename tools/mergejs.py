@@ -134,6 +134,9 @@ class Config:
             self.include = []
             self.exclude = []
 
+        if not os.path.isfile(filename):
+            raise MissingImport("Config file '%s' not found." % filename)
+
         lines = [re.sub("#.*?$", "", line).strip() # Assumes end-of-line character is present
                  for line in open(filename)
                  if line.strip() and not line.strip().startswith("#")] # Skip blank lines and comments
@@ -172,8 +175,8 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
     files = {}
 
     ## Import file source code
-    cfg.forceLast = importFiles("[last]", cfg.forceLast, cfg, files) 
     cfg.forceFirst = importFiles("[first]", cfg.forceFirst, cfg, files) 
+    cfg.forceLast = importFiles("[last]", cfg.forceLast, cfg, files) 
     if len(cfg.include) == 0:
         importFiles("[include]", ["."], cfg, files)
     else:
