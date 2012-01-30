@@ -82,7 +82,7 @@
               "activated one tool control, the other one is inactive and the toggle & button controls also.");
 
         panel.activateControl(toggleControl);
-        t.eq(toggleControl.panel_div.className,"mbControlTestToggleItemActive",
+        t.eq(toggleControl.panel_div.className,"mbControlTestToggleItemActive olButton",
             "className of icon div for toggle control is active.");
         t.ok(toolControl.active && !anotherToolControl.active && toggleControl.active,
               "activated the toggle control, which has no influence on the tool & togggle controls.");
@@ -96,9 +96,9 @@
               "activated the button control, which has no influence on the tool & togggle controls.");
 
         panel.activateControl(anotherToolControl);
-        t.eq(anotherToolControl.panel_div.className,"mbControlTestToolItemActive",
+        t.eq(anotherToolControl.panel_div.className,"mbControlTestToolItemActive olButton",
             "className of icon div for anotherToolControl is active.");
-        t.eq(toolControl.panel_div.className,"olControlZoomBoxItemInactive",
+        t.eq(toolControl.panel_div.className,"olControlZoomBoxItemInactive olButton",
             "className of icon div for toolControl is inactive.");
         t.ok(!toolControl.active && anotherToolControl.active && toggleControl.active,
               "activated the other tool control, the first one is inactive and the toggle control still active.");
@@ -287,6 +287,55 @@
 
         // panel.deactivate();
         map.destroy();
+    }
+
+    function test_iconOn_iconOff(t) {
+        t.plan(2);
+
+        var map = new OpenLayers.Map('map');
+
+        var panel = new OpenLayers.Control.Panel();
+        var ctrl = new OpenLayers.Control({displayClass: 'ctrl'});
+        panel.addControls([ctrl]);
+
+        map.addControl(panel);
+
+        // add arbitrary classes to the panel div - we want to test
+        // than iconOn and iconOff do their jobs even when the panel
+        // div has application-specific classes.
+
+        ctrl.panel_div.className =
+            'ctrlItemInactive fooItemActive fooItemInactive';
+
+        panel.iconOn.call(ctrl);
+        t.eq(ctrl.panel_div.className,
+             'ctrlItemActive fooItemActive fooItemInactive',
+             'iconOn behaves as expected');
+
+        ctrl.panel_div.className =
+            'ctrlItemActive fooItemActive fooItemInactive';
+
+        panel.iconOff.call(ctrl);
+        t.eq(ctrl.panel_div.className,
+             'ctrlItemInactive fooItemActive fooItemInactive',
+             'iconOff behaves as expected');
+
+        map.destroy();
+    }
+    
+    function test_buttonclick(t) {
+        t.plan(4);
+        var map = new OpenLayers.Map('map');
+        var panel1 = new OpenLayers.Control.Panel();
+        var div = document.createElement("div");
+        var panel2 = new OpenLayers.Control.Panel({div: div});
+        map.addControls([panel1, panel2]);
+        
+        t.ok(map.events.listeners.buttonclick, "buttonclick event registered on map's Events instance for panel inside map");
+        t.ok(!panel1.events.element, "Panel inside map has no element on its Events instance");
+        t.ok(panel2.events.listeners.buttonclick, "buttonclick event registered on panel's Events instance if outside map")
+        t.ok(panel2.events.element === div, "Panel outside map has the panel's div as element on its Events instance");
+        
     }
   </script>
 </head>
