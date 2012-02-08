@@ -113,7 +113,28 @@ def getSvnInfo(path):
         'date': tree.findtext('entry/commit/date')
     }
     return d
-    
+
+def getGitInfo(path):
+    h = os.popen("git log --pretty='%%H%%n%%an%%n%%aD' -1 -- %s" % path)
+    d = dict(zip(["url", "author", "date"], h.read().strip().split("\n")))
+    h.close()
+    return d
+
+def chooseGetInfo():
+    def checkSvn():
+        try:
+            h = os.popen("svn info 2>&1")
+            h.read()
+            ret = h.close()
+            return ret == 0 or ret is None
+        except OSError, e:
+            return False
+
+    if checkSvn():
+        return getSvnInfo
+
+    return getGitInfo
+
 def createFeed(examples):
     doc = Document()
     atomuri = "http://www.w3.org/2005/Atom"
@@ -225,13 +246,15 @@ if __name__ == "__main__":
 
     modtime = time.strftime("%Y-%m-%dT%I:%M:%SZ", time.gmtime())
 
+    getInfo = chooseGetInfo()
+
     for example in examples:
         url = os.path.join(examplesLocation,example)
         html = getExampleHtml(url)
         tagvalues = parseHtml(html,docIds)
         tagvalues['example'] = example
-        # add in svn info
-        d = getSvnInfo(url)
+        # add in version control info
+        d = getInfo(url)
         tagvalues["modified"] = d["date"] or modtime
         tagvalues["author"] = d["author"] or "anonymous"
         tagvalues['link'] = example
