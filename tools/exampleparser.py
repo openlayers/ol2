@@ -114,11 +114,25 @@ def getSvnInfo(path):
     }
     return d
 
-def getGitInfo(path):
-    h = os.popen("git log --pretty='%%H%%n%%an%%n%%aD' -1 -- %s" % path)
+def getGitInfo(path, rev=""):
+    h = os.popen("git log --pretty='%%H%%n%%an%%n%%aD' -1 %s -- %s" % (rev, path))
     d = dict(zip(["url", "author", "date"], h.read().strip().split("\n")))
     h.close()
     return d
+
+def getStubInfo(path):
+    return { "url": "", "author": "", "date": "" }
+
+def getGitTopDir():
+    try:
+        h = os.popen("git rev-parse --show-cdup 2>&1")
+        topdir = h.read().strip()
+        ret = h.close()
+        if ret == 0 or ret is None:
+            return topdir
+    except OSError:
+        return None
+    return None
 
 def chooseGetInfo():
     def checkSvn():
@@ -133,7 +147,13 @@ def chooseGetInfo():
     if checkSvn():
         return getSvnInfo
 
-    return getGitInfo
+    topdir = getGitTopDir()
+
+    if topdir:
+        rev = os.environ.get("RELEASE_VER", "")
+        return lambda path: getGitInfo(topdir + "tools/" + path, rev)
+
+    return getStubInfo
 
 def createFeed(examples):
     doc = Document()
