@@ -88,7 +88,7 @@
     }
 
     function test_Handler_Drag_callbacks(t) {
-        t.plan(33);
+        t.plan(45);
         
         var map = new OpenLayers.Map('map', {controls: []});
 
@@ -100,16 +100,18 @@
         var testEvents = {};
         var xys = {};
         var callbacks = {};
+        var sequenceLogs = "";
         for(var i=0; i<events.length; ++i) {
             var px = new OpenLayers.Pixel(Math.random(), Math.random());
             testEvents[events[i]] = {xy: px};
             setCallback(events[i]);
         }
         function setCallback(key) {
-            callbacks[key] = function(evtxy) {
+            callbacks[key] = function(evtxy, type) {
                 t.ok(evtxy.x == testEvents[key].xy.x &&
                      evtxy.y == testEvents[key].xy.y,
                      key + " callback called with the proper evt.xy");
+                sequenceLogs += key + (type?"-"+type:"") + ",";
             }
         }
 
@@ -121,21 +123,26 @@
         var oldCheckModifiers = handler.checkModifiers;
 
         // test mousedown with right click
+        sequenceLogs = "";
         OpenLayers.Event.isLeftClick = function() {
             return false;
         }
         handler.checkModifiers = function() {
             return true;
         }
+        var realDone = testEvents.done;
+        testEvents.done = testEvents.up;
         handler.started = true;
         handler.start = {x: "foo", y: "bar"};
         handler.last = {x: "foo", y: "bar"};
-        map.events.triggerEvent("mousedown", testEvents.down);
+        map.events.triggerEvent("mousedown", testEvents.up);
         t.ok(!handler.started, "right-click sets started to false");
         t.eq(handler.start, null, "right-click sets start to null");
         t.eq(handler.last, null, "right-click sets last to null");
+        t.eq(sequenceLogs, "up-down,done-down,", "The sequence of logs is that is expected");
 
         // test mousedown with improper modifier
+        sequenceLogs = "";
         OpenLayers.Event.isLeftClick = function() {
             return true;
         }
@@ -145,12 +152,15 @@
         handler.started = true;
         handler.start = {x: "foo", y: "bar"};
         handler.last = {x: "foo", y: "bar"};
-        map.events.triggerEvent("mousedown", testEvents.down);
+        map.events.triggerEvent("mousedown", testEvents.up);
         t.ok(!handler.started, "bad modifier sets started to false");
         t.eq(handler.start, null, "bad modifier sets start to null");
         t.eq(handler.last, null, "bad modifier sets last to null");
+        t.eq(sequenceLogs, "up-down,done-down,", "The sequence of logs is that is expected");
+        testEvents.done = realDone;
 
         // test mousedown
+        sequenceLogs = "";
         handler.checkModifiers = function(evt) {
             t.ok(evt.xy.x == testEvents.down.xy.x &&
                  evt.xy.y == testEvents.down.xy.y,
@@ -182,26 +192,31 @@
         t.ok(handler.last.x == testEvents.down.xy.x &&
              handler.last.y == testEvents.down.xy.y,
              "mouse down sets handler.last correctly");
+        t.eq(sequenceLogs, "down,", "The sequence of logs is that is expected");
         
         OpenLayers.Event.stop = oldStop;        
         OpenLayers.Event.isLeftClick = oldIsLeftClick;
         handler.checkModifiers = oldCheckModifiers;
 
         // test mouseup before mousemove
+        sequenceLogs = "";
         var realUp = testEvents.up;
         testEvents.up = testEvents.down;
         // this will fail with notice about the done callback being called
         // if done is called when it shouldn't be
         map.events.triggerEvent("mouseup", testEvents.up);
+        t.eq(sequenceLogs, "up-up,", "The sequence of logs is that is expected");
         testEvents.up = realUp;
 
         // test mousemove
+        sequenceLogs = "";
         handler.started = false;
         map.events.triggerEvent("mousemove", {xy: {x: null, y: null}});
         // if the handler triggers the move callback, it will be with the
         // incorrect evt.xy
         t.ok(true,
              "mousemove before the handler has started doesn't call move");
+        t.eq(sequenceLogs, "", "Nothing is yet recorded in the log");
         
         handler.started = true;
         map.events.triggerEvent("mousemove", testEvents.move);
@@ -212,6 +227,7 @@
         t.ok(handler.last.x == testEvents.move.xy.x &&
              handler.last.y == testEvents.move.xy.y,
              "mouse move sets handler.last correctly");
+        t.eq(sequenceLogs, "move,", "The sequence of logs is that is expected");
         
         // a second move with the same evt.xy should not trigger move callback
         // if it does, the test page will complain about a bad plan number
@@ -233,12 +249,16 @@
         
         handler.started = true;
         // mouseup triggers the up and done callbacks
+        sequenceLogs = "";
         testEvents.done = testEvents.up;
         map.events.triggerEvent("mouseup", testEvents.up);
         t.ok(!this.started, "mouseup sets the started flag to false");
         t.ok(!this.dragging, "mouseup sets the dragging flag to false");
+        t.eq(sequenceLogs, "up-up,done-up,", 
+                                    "The sequence of logs is that is expected");
         
         // test mouseout
+        sequenceLogs = "";
         handler.started = false;
         map.events.triggerEvent("mouseout", {xy: {x: null, y: null}});
         // if the handler triggers the out or done callback, it will be with the
@@ -259,6 +279,7 @@
         // mouseup triggers the out and done callbacks
         // out callback gets no arguments
         handler.callbacks.out = function() {
+            sequenceLogs += "out,"
             t.eq(arguments.length, 0,
                  "mouseout calls out callback with no arguments");
         }
@@ -286,7 +307,10 @@
         map.events.triggerEvent("click", null);
         var after = getProperties(handler);
         t.eq(before, after, "click doesn't mess with handler");
+        t.eq(sequenceLogs, "out,done-out,", 
+                                    "The sequence of logs is that is expected");
         
+        map.destroy();
     }
 
     function test_Handler_Drag_touch(t) {
@@ -348,7 +372,7 @@
     }
 
     function test_Handler_Drag_submethods(t) {
-        t.plan(8);
+        t.plan(23);
         
         var map = new OpenLayers.Map('map', {controls: []});
 
@@ -361,10 +385,11 @@
         var events = ["down", "move", "up", "out"];
         var onselect = {
             "move": OpenLayers.Function.False,
-            "up": OpenLayers.Function.False,
+            "up": OpenLayers.Function.True,
             "out": OpenLayers.Function.True
         }
         var testEvents = {};
+        var sequenceLogs = "";
         var type, px;
         for(var i=0; i<events.length; ++i) {
             type = events[i];
@@ -374,10 +399,10 @@
         }
         function setMethod(type) {
             handler[type] = function(evt) {
+                sequenceLogs += type + ",";
                 t.ok(evt.xy.x == testEvents[type].xy.x &&
                      evt.xy.y == testEvents[type].xy.y,
                      "handler." + type + " called with the right event");
-                onselect[type] && t.ok(document.onselectstart === onselect[type], "document.onselectstart listener is correct after " + type);
             }
         }
         handler.activate();
@@ -386,6 +411,7 @@
         handler.oldOnselectstart = OpenLayers.Function.True;
         
         // test mousedown
+        sequenceLogs = "";
         handler.checkModifiers = function(evt) {
             return true;
         }
@@ -395,14 +421,24 @@
         }
         map.events.triggerEvent("mousedown", testEvents.down);
         OpenLayers.Event.isLeftClick = oldIsLeftClick;
+        t.eq(OpenLayers.Element.hasClass(map.viewPortDiv,"olDragDown"), true, 
+            "Drag cursor has been set after \"mousedown\"");
 
         // test mousemove
         map.events.triggerEvent("mousemove", testEvents.move);
+        t.ok(document.onselectstart === onselect["move"], // checking must occur after the completion of "triggerEvent"
+            "document.onselectstart listener is correct after \"mousemove\"");
         
         // test mouseup
         map.events.triggerEvent("mouseup", testEvents.up);
+        t.ok(document.onselectstart === onselect["up"], // checking must occur after the completion of "triggerEvent"
+            "document.onselectstart listener is correct after \"mouseup\""); 
+        t.eq(OpenLayers.Element.hasClass(map.viewPortDiv,"olDragDown"), false, 
+            "Drag cursor has been removed after \"mouseup\"");
+        t.eq(sequenceLogs, "down,move,up,", "The sequence of logs is that is expected");
         
         // test mouseout
+        sequenceLogs = "";
         var oldMouseLeft = OpenLayers.Util.mouseLeft;
         OpenLayers.Util.mouseLeft = function() {
             return true;
@@ -412,7 +448,52 @@
         OpenLayers.Util.mouseLeft = oldMouseLeft;
         
         t.ok(document.onselectstart === OpenLayers.Function.True, "document.onselectstart listener correct after down-move-up-out cycle");
+        t.eq(sequenceLogs, "out,", "The sequence of logs is that is expected");
+
+        // Cycle down-move-out
+        sequenceLogs = "";
+        OpenLayers.Event.isLeftClick = function(evt) {
+            return true;
+        }
+        map.events.triggerEvent("mousedown", testEvents.down);
+        OpenLayers.Event.isLeftClick = oldIsLeftClick; // Restore method
+        map.events.triggerEvent("mousemove", testEvents.move);
+        OpenLayers.Util.mouseLeft = function() {
+            return true;
+        };
+        map.events.triggerEvent("mouseout", testEvents.out);
+        OpenLayers.Util.mouseLeft = oldMouseLeft; // Restore method
+        t.ok(document.onselectstart === OpenLayers.Function.True, 
+            "document.onselectstart listener correct after down-move-out cycle");
+        t.eq(OpenLayers.Element.hasClass(map.viewPortDiv,"olDragDown"), false, 
+            "Drag cursor has been removed after down-move-out cycle");
+        t.eq(sequenceLogs, "down,move,out,", "The sequence of logs is that is expected");
+
+        // Test right click while dragging
+        sequenceLogs = "";
+        OpenLayers.Event.isLeftClick = function(evt) {
+            return true;
+        };
+        handler.started = false;
+        map.events.triggerEvent("mousedown", testEvents.down);
+        OpenLayers.Event.isLeftClick = oldIsLeftClick; // Restore method
+        map.events.triggerEvent("mousemove", testEvents.move);
         
+        testEvents.done = testEvents.down;
+        testEvents.up = testEvents.down;
+        OpenLayers.Event.isLeftClick = function(evt) { // Is right click
+            return false;
+        };
+        map.events.triggerEvent("mousedown", testEvents.down);
+        OpenLayers.Event.isLeftClick = oldIsLeftClick; // Restore method
+
+        t.ok(document.onselectstart === OpenLayers.Function.True, 
+            "document.onselectstart listener on after \"right click\"");
+        t.eq(OpenLayers.Element.hasClass(map.viewPortDiv,"olDragDown"), false, 
+            "Drag cursor has been removed after \"right click\"");
+        t.eq(sequenceLogs, "down,move,up,", "The sequence of logs is that is expected");
+
+        map.destroy();
     }
 
     function test_Handler_Drag_deactivate(t) {
