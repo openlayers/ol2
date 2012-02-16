@@ -6,11 +6,15 @@
     function test_activate(t) {
         t.plan(5);
 
-        var featureList = ['foo', 'bar'];
+        var response = new OpenLayers.Protocol.Response({
+            code: OpenLayers.Protocol.Response.SUCCESS,
+            features: ['foo', 'bar']
+        });
+
         // a fake protocol
         var protocol = {
             read: function(options) {
-                options.callback.call(options.scope, {features: featureList});
+                options.callback.call(options.scope, response);
             }
         };
         
@@ -23,7 +27,7 @@
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: protocol,
             addFeatures: function(features) {
-                t.eq(features, featureList, "Features added to the layer");
+                t.eq(features, response.features, "Features added to the layer");
             }
         });
         
@@ -74,7 +78,9 @@
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol({
                 read: function(config) {
-                    config.callback.call(config.scope, {});
+                    config.callback.call(config.scope, new OpenLayers.Protocol.Response({
+                        code: OpenLayers.Protocol.Response.SUCCESS
+                    }));
                 }
             }),
             isBaseLayer: true,
@@ -151,9 +157,13 @@
             new OpenLayers.Feature.Vector(geometries[0].clone()),
             new OpenLayers.Feature.Vector(geometries[1].clone())
         ];
+        var response = new OpenLayers.Protocol.Response({
+            code: OpenLayers.Protocol.Response.SUCCESS,
+            features: features
+        });
 
         // call merge with a mocked up response
-        strategy.merge(new OpenLayers.Projection("EPSG:900913"), {features: features});
+        strategy.merge(new OpenLayers.Projection("EPSG:900913"), response);
         
         // confirm that the original features were destroyed
         t.eq(layer.features.length, 2, "old features destroyed");
@@ -171,17 +181,17 @@
         layer.destroyFeatures();
         layer.projection = map.getProjectionObject();
         
-        features = [
+        response.features = [
             new OpenLayers.Feature.Vector(geometries[0].clone()),
             new OpenLayers.Feature.Vector(geometries[1].clone())
         ];
         
         // call merge again with mocked up response
-        strategy.merge(new OpenLayers.Projection("EPSG:900913"), {features: features});
+        strategy.merge(new OpenLayers.Projection("EPSG:900913"), response);
 
         // test that feature geometries have not been transformed
-        t.geom_eq(layer.features[0].geometry, features[0].geometry, "[same proj] feature 0 geometry not transformed");
-        t.geom_eq(layer.features[1].geometry, features[1].geometry, "[same proj] feature 1 geometry not transformed");
+        t.geom_eq(layer.features[0].geometry, response.features[0].geometry, "[same proj] feature 0 geometry not transformed");
+        t.geom_eq(layer.features[1].geometry, response.features[1].geometry, "[same proj] feature 1 geometry not transformed");
         
     }
 
