@@ -42,11 +42,6 @@
                 onclick="toggleControl(this);" />
                 <label for="clickHandler">Click</label>
             </li>
-            <li>
-                <input type="radio" name="type" value="click_callback" id="clickHandlerCustom" 
-                onclick="toggleControl(this);" />
-                <label for="clickHandlerCustom">Click with custom callback</label>
-            </li>
         </ul>
     </div>
     <div id="docs">
@@ -83,8 +78,10 @@
                 for (var idx in dataLookup) {
                     // idx can be used to retrieve layer from map.layers[idx]
                     data = dataLookup[idx];
-                    msg += "<strong>In 2005, " + data.NAME + " had a population of " +
-                        data.POP2005 + " people.</strong> ";
+                    if (data) {
+                        msg += "<p>In 2005, " + data.NAME + " had a population of " +
+                            data.POP2005 + " people.</p>";
+                    }
                 }
             }
             document.getElementById("attrsdiv").innerHTML = msg;
