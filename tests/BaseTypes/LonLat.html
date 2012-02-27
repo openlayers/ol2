@@ -6,7 +6,7 @@
     var lonlat; 
 
     function test_LonLat_constructor (t) {
-        t.plan( 8 );
+        t.plan( 10 );
         lonlat = new OpenLayers.LonLat(6, 5);
         t.ok( lonlat instanceof OpenLayers.LonLat, "new OpenLayers.LonLat returns LonLat object" );
         t.eq( lonlat.CLASS_NAME, "OpenLayers.LonLat", "lonlat.CLASS_NAME is set correctly");
@@ -23,6 +23,13 @@
         t.eq(lonlat.lon, 1, "lon from array");
         t.eq(lonlat.lat, 2, "lat from array");
         
+        // allow construction from single latlon arg with transform
+        lonlat = new OpenLayers.LonLat(
+            {lon: 180, lat: -85.0511287798066},
+            new OpenLayers.Projection("EPSG:3857")
+        );
+        t.eq(lonlat.lon, 20037508.34, "lon from latlon object");
+        t.eq(lonlat.lat, -20037508.34, "lat from latlon object");
     }
     
     function test_LonLat_constructorFromStrings (t) {
