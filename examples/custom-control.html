@@ -12,33 +12,46 @@
             var lon = 5;
             var lat = 40;
             var zoom = 5;
-            var map, layer;
+            var map, layer, control;
+
+            // DisplayBounds is a custom control that allows to draw rectangles
+            // on the map, and, upon drawing a rectangle, displays its coords
+            // in a browser alert window.
+            var DisplayBounds = OpenLayers.Class(OpenLayers.Control, {
+
+                autoActivate: true, // make the map activate the control
+                                    // when the control is added to the
+                                    // map with map.addControl
+
+                initialize: function() {
+                    OpenLayers.Control.prototype.initialize.apply(this,
+                                                                  arguments);
+                    this.handler = new OpenLayers.Handler.Box(this,
+                        {"done": this.notice},
+                        {keyMask: OpenLayers.Handler.MOD_SHIFT});
+                },
+
+                notice: function (bounds) {
+                    var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
+                    var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top));
+                    alert(ll.lon.toFixed(4) + ", " +
+                          ll.lat.toFixed(4) + ", " +
+                          ur.lon.toFixed(4) + ", " +
+                          ur.lat.toFixed(4));
+                },
+
+                draw: function() {
+                    // we override "draw" and set it to an empty
+                    // func so no element is created and added to
+                    // the DOM for this control
+                }
+            });
 
             function init(){
                 map = new OpenLayers.Map('map');
                 layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
                         "http://vmap0.tiles.osgeo.org/wms/vmap0", {layers: 'basic'} );
-
-                var control = new OpenLayers.Control();
-                OpenLayers.Util.extend(control, {
-                    draw: function () {
-                        // this Handler.Box will intercept the shift-mousedown
-                        // before Control.MouseDefault gets to see it
-                        this.box = new OpenLayers.Handler.Box( control,
-                            {"done": this.notice},
-                            {keyMask: OpenLayers.Handler.MOD_SHIFT});
-                        this.box.activate();
-                    },
-
-                    notice: function (bounds) {
-                        var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
-                        var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
-                        alert(ll.lon.toFixed(4) + ", " + 
-                              ll.lat.toFixed(4) + ", " + 
-                              ur.lon.toFixed(4) + ", " + 
-                              ur.lat.toFixed(4));
-                    }
-                });
+                control = new DisplayBounds();
 
                 map.addLayer(layer);
                 map.addControl(control);
