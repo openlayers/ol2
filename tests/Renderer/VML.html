@@ -189,19 +189,20 @@
         r.resolution = 1;
         
         var node = document.createElement('div');
-        node.id = "test"
+        node.id = "test";
         node._geometryClass = "OpenLayers.Geometry.Point";
         
         var geometry = {
             x: 1,
-            y: 2
-        }
+            y: 2,
+            CLASS_NAME: node._geometryClass
+        };
         
         var style = {
             externalGraphic: "foo.png",
             graphicWidth: 7,
             graphicHeight: 10
-        }
+        };
         
         r.drawGeometryNode(node, geometry, style);
 
