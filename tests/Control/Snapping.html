@@ -414,25 +414,25 @@
         control.greedy = true;
         events = [];        
         
-        // demonstrate snapping on sketchstarted
+        // demonstrate snapping on sketchcreated
         var p = new OpenLayers.Geometry.Point(0, 1);
-        layer1.events.triggerEvent("sketchstarted", {
+        layer1.events.triggerEvent("sketchcreated", {
             vertex: p,
             feature: new OpenLayers.Feature.Vector(p)
         });
-        t.eq(events.length, 2, "[sketchstarted] 2 events triggered");
-        t.eq(events[0].type, "beforesnap", "[sketchstarted] beforesnap triggered");
-        t.eq(events[0].snapType, "node", "[sketchstarted] beforesnap triggered for node");
-        t.ok(events[0].point === p, "[sketchstarted] beforesnap triggered with vertex");
-        t.eq(events[0].x, 0, "[sketchstarted] beforesnap triggered correct x");
-        t.eq(events[0].y, 0, "[sketchstarted] beforesnap triggered with correct y");
-        t.eq(events[1].type, "snap", "[sketchstarted] snap triggered");
-        t.eq(events[1].snapType, "node", "[sketchstarted] snap triggered for node");
-        t.ok(events[1].point === p, "[sketchstarted] snap triggered with point");
-        t.eq(events[1].distance, 1, "[sketchstarted] snap triggered correct distance");
-        t.ok(events[1].layer === layer1, "[sketchstarted] snap triggered with correct target layer");
-        t.eq(p.x, 0, "[sketchstarted] vertex x modified");
-        t.eq(p.y, 0, "[sketchstarted] vertex y modified");
+        t.eq(events.length, 2, "[sketchcreated] 2 events triggered");
+        t.eq(events[0].type, "beforesnap", "[sketchcreated] beforesnap triggered");
+        t.eq(events[0].snapType, "node", "[sketchcreated] beforesnap triggered for node");
+        t.ok(events[0].point === p, "[sketchcreated] beforesnap triggered with vertex");
+        t.eq(events[0].x, 0, "[sketchcreated] beforesnap triggered correct x");
+        t.eq(events[0].y, 0, "[sketchcreated] beforesnap triggered with correct y");
+        t.eq(events[1].type, "snap", "[sketchcreated] snap triggered");
+        t.eq(events[1].snapType, "node", "[sketchcreated] snap triggered for node");
+        t.ok(events[1].point === p, "[sketchcreated] snap triggered with point");
+        t.eq(events[1].distance, 1, "[sketchcreated] snap triggered correct distance");
+        t.ok(events[1].layer === layer1, "[sketchcreated] snap triggered with correct target layer");
+        t.eq(p.x, 0, "[sketchcreated] vertex x modified");
+        t.eq(p.y, 0, "[sketchcreated] vertex y modified");
         // reset
         events = [];        
         
