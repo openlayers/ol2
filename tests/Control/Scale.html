@@ -45,6 +45,45 @@
         map.addControl(control);
         t.eq(control.div.firstChild.innerHTML, "Scale = 1 : 443M", "Internal scale displayed properly.");
     }    
+    
+    function test_Scale_AddControl(t) {
+        t.plan(3);
+
+        var map = new OpenLayers.Map('map', {controls: []});
+
+        function inViewPortDiv(div) {
+            for(var i=0; i < map.viewPortDiv.childNodes.length; i++) {
+                var childNode = map.viewPortDiv.childNodes[i];
+                if (childNode == control.div) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        var control, childNodesLength;
+
+        childNodesLength = map.viewPortDiv.childNodes.length;
+
+        // add a Scale to the map
+        control = new OpenLayers.Control.Scale();
+        map.addControlToMap(control);
+        t.eq(map.viewPortDiv.childNodes.length, childNodesLength + 1,
+             'one child node added to viewport div');
+        t.ok(inViewPortDiv(control.div), 'Scale div is in viewport div');
+        control.destroy();
+
+        childNodesLength = map.viewPortDiv.childNodes.length;
+
+        // add to the map a Scale using a HTML element outside viewport 
+        control = new OpenLayers.Control.Scale('scale');
+        map.addControlToMap(control);
+        t.eq(map.viewPortDiv.childNodes.length, childNodesLength,
+             'no child node added to viewport div');
+        control.destroy();
+        
+        map.destroy();
+    }
   </script>
 </head>
 <body>
