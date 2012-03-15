@@ -53,7 +53,7 @@
     }
     
     function test_Map_constructor_convenience(t) {
-        t.plan(13);
+        t.plan(26);
         var map = new OpenLayers.Map({
             maxExtent: [-170, -80, 170, 80],
             restrictedExtent: [-120, -65, 120, 65],
@@ -84,6 +84,39 @@
         
         t.eq(map.getZoom(), 3, "zoom");
         
+        map.destroy();
+
+        map = new OpenLayers.Map({
+            projection: "EPSG:3857",
+            maxExtent: [{lon: -170, lat: -80}, {lon: 170, lat: 80}],
+            restrictedExtent: [{lon: -120, lat: -65}, {lon: 120, lat: 65}],
+            layers: [
+                new OpenLayers.Layer(null, {isBaseLayer: true})
+            ],
+            center: {lon: -111, lat: 45},
+            zoom: 3
+        });
+        
+        // maxExtent from latlon array
+        t.ok(map.maxExtent instanceof OpenLayers.Bounds, "maxExtent bounds");
+        t.eq(map.maxExtent.left, -18924313.432222, "maxExtent left");
+        t.eq(map.maxExtent.bottom, -15538711.094146, "maxExtent bottom");
+        t.eq(map.maxExtent.right, 18924313.432222, "maxExtent right");
+        t.eq(map.maxExtent.top, 15538711.094146, "maxExtent top");
+
+        // restrictedExtent from latlon object
+        t.ok(map.restrictedExtent instanceof OpenLayers.Bounds, "restrictedExtent bounds");
+        t.eq(map.restrictedExtent.left, -13358338.893333, "restrictedExtent left");
+        t.eq(map.restrictedExtent.bottom, -9608371.5085962, "restrictedExtent bottom");
+        t.eq(map.restrictedExtent.right, 13358338.893333, "restrictedExtent right");
+        t.eq(map.restrictedExtent.top, 9608371.5085962, "restrictedExtent top");
+        
+        center = map.getCenter();
+        t.eq(center.lon, -12356463.476333, "center lon");
+        t.eq(center.lat, 5621521.4854095, "center lat");
+        
+        t.eq(map.getZoom(), 3, "zoom");
+
         map.destroy();
     }
     

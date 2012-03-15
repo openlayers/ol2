@@ -4,7 +4,7 @@
   <script type="text/javascript">
     var bounds; 
     function test_Bounds_constructor (t) {
-        t.plan( 26 );
+        t.plan( 31 );
         
         bounds = new OpenLayers.Bounds();
         t.ok( bounds instanceof OpenLayers.Bounds, "new OpenLayers.Bounds returns Bounds object" );
@@ -53,6 +53,16 @@
         t.eq(bounds.right, 180, "(array) right");
         t.eq(bounds.top, 90, "(array) top");
         
+        // allow construction from a latlon object and transform
+        bounds = new OpenLayers.Bounds(
+            [{lon: -180, lat: -85.0511287798066}, {lon: 180, lat: 85.0511287798066}],
+            new OpenLayers.Projection("EPSG:3857")
+        );
+        t.ok(bounds instanceof OpenLayers.Bounds, "(array latlon) correct instance");
+        t.eq(bounds.left, -20037508.34, "(array latlon) left");
+        t.eq(bounds.bottom, -20037508.34, "(array latlon) bottom");
+        t.eq(bounds.right, 20037508.34, "(array latlon) right");
+        t.eq(bounds.top, 20037508.34, "(array latlon) top");
     }
 
     function test_Bounds_constructorFromStrings(t) {
