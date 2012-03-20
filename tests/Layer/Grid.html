@@ -558,20 +558,6 @@
         desiredTileBounds = new OpenLayers.Bounds(-40,-35,80,145);
     	layer.initSingleTile(bounds);
     	t.ok(layer.tileSize.equals(new OpenLayers.Size(120, 180)), "tileSize correct.");
-    	
-    	//test bounds outside of the maxExtent
-    	bounds = new OpenLayers.Bounds(-10,10,50,100);
-    	layer.ratio = 1;
-    	layer.displayOutsideMaxExtent = false;
-    	layer.maxExtent = new OpenLayers.Bounds(-180,-80,-100,0);
-        layer.removeExcessTiles = function(x,y) {
-            t.ok(x == 0 && y == 0, "removeExcessTiles called with 0,0");
-            layer.grid = [];  
-        };
-    	desiredTileBounds = new OpenLayers.Bounds(-10,10,-100,0); //BAD BOUNDS, This should not draw
-    	layer.initSingleTile(bounds);
-    	t.ok(layer.grid.length === 0, "layer grid is empty");
-    	t.ok(layer.tileSize.equals(new OpenLayers.Size(120, 180)), "retained previous tileSize, without modification");
     }  
      
     function test_Layer_Grid_addTileMonitoringHooks(t) {
