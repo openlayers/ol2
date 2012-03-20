@@ -452,7 +452,7 @@
     }
     
     function test_Layer_Grid_initSingleTile(t) {
-      t.plan( 24 );
+        t.plan( 27 );
       
         layer = new OpenLayers.Layer.Grid(name, url, params, {
             singleTile: true,
@@ -557,6 +557,16 @@
         desiredTileBounds = new OpenLayers.Bounds(-40,-35,80,145);
     	layer.initSingleTile(bounds);
     	t.ok(layer.tileSize.equals(new OpenLayers.Size(120, 180)), "tileSize correct.")
+
+        // test for prevention against negative values in height
+        layer.ratio = 1;
+        desiredTileBounds = new OpenLayers.Bounds(-10306257, 1740194, -8551263, 2145729);
+        translatedPX = {x: -10306257, y: 2145729};
+        layer.displayOutsideMaxExtent = false;
+        layer.map.getMaxExtent = function() { return new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34); };
+        layer.maxExtent = new OpenLayers.Bounds(-17838103, 2145729, -7783211, 6135817);
+        bounds = new OpenLayers.Bounds(-10306257, 1133589, -8551263, 1740194);
+        layer.initSingleTile(bounds);
     }  
      
     function test_Layer_Grid_addTileMonitoringHooks(t) {
