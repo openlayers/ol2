@@ -449,15 +449,55 @@
         t.eq(data[0].bounds.top, 74.0, "read top left bound is correct");
     }
 
-    function test_Format_GeoJSON_point_extradims(t) { 
-        t.plan(3);
-        var point_feature_3d = '{"geometry": {"type": "Point", "coordinates": [94.21875, 72.94921875, 0.0]}, "type": "Feature", "id": 573, "properties": {"strokeColor": "blue", "title": "Feature 5", "author": "Your Name Here"}}';
-        p = new OpenLayers.Format.GeoJSON({"ignoreExtraDims": true});
+    function test_read_z(t) { 
+        t.plan(5);
+        var point_feature_3d = '{"geometry": {"type": "Point", "coordinates": [94.21875, 72.94921875, 10.0]}, "type": "Feature", "id": 573, "properties": {"strokeColor": "blue", "title": "Feature 5", "author": "Your Name Here"}}';
+        p = new OpenLayers.Format.GeoJSON();
         data = p.read(point_feature_3d);
         t.eq(data[0].fid, 573, "Fid is correct on point feature"); 
-        t.eq(data[0].geometry.x, 94.21875, 'Reading point feature gives correct x');
+        t.eq(data[0].geometry.x, 94.21875, 'correct x');
+        t.eq(data[0].geometry.y, 72.94921875, 'correct y');
+        t.eq(data[0].geometry.z, 10.0, 'correct z');
         data = p.read(point_feature_3d, "Feature");
         t.eq(data.fid, 573, 'Reading point feature with type gives feature instead of array of features ');
+    }
+
+    function test_write_z(t) {
+        t.plan(1);
+        
+        var p1 = new OpenLayers.Geometry.Point(10, 20, 30);
+        var p2 = new OpenLayers.Geometry.Point(11, 21, 31);
+        var line = new OpenLayers.Geometry.LineString([p1, p2]);
+        var pointFeature = new OpenLayers.Feature.Vector(p1);
+        var lineFeature = new OpenLayers.Feature.Vector(line);
+        
+        var gjf = new OpenLayers.Format.GeoJSON();
+        var jf = new OpenLayers.Format.JSON();
+        
+        var str = gjf.write([pointFeature, lineFeature]);
+        var obj = jf.read(str);
+        
+        var exp = {
+            type: "FeatureCollection",
+            features: [{
+                type: "Feature",
+                properties: {},
+                geometry: {
+                    type: "Point",
+                    coordinates: [10, 20, 30]
+                }
+            }, {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                    type: "LineStrings",
+                    coordinates: [[10, 20, 30], [11, 21, 31]]
+                }
+            }]
+        };
+        
+        t.eq(obj, exp, "preserved 3d coordinate value: '" + str + "'");
+        
     }
 
 
