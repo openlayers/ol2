@@ -7,12 +7,12 @@
 
     function test_readNode_geometry(t) {
         var files = [
-            "v2/point-coord.xml", "v2/point-coordinates.xml",
-            "v2/linestring-coord.xml", "v2/linestring-coordinates.xml",
-            "v2/polygon-coord.xml", "v2/polygon-coordinates.xml",
-            "v2/multipoint-coord.xml", "v2/multipoint-coordinates.xml",
-            "v2/multilinestring-coord.xml", "v2/multilinestring-coordinates.xml",
-            "v2/multipolygon-coord.xml", "v2/multipolygon-coordinates.xml",
+            "v2/point-coord.xml", "v2/point-coordinates.xml", "v2/point-coordinates-z.xml",
+            "v2/linestring-coord.xml", "v2/linestring-coordinates.xml", "v2/linestring-coordinates-z.xml",
+            "v2/polygon-coord.xml", "v2/polygon-coordinates.xml", "v2/polygon-coordinates-z.xml",
+            "v2/multipoint-coord.xml", "v2/multipoint-coordinates.xml", "v2/multipoint-coordinates-z.xml",
+            "v2/multilinestring-coord.xml", "v2/multilinestring-coordinates.xml", "v2/multilinestring-coordinates-z.xml",
+            "v2/multipolygon-coord.xml", "v2/multipolygon-coordinates.xml", "v2/multipolygon-coordinates-z.xml",
             "v2/geometrycollection-coordinates.xml"
         ];
 
@@ -88,11 +88,17 @@
         // we only care to write the 'coordinates' variant of GML 2
         var files = [
             "v2/point-coordinates.xml",
+            "v2/point-coordinates-z.xml",
             "v2/linestring-coordinates.xml",
+            "v2/linestring-coordinates-z.xml",
             "v2/polygon-coordinates.xml",
+            "v2/polygon-coordinates-z.xml",
             "v2/multipoint-coordinates.xml",
+            "v2/multipoint-coordinates-z.xml",
             "v2/multilinestring-coordinates.xml",
+            "v2/multilinestring-coordinates-z.xml",
             "v2/multipolygon-coordinates.xml",
+            "v2/multipolygon-coordinates-z.xml",
             "v2/geometrycollection-coordinates.xml"
         ];
 
@@ -280,6 +286,11 @@
   <gml:coordinates decimal="." cs="," ts=" ">1,2</gml:coordinates>
 </gml:Point>
 --></div>
+<div id="v2/point-coordinates-z.xml"><!--
+<gml:Point xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+  <gml:coordinates decimal="." cs="," ts=" ">1,2,3</gml:coordinates>
+</gml:Point>
+--></div>
 <div id="v2/linestring-coord.xml"><!--
 <gml:LineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
   <gml:coord>
@@ -295,6 +306,11 @@
 <div id="v2/linestring-coordinates.xml"><!--
 <gml:LineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
   <gml:coordinates decimal="." cs="," ts=" ">1,2 3,4</gml:coordinates>
+</gml:LineString>
+--></div>
+<div id="v2/linestring-coordinates-z.xml"><!--
+<gml:LineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+  <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5</gml:coordinates>
 </gml:LineString>
 --></div>
 <div id="v2/polygon-coord.xml"><!--
@@ -380,6 +396,25 @@
     </gml:innerBoundaryIs>    
 </gml:Polygon>
 --></div>
+<div id="v2/polygon-coordinates-z.xml"><!--
+<gml:Polygon xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:outerBoundaryIs>
+        <gml:LinearRing>
+            <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5 5,6,7 1,2,3</gml:coordinates>
+        </gml:LinearRing>
+    </gml:outerBoundaryIs>
+    <gml:innerBoundaryIs>
+        <gml:LinearRing>
+            <gml:coordinates decimal="." cs="," ts=" ">2,3,4 4,5,6 6,7,8 2,3,4</gml:coordinates>
+        </gml:LinearRing>
+    </gml:innerBoundaryIs>    
+    <gml:innerBoundaryIs>
+        <gml:LinearRing>
+            <gml:coordinates decimal="." cs="," ts=" ">3,4,5 5,6,7 7,8,9 3,4,5</gml:coordinates>
+        </gml:LinearRing>
+    </gml:innerBoundaryIs>    
+</gml:Polygon>
+--></div>
 <div id="v2/multipoint-coord.xml"><!--
 <gml:MultiPoint xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:pointMember>
@@ -427,6 +462,25 @@
     </gml:pointMember>
 </gml:MultiPoint>
 --></div>
+<div id="v2/multipoint-coordinates-z.xml"><!--
+<gml:MultiPoint xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:pointMember>
+        <gml:Point>
+            <gml:coordinates decimal="." cs="," ts=" ">1,2,3</gml:coordinates>
+        </gml:Point>
+    </gml:pointMember>
+    <gml:pointMember>
+        <gml:Point>
+            <gml:coordinates decimal="." cs="," ts=" ">2,3,4</gml:coordinates>
+        </gml:Point>
+    </gml:pointMember>
+    <gml:pointMember>
+        <gml:Point>
+            <gml:coordinates decimal="." cs="," ts=" ">3,4,5</gml:coordinates>
+        </gml:Point>
+    </gml:pointMember>
+</gml:MultiPoint>
+--></div>
 <div id="v2/multilinestring-coord.xml"><!--
 <gml:MultiLineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:lineStringMember>
@@ -465,6 +519,20 @@
     <gml:lineStringMember>
         <gml:LineString>
             <gml:coordinates decimal="." cs="," ts=" ">3,4 4,5</gml:coordinates>
+        </gml:LineString>
+    </gml:lineStringMember>
+</gml:MultiLineString>
+--></div>
+<div id="v2/multilinestring-coordinates-z.xml"><!--
+<gml:MultiLineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:lineStringMember>
+        <gml:LineString>
+            <gml:coordinates decimal="." cs="," ts=" ">1,2,3 2,3,4</gml:coordinates>
+        </gml:LineString>
+    </gml:lineStringMember>
+    <gml:lineStringMember>
+        <gml:LineString>
+            <gml:coordinates decimal="." cs="," ts=" ">3,4,5 4,5,6</gml:coordinates>
         </gml:LineString>
     </gml:lineStringMember>
 </gml:MultiLineString>
@@ -587,6 +655,38 @@
             <gml:outerBoundaryIs>
                 <gml:LinearRing>
                     <gml:coordinates decimal="." cs="," ts=" ">1,2 3,4 5,6 1,2</gml:coordinates>
+                </gml:LinearRing>
+            </gml:outerBoundaryIs>
+        </gml:Polygon>
+    </gml:polygonMember>
+</gml:MultiPolygon>
+--></div>
+<div id="v2/multipolygon-coordinates-z.xml"><!--
+<gml:MultiPolygon xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:polygonMember>
+        <gml:Polygon>
+            <gml:outerBoundaryIs>
+                <gml:LinearRing>
+                    <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5 5,6,7 1,2,3</gml:coordinates>
+                </gml:LinearRing>
+            </gml:outerBoundaryIs>
+            <gml:innerBoundaryIs>
+                <gml:LinearRing>
+                    <gml:coordinates decimal="." cs="," ts=" ">2,3,4 4,5,6 6,7,8 2,3,4</gml:coordinates>
+                </gml:LinearRing>
+            </gml:innerBoundaryIs>    
+            <gml:innerBoundaryIs>
+                <gml:LinearRing>
+                    <gml:coordinates decimal="." cs="," ts=" ">3,4,5 5,6,7 7,8,9 3,4,5</gml:coordinates>
+                </gml:LinearRing>
+            </gml:innerBoundaryIs>    
+        </gml:Polygon>
+    </gml:polygonMember>
+    <gml:polygonMember>
+        <gml:Polygon>
+            <gml:outerBoundaryIs>
+                <gml:LinearRing>
+                    <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5 5,6,7 1,2,3</gml:coordinates>
                 </gml:LinearRing>
             </gml:outerBoundaryIs>
         </gml:Polygon>
