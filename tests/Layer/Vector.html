@@ -1,7 +1,8 @@
+<!doctype html>
 <html>
 <head>
 <script src="../OLLoader.js"></script>
-  <script type="text/javascript">
+<script>
 
     var name = "Vector Layer";
     
@@ -155,51 +156,108 @@
     }
 
     function test_Layer_Vector_getFeature(t) {
-        t.plan(13);
+        t.plan(27);
 
         var layer = new OpenLayers.Layer.Vector(name);
-        var feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(-111.04, 45.68));
+        var feature1 = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(-111.04, 45.68));
 
-        t.ok(layer.getFeatureById(feature.id) == null,
+        t.ok(layer.getFeatureById(feature1.id) == null,
              "OpenLayers.Layer.Vector.getFeatureById returns null while the layer is empty");
         t.ok(layer.getFeatureByFid('my_fid') == null,
              "OpenLayers.Layer.Vector.getFeatureByFid returns null while the layer is empty");
 
-        layer.addFeatures([feature]);
+        layer.addFeatures([feature1]);
 
         t.ok(layer.getFeatureByFid('my_fid') == null,
              "OpenLayers.Layer.Vector.getFeatureByFid returns null on unset feature fid");
 
-        feature.fid = 'my_fid';
+        feature1.fid = 'my_fid';
 
-        t.ok(layer.getFeatureById(feature.id) == feature,
+        t.ok(layer.getFeatureById(feature1.id) == feature1,
              "OpenLayers.Layer.Vector.getFeatureById returns the correct feature");
-        t.ok(layer.getFeatureByFid(feature.fid) == feature,
+        t.ok(layer.getFeatureByFid(feature1.fid) == feature1,
              "OpenLayers.Layer.Vector.getFeatureByFid returns the correct feature");
         t.ok(layer.getFeatureById('some_id_that_does_not_exist') == null,
              "OpenLayers.Layer.Vector.getFeatureById returns null on non-existing feature id");
         t.ok(layer.getFeatureByFid('some_fid_that_does_not_exist') == null,
              "OpenLayers.Layer.Vector.getFeatureByFid returns null on non-existing feature fid");
-        t.ok(layer.getFeatureById(feature.fid) == null,
+        t.ok(layer.getFeatureById(feature1.fid) == null,
              "OpenLayers.Layer.Vector.getFeatureById ignores the feature fid");
-        t.ok(layer.getFeatureByFid(feature.id) == null,
+        t.ok(layer.getFeatureByFid(feature1.id) == null,
              "OpenLayers.Layer.Vector.getFeatureByFid ignores the feature id");
 
-        t.ok(layer.getFeatureBy('id', feature.id) == feature,
+        t.ok(layer.getFeatureBy('id', feature1.id) == feature1,
              "OpenLayers.Layer.Vector.getFeatureBy('id', ...) works like getFeatureById on existing feature id");
         t.ok(layer.getFeatureBy('id', 'some_id_that_does_not_exist') == null,
              "OpenLayers.Layer.Vector.getFeatureBy('id', ...) works like getFeatureById on non-existing feature id");
-        t.ok(layer.getFeatureBy('fid', feature.fid) == feature,
+        t.ok(layer.getFeatureBy('fid', feature1.fid) == feature1,
              "OpenLayers.Layer.Vector.getFeatureBy('fid', ...) works like getFeatureByFid on existing feature fid");
         t.ok(layer.getFeatureBy('fid', 'some_fid_that_does_not_exist') == null,
              "OpenLayers.Layer.Vector.getFeatureBy('fid', ...) works like getFeatureByFid on non-existing feature fid");
+
+        // Clustered Features
+        var clusterStrategy = new OpenLayers.Strategy.Cluster();
+        var layer = new OpenLayers.Layer.Vector(name, {
+            strategies: [clusterStrategy],
+            isBaseLayer: true
+        });
+        var map = new OpenLayers.Map('map', {
+            resolutions: [4, 2, 1],
+            maxExtent: new OpenLayers.Bounds(-40, -40, 40, 40)
+        });
+        map.addLayer(layer);
+
+        var feature1 = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(-3, 3));
+        var feature2 = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(4, 4));
+        var feature3 = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(2, 1));
+        var feature4 = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(3, 0));
+        feature1.fid = 'my_fid';
+
+        layer.addFeatures([feature1, feature2, feature3, feature4]);
+        map.setCenter(new OpenLayers.LonLat(0, 0), 0);
+
+        if (layer.features.length !== 1) {
+            t.fail("Cluster Strategy does not work");
+        }
+
+        t.ok(layer.getFeatureById(feature1.id) == null,
+             "OpenLayers.Layer.Vector.getFeatureById returns null when Cluster Strategy is active");
+        t.ok(layer.getFeatureByFid(feature1.fid) == null,
+             "OpenLayers.Layer.Vector.getFeatureByFid returns null when Cluster Strategy is active");
+
+        t.ok(layer.getFeatureById(feature1.id, true) == feature1,
+             "OpenLayers.Layer.Vector.getFeatureById returns the correct feature when Cluster Strategy is active and searchClustered is true");
+        t.ok(layer.getFeatureByFid(feature1.fid, true) == feature1,
+             "OpenLayers.Layer.Vector.getFeatureByFid returns the correct feature when Cluster Strategy is active and searchClustered is true");
+
+        t.ok(layer.getFeatureById(feature1.id, true) == feature1,
+             "OpenLayers.Layer.Vector.getFeatureById returns the correct feature when Cluster Strategy is active and searchClustered is true");
+        t.ok(layer.getFeatureByFid(feature1.fid, true) == feature1,
+             "OpenLayers.Layer.Vector.getFeatureByFid returns the correct feature when Cluster Strategy is active and searchClustered is true");
+        t.ok(layer.getFeatureById('some_id_that_does_not_exist', true) == null,
+             "OpenLayers.Layer.Vector.getFeatureById returns null on non-existing feature id when Cluster Strategy is active and searchClustered is true");
+        t.ok(layer.getFeatureByFid('some_fid_that_does_not_exist', true) == null,
+             "OpenLayers.Layer.Vector.getFeatureByFid returns null on non-existing feature fid when Cluster Strategy is active and searchClustered is true");
+        t.ok(layer.getFeatureById(feature1.fid, true) == null,
+             "OpenLayers.Layer.Vector.getFeatureById ignores the feature fid when Cluster Strategy is active and searchClustered is true");
+        t.ok(layer.getFeatureByFid(feature1.id, true) == null,
+             "OpenLayers.Layer.Vector.getFeatureByFid ignores the feature id when Cluster Strategy is active and searchClustered is true");
+
+        t.ok(layer.getFeatureBy('id', feature1.id, true) == feature1,
+             "OpenLayers.Layer.Vector.getFeatureBy('id', ...) works like getFeatureById on existing feature id when Cluster Strategy is active and searchClustered is true");
+        t.ok(layer.getFeatureBy('id', 'some_id_that_does_not_exist', true) == null,
+             "OpenLayers.Layer.Vector.getFeatureBy('id', ...) works like getFeatureById on non-existing feature id when Cluster Strategy is active and searchClustered is true");
+        t.ok(layer.getFeatureBy('fid', feature1.fid, true) == feature1,
+             "OpenLayers.Layer.Vector.getFeatureBy('fid', ...) works like getFeatureByFid on existing feature fid when Cluster Strategy is active and searchClustered is true");
+        t.ok(layer.getFeatureBy('fid', 'some_fid_that_does_not_exist', true) == null,
+             "OpenLayers.Layer.Vector.getFeatureBy('fid', ...) works like getFeatureByFid on non-existing feature fid when Cluster Strategy is active and searchClustered is true");
     }
-    
+
     function test_Layer_Vector_getFeaturesByAttribute(t) {
-        t.plan( 9 );
+        t.plan(18);
         // setup layer
         var layer = new OpenLayers.Layer.Vector(name);
-        
+
         // feature_1
         var geometry_1 = new OpenLayers.Geometry.Point(-28.63, 153.64);
         var attributes_1 = {
@@ -208,7 +266,7 @@
         };
         var feature_1 = new OpenLayers.Feature.Vector(geometry_1, attributes_1);
         feature_1.fid = 'f_01'; // to identify later
-        
+
         // feature_2
         var geometry_2 = new OpenLayers.Geometry.Point(-27.48, 153.05);
         var attributes_2 = {
@@ -217,7 +275,7 @@
         };
         var feature_2 = new OpenLayers.Feature.Vector(geometry_2, attributes_2);
         feature_2.fid = 'f_02'; // to identify later
-        
+
         // feature_3
         var geometry_3 = new OpenLayers.Geometry.Point(-33.74, 150.3);
         var attributes_3 = {
@@ -226,16 +284,16 @@
         };
         var feature_3 = new OpenLayers.Feature.Vector(geometry_3, attributes_3);
         feature_3.fid = 'f_03'; // to identify later
-        
+
         // Tests
-        
+
         // don't find anything... no features added
         // 1 test
         t.ok(layer.getFeaturesByAttribute('humpty', 'dumpty').length === 0,
              "OpenLayers.Layer.Vector.getFeaturesByAttribute returns an empty array while the layer is empty");
-        
+
         layer.addFeatures([feature_1, feature_2, feature_3]);
-        
+
         // simple use case: find 1 feature with an attribute and matching value
         // 2 tests
         var dumptyResults = layer.getFeaturesByAttribute('humpty', 'dumpty');
@@ -243,7 +301,7 @@
              "OpenLayers.Layer.Vector.getFeaturesByAttribute returns an array with one feature for attribute 'humpty' with value 'dumpty'");
         t.ok(dumptyResults[0].fid === 'f_01',
              "OpenLayers.Layer.Vector.getFeaturesByAttribute returns the correct feature with attribute 'humpty' set to 'dumpty'");
-        
+
         // simple use case: find 1 feature with an attribute and matching value
         //                  and respect data types
         // 2 tests
@@ -252,17 +310,17 @@
              "OpenLayers.Layer.Vector.getFeaturesByAttribute returns an array with one feature for attribute 'clazz' with value '1' (a string)");
         t.ok(strOneResults[0].fid === 'f_02',
              "OpenLayers.Layer.Vector.getFeaturesByAttribute returns the correct feature with attribute 'clazz' set to the string '1'");
-        
+
         // simple use case: find 2 features with an attribute and matching value
         //                  and respect data types
-        // 2 tests    
+        // 2 tests
         var numOneResults = layer.getFeaturesByAttribute('clazz', 1);
         t.ok(numOneResults.length === 2,
              "OpenLayers.Layer.Vector.getFeaturesByAttribute returns an array with two features for attribute 'clazz' with value 1 (a number)");
-        var bothFound = !!((numOneResults[0].fid === 'f_01' && numOneResults[1].fid === 'f_03') || (numOneResults[0].fid === 'f_03' && numOneResults[1].fid === 'f_01')); 
+        var bothFound = !!((numOneResults[0].fid === 'f_01' && numOneResults[1].fid === 'f_03') || (numOneResults[0].fid === 'f_03' && numOneResults[1].fid === 'f_01'));
         t.ok(bothFound,
              "OpenLayers.Layer.Vector.getFeaturesByAttribute returns the correct features with attribute 'clazz' set to the number 1");
-        
+
         // advanced use case: find the 1 feature, that has an attribute not set
         var undefined;
         var humptyNotSet = layer.getFeaturesByAttribute('humpty', undefined);
@@ -270,6 +328,68 @@
              "OpenLayers.Layer.Vector.getFeaturesByAttribute can be used to find features that have certain attributes not set");
         t.ok(humptyNotSet[0].fid === 'f_02',
              "OpenLayers.Layer.Vector.getFeaturesByAttribute found the correct featuren that has a certain attribute not set");
+
+        // Clustered Features
+        var clusterStrategy = new OpenLayers.Strategy.Cluster();
+        var layer = new OpenLayers.Layer.Vector(name, {
+            strategies: [clusterStrategy],
+            isBaseLayer: true
+        });
+        var map = new OpenLayers.Map('map', {
+            resolutions: [4, 2, 1],
+            maxExtent: new OpenLayers.Bounds(-40, -40, 40, 40)
+        });
+        map.addLayer(layer);
+        map.setCenter(new OpenLayers.LonLat(0, 0), 0);
+
+        // Clustered Features Tests
+
+        // don't find anything... no features added
+        // 1 test
+        t.ok(layer.getFeaturesByAttribute('humpty', 'dumpty', true).length === 0,
+             "OpenLayers.Layer.Vector.getFeaturesByAttribute returns an empty array while the layer is empty when Cluster Strategy is active and searchClustered is true");
+
+        layer.addFeatures([feature_1, feature_2, feature_3]);
+
+        if (layer.features.length !== 1) {
+            t.fail("Cluster Strategy does not work");
+        }
+
+        // simple use case: find 1 feature with an attribute and matching value
+        // 2 tests
+        var dumptyResults = layer.getFeaturesByAttribute('humpty', 'dumpty', true);
+        t.ok(dumptyResults.length === 1,
+             "OpenLayers.Layer.Vector.getFeaturesByAttribute returns an array with one feature for attribute 'humpty' with value 'dumpty' when Cluster Strategy is active and searchClustered is true");
+        t.ok(dumptyResults[0].fid === 'f_01',
+             "OpenLayers.Layer.Vector.getFeaturesByAttribute returns the correct feature with attribute 'humpty' set to 'dumpty' when Cluster Strategy is active and searchClustered is true");
+
+        // simple use case: find 1 feature with an attribute and matching value
+        //                  and respect data types
+        // 2 tests
+        var strOneResults = layer.getFeaturesByAttribute('clazz', '1', true);
+        t.ok(strOneResults.length === 1,
+             "OpenLayers.Layer.Vector.getFeaturesByAttribute returns an array with one feature for attribute 'clazz' with value '1' (a string) when Cluster Strategy is active and searchClustered is true");
+        t.ok(strOneResults[0].fid === 'f_02',
+             "OpenLayers.Layer.Vector.getFeaturesByAttribute returns the correct feature with attribute 'clazz' set to the string '1' when Cluster Strategy is active and searchClustered is true");
+
+        // simple use case: find 2 features with an attribute and matching value
+        //                  and respect data types
+        // 2 tests
+        var numOneResults = layer.getFeaturesByAttribute('clazz', 1, true);
+        t.ok(numOneResults.length === 2,
+             "OpenLayers.Layer.Vector.getFeaturesByAttribute returns an array with two features for attribute 'clazz' with value 1 (a number) when Cluster Strategy is active and searchClustered is true");
+        var bothFound = !!((numOneResults[0].fid === 'f_01' && numOneResults[1].fid === 'f_03') || (numOneResults[0].fid === 'f_03' && numOneResults[1].fid === 'f_01'));
+        t.ok(bothFound,
+             "OpenLayers.Layer.Vector.getFeaturesByAttribute returns the correct features with attribute 'clazz' set to the number 1 when Cluster Strategy is active and searchClustered is true");
+
+        // advanced use case: find the 1 feature plus 1 cluster, that has an attribute not set
+        var undefined;
+        var humptyNotSet = layer.getFeaturesByAttribute('humpty', undefined, true);
+        t.ok(humptyNotSet.length === 1 + 1,
+             "OpenLayers.Layer.Vector.getFeaturesByAttribute can be used to find features that have certain attributes not set when Cluster Strategy is active and searchClustered is true");
+        t.ok(humptyNotSet[1].fid === 'f_02',
+             "OpenLayers.Layer.Vector.getFeaturesByAttribute found the correct featuren that has a certain attribute not set when Cluster Strategy is active and searchClustered is true");
+
     }
 
     function test_Layer_Vector_getDataExtent(t) {
@@ -896,7 +1016,7 @@
         map.destroy();
     }
 
-  </script>
+</script>
 </head>
 <body>
 <div id="map" style="width:500px;height:550px"></div>
