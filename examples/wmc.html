@@ -120,7 +120,8 @@
         }
             
     </script>
-    </head>
+    <title">WMC Example</title>
+   </head>
     <body onload="init()">
     <h1 id="title">WMC Example</h1>
 
@@ -132,10 +133,11 @@
     </p>
     <div id="map" class="smallmap"></div>
         <button onclick="writeWMC();">write</button><br>
-        <button onclick="readWMC();">read as new map</button> with the following extra map options : <input type="text" id="mapOptions" value='{"div": "map", "allOverlays": true}'/><br>
+        <label for="mapOptions"><button onclick="readWMC();">read as new map</button> with the following extra map options</label> : <input type="text" id="mapOptions" value='{"div": "map", "allOverlays": true}'/><br>
         <button onclick="readWMC(true);">read and merge</button><br>
         <button onclick="pasteWMC();">try with another WMC document</button><br>
-        <textarea id="wmc">paste WMC doc here</textarea>
+        <label for="wmc">paste WMC doc here</label>:
+        <textarea id="wmc"></textarea>
     <div id="docs">
         <p>This is an example of parsing WMC documents. <br>
         The format class has a layerOptions property, which can be used
