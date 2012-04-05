@@ -22,7 +22,7 @@ var map = new OpenLayers.Map({
     controls: [
         new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.ZoomPanel()
+        new OpenLayers.Control.Zoom()
     ],
     layers: [
         marble

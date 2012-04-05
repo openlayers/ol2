@@ -37,7 +37,7 @@ var map = new OpenLayers.Map({
                 enableKinetic: true
             }
         }),
-        new OpenLayers.Control.ZoomPanel()
+        new OpenLayers.Control.Zoom()
     ],
     layers: [raster],
     center: new OpenLayers.LonLat(0, 0),
