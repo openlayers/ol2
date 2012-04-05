@@ -5,6 +5,9 @@
     <script type="text/javascript">window.alert = oldAlert;</script>
 <script src="../OLLoader.js"></script>
   <script type="text/javascript">
+    // turn off animation frame handling, so we can check img urls in tests
+    delete OpenLayers.Layer.Grid.prototype.queueTileDraw;
+
     var isMozilla = (navigator.userAgent.indexOf("compatible") == -1);
     var layer;
 
@@ -86,10 +89,10 @@
         t.eq( tile.url,
              layer.getFullRequestString(tParams),
              "image src is created correctly via addtile" );
-        t.eq( tile.frame.style.top, "6px", "image top is set correctly via addtile" );
-        t.eq( tile.frame.style.left, "5px", "image top is set correctly via addtile" );
+        t.eq( tile.getTile().style.top, "6%", "image top is set correctly via addtile" );
+        t.eq( tile.getTile().style.left, "5%", "image top is set correctly via addtile" );
 
-        var firstChild = layer.div.firstChild.firstChild;
+        var firstChild = layer.div.firstChild;
         t.eq( firstChild.nodeName.toLowerCase(), "img", "div first child is an image object" );
         t.ok( firstChild == img, "div first child is correct image object" );
         t.eq( tile.position.toString(), "x=5,y=6", "Position of tile is set correctly." );
@@ -117,10 +120,10 @@
         t.eq( tile.url,
              layer.getFullRequestString(tParams),
              "image src is created correctly via addtile" );
-        t.eq( tile.frame.style.top, "6px", "image top is set correctly via addtile" );
-        t.eq( tile.frame.style.left, "5px", "image top is set correctly via addtile" );
+        t.eq( tile.getTile().style.top, "6%", "image top is set correctly via addtile" );
+        t.eq( tile.getTile().style.left, "5%", "image top is set correctly via addtile" );
 
-        var firstChild = layer.div.firstChild.firstChild;
+        var firstChild = layer.div.firstChild;
         t.eq( firstChild.nodeName.toLowerCase(), "img", "div first child is an image object" );
         t.ok( firstChild, img, "div first child is correct image object" );
         t.eq( tile.position.toString(), "x=5,y=6", "Position of tile is set correctly." );
@@ -271,70 +274,24 @@
 
     }
 
-    function test_Layer_WMS_setOpacity (t) {
-        t.plan( 5 );
+    function test_setOpacity(t) {
+        t.plan(1);
 
-        var map = new OpenLayers.Map('map');
-        map.projection = "xx";
-        tUrl = "http://octo.metacarta.com/cgi-bin/mapserv";
-        tParams = { layers: 'basic',
-                   format: 'image/png'};
-        tOptions = { 'opacity': '0.5' };
-        var tLayer = new OpenLayers.Layer.WMS(name, tUrl, tParams, tOptions);
-        map.addLayer(tLayer);
-        map.zoomToMaxExtent();
-        t.eq(tLayer.opacity, "0.5", "Opacity is set correctly");
-        t.eq(parseFloat(tLayer.div.firstChild.firstChild.style.opacity), 0.5, "Opacity on tile is correct");
-        tLayer.setOpacity("0.6");
-        t.eq(tLayer.opacity, "0.6", "setOpacity works properly");
-        t.eq(parseFloat(tLayer.div.firstChild.firstChild.style.opacity), 0.6, "Opacity on tile is changed correctly");
-        var pixel = new OpenLayers.Pixel(5,6);
-        var tile = tLayer.addTile(new OpenLayers.Bounds(1,2,3,4), pixel);
-        tile.draw();
-        t.eq(parseFloat(tile.imgDiv.style.opacity), 0.6, "Tile opacity is set correctly");
-
-        map.destroy();
-    }
-
-    function test_Layer_WMS_Reproject (t) {
-        var validkey = (window.location.protocol == "file:") ||
-                       (window.location.host == "localhost") ||
-                       (window.location.host == "openlayers.org");
-        if (OpenLayers.BROWSER_NAME == "opera" || OpenLayers.BROWSER_NAME == "safari") {
-            t.plan(1);
-            t.debug_print("Can't test google reprojection in Opera or Safari.");
-        } else if(validkey) {
-            t.plan(5);
-
-            var map = new OpenLayers.Map('map');
-            var layer = new OpenLayers.Layer.Google("Google");
-            map.addLayer(layer);
-            var wmslayer = new OpenLayers.Layer.WMS(name, url, params,
-                                                    {isBaseLayer: false, reproject:true, buffer: 2});
-            wmslayer.isBaseLayer=false;
-            map.addLayer(wmslayer);
-            map.setCenter(new OpenLayers.LonLat(0,0), 5);
-            var tile = wmslayer.grid[0][0];
-            t.eq( tile.bounds.left, -22.5, "left side matches" );
-            t.eq( tile.bounds.right, -11.25, "right side matches" );
-            t.eq( tile.bounds.bottom.toFixed(6), '11.178402', "bottom side matches" );
-            t.eq( tile.bounds.top.toFixed(6), '21.943046', "top side matches" );
-            map.destroy();
-        } else {
-            t.plan(1);
-            t.debug_print("can't test google layer from " +
-                          window.location.host);
-        }
-
-        var map = new OpenLayers.Map('map');
-        layer = new OpenLayers.Layer.WMS(name, url, params, {buffer: 2});
+        var layer = new OpenLayers.Layer.WMS(
+            null, "/bogus/wms", {layers: "mylayer"}
+        );
+        var map = new OpenLayers.Map("map");
         map.addLayer(layer);
-        map.setCenter(new OpenLayers.LonLat(0,0), 5);
-        var tile = layer.grid[0][0];
-        t.ok( tile.bounds.equals(new OpenLayers.Bounds(-33.75, 33.75, -22.5, 45)), "okay");
-
-        map.destroy();
+        
+        map.zoomToMaxExtent();
+        
+        layer.setOpacity(0.5);
+        t.delay_call(1, function() {
+            t.eq(parseFloat(layer.div.firstChild.style.opacity), 0.5, "opacity set");
+            map.destroy();
+        });
     }
+
 
     function test_Layer_WMS_noGutters (t) {
         t.plan(2);
@@ -378,6 +335,42 @@
 
     }
 
+    function test_maxExtent(t) {
+        t.plan(5);
+        
+        var layer = new OpenLayers.Layer.WMS(
+            null, "http://example.com/wms", 
+            {layers: "foo"}, 
+            {maxExtent: [-180, 0, 0, 90]}
+        );
+        
+        t.ok(layer.maxExtent instanceof OpenLayers.Bounds, "(array) bounds instance");
+        t.eq(layer.maxExtent.left, -180, "(array) bounds left");
+        t.eq(layer.maxExtent.bottom, 0, "(array) bounds left");
+        t.eq(layer.maxExtent.right, 0, "(array) bounds right");
+        t.eq(layer.maxExtent.top, 90, "(array) bounds top");
+        
+        layer.destroy();
+    }
+
+    function test_minExtent(t) {
+        t.plan(5);
+        
+        var layer = new OpenLayers.Layer.WMS(
+            null, "http://example.com/wms", 
+            {layers: "foo"}, 
+            {minExtent: [-180, 0, 0, 90]}
+        );
+        
+        t.ok(layer.minExtent instanceof OpenLayers.Bounds, "(array) bounds instance");
+        t.eq(layer.minExtent.left, -180, "(array) bounds left");
+        t.eq(layer.minExtent.bottom, 0, "(array) bounds left");
+        t.eq(layer.minExtent.right, 0, "(array) bounds right");
+        t.eq(layer.minExtent.top, 90, "(array) bounds top");
+        
+        layer.destroy();
+    }
+
     function test_tileOrigin(t) {
         t.plan(4);
         
@@ -395,6 +388,7 @@
         var map = new OpenLayers.Map({
             div: "map",
             maxExtent: new OpenLayers.Bounds(-185, -95, 185, 95),
+            maxResolution: 1.40625,
             layers: [dummy, unconstrained, constrained],
             center: new OpenLayers.LonLat(0, 0),
             zoom: 1
@@ -407,19 +401,6 @@
         
         map.destroy();
         
-    }
-
-
-
-    // DEPRECATED -- REMOVE IN 3.0
-    function test_Layer_Untiled_WMS(t) {
-        t.plan(1);
-
-        var layer = new OpenLayers.Layer.WMS.Untiled();
-
-        var clone = layer.clone();
-
-        t.ok(clone.singleTile, "regression test: clone works. this is for #1013");
     }
 
     function test_Layer_WMS_destroy (t) {

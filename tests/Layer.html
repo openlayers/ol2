@@ -197,6 +197,39 @@
         t.eq(layer.numZoomLevels, numZoomLevels, "numZoomLevels set correctly");
     }
     
+    function test_maxExtent(t) {
+        t.plan(5);
+        
+        var layer = new OpenLayers.Layer(
+            null, {maxExtent: [-180, 0, 0, 90]}
+        );
+        
+        t.ok(layer.maxExtent instanceof OpenLayers.Bounds, "(array) bounds instance");
+        t.eq(layer.maxExtent.left, -180, "(array) bounds left");
+        t.eq(layer.maxExtent.bottom, 0, "(array) bounds left");
+        t.eq(layer.maxExtent.right, 0, "(array) bounds right");
+        t.eq(layer.maxExtent.top, 90, "(array) bounds top");
+        
+        layer.destroy();
+    }
+
+    function test_minExtent(t) {
+        t.plan(5);
+        
+        var layer = new OpenLayers.Layer(
+            null, {minExtent: [-180, 0, 0, 90]}
+        );
+        
+        t.ok(layer.minExtent instanceof OpenLayers.Bounds, "(array) bounds instance");
+        t.eq(layer.minExtent.left, -180, "(array) bounds left");
+        t.eq(layer.minExtent.bottom, 0, "(array) bounds left");
+        t.eq(layer.minExtent.right, 0, "(array) bounds right");
+        t.eq(layer.minExtent.top, 90, "(array) bounds top");
+        
+        layer.destroy();
+    }
+
+
     function test_eventListeners(t) {
         t.plan(1);
         
@@ -235,10 +268,10 @@
         map.destroy();
 
         map = new OpenLayers.Map("map");
-        layer = new OpenLayers.Layer("test", {projection: "EPSG:4326"});
+        layer = new OpenLayers.Layer("test", {projection: "unknown"});
         map.addLayer(layer);
         t.eq(layer.alwaysInRange, true,
-             "alwaysInRange true if only get projection.");
+             "alwaysInRange true if unknown projection is set.");
         map.destroy();
 
         map = new OpenLayers.Map("map");
@@ -639,18 +672,81 @@
         // test that the moveend event was triggered
         t.ok(log.event, "an event was logged");
         t.eq(log.event.type, "moveend", "moveend was triggered");
-        t.eq(log.event.zoomChanged, true, "event says zoomChanged true - poor name");
+        t.eq(log.event.zoomChanged, false, "event says zoomChanged false");
 
         layer.moveTo = function(bounds, zoomChanged, dragging) {
             var extent = layer.map.getExtent();
             t.ok(bounds.equals(extent),
                  "redraw calls moveTo with the map extent");
-            t.ok(zoomChanged,
-                 "redraw calls moveTo with zoomChanged true");
+            t.ok(!zoomChanged,
+                 "redraw calls moveTo with zoomChanged false");
             t.ok(!dragging,
                  "redraw calls moveTo with dragging false");
         }
         layer.redraw();
+    }
+
+    // This function includes integration tests to verify that the
+    // layer's moveTo function is called with the expected value
+    // for zoomChanged
+    function test_moveTo_zoomChanged(t) {
+        t.plan(6);
+
+        var log = {};
+        var map = new OpenLayers.Map('map');
+
+        var l1 = new OpenLayers.Layer('l1', {isBaseLayer: true});
+        l1.moveTo = function(bounds, zoomChanged, dragging) {
+            log.moveTo = {zoomChanged: zoomChanged};
+            OpenLayers.Layer.prototype.moveTo.apply(this, arguments);
+        };
+
+        map.addLayer(l1);
+        map.zoomToMaxExtent();
+
+        log = {};
+        l1.redraw();
+        t.eq(log.moveTo.zoomChanged, false,
+                "[a] redraw calls moveTo with zoomChanged false");
+
+        log = {};
+        l1.resolution = null;
+        l1.redraw();
+        t.eq(log.moveTo.zoomChanged, true,
+             "[b] redraw calls moveTo with zoomChanged true");
+
+        l1.setVisibility(false);
+        log = {};
+        l1.setVisibility(true);
+        t.eq(log.moveTo.zoomChanged, false,
+             "[c] redraw calls moveTo with zoomChanged false");
+
+        l1.setVisibility(false);
+        map.zoomIn();
+        log = {};
+        l1.setVisibility(true);
+        t.eq(log.moveTo.zoomChanged, true,
+             "[d] redraw calls moveTo with zoomChanged true");
+
+        l1.moveTo = OpenLayers.Layer.prototype.moveTo;
+
+        var l2 = new OpenLayers.Layer('l2');
+        l2.moveTo = function(bounds, zoomChanged, dragging) {
+            log.moveTo = {zoomChanged: zoomChanged};
+            OpenLayers.Layer.prototype.moveTo.apply(this, arguments);
+        };
+        log = {};
+        map.addLayer(l2);
+        t.eq(log.moveTo.zoomChanged, true,
+             "[e] redraw calls moveTo with zoomChanged true");
+
+        map.removeLayer(l2);
+        log = {};
+        map.addLayer(l2);
+        t.eq(log.moveTo.zoomChanged, true,
+             "[f] redraw calls moveTo with zoomChanged true");
+
+        map.destroy();
     }
       
     function test_layer_setIsBaseLayer(t) {
@@ -668,7 +764,7 @@
     }
       
     function test_layer_setTileSize(t) {
-        t.plan(6);
+        t.plan(4);
 
         layer = new OpenLayers.Layer();
         
@@ -688,7 +784,6 @@
         var size = new OpenLayers.Size(2,2);
         layer.setTileSize(size);
         t.ok(layer.tileSize.equals(size), "size paramater set correctly to layer's tile size");
-        t.ok(layer.imageOffset == null, "imageOffset and imageSize null when no gutters")
       
       //set on layer
         layer.tileSize = layerTileSize;
@@ -707,10 +802,8 @@
         size = new OpenLayers.Size(10,100);
         layer.setTileSize(size);
 
-        var desiredImageOffset = new OpenLayers.Pixel(-15, -15); 
         var desiredImageSize = new OpenLayers.Size(40, 130); 
 
-        t.ok(layer.imageOffset.equals(desiredImageOffset), "image offset correctly calculated");
         t.ok(layer.imageSize.equals(desiredImageSize), "image size correctly calculated");
     }
     

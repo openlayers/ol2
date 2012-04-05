@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import os
 sys.path.append("../tools")
 import mergejs
 import optparse
@@ -13,7 +14,9 @@ def build(config_file = None, output_file = None, options = None):
     except ImportError:
         print "No jsmin"
     try:
-        import closure
+        # tools/closure_library_jscompiler.py from: 
+        #       http://code.google.com/p/closure-library/source/browse/trunk/closure/bin/build/jscompiler.py
+        import closure_library_jscompiler as closureCompiler
         have_compressor.append("closure")
     except Exception, E:
         print "No closure (%s)" % E
@@ -48,19 +51,57 @@ def build(config_file = None, output_file = None, options = None):
         outputFilename = output_file
 
     print "Merging libraries."
-    merged = mergejs.run(sourceDirectory, None, configFilename)
+    try:
+        if use_compressor == "closure":
+            sourceFiles = mergejs.getNames(sourceDirectory, configFilename)
+        else:
+            merged = mergejs.run(sourceDirectory, None, configFilename)
+    except mergejs.MissingImport, E:
+        print "\nAbnormal termination."
+        sys.exit("ERROR: %s" % E)
+
     print "Compressing using %s" % use_compressor
     if use_compressor == "jsmin":
         minimized = jsmin.jsmin(merged)
     elif use_compressor == "minimize":
         minimized = minimize.minimize(merged)
     elif use_compressor == "closure_ws":
-        minimized = closure_ws.minimize(merged)      
+        if len(merged) > 1000000: # The maximum file size for this web service is 1000 KB.
+            print "\nPre-compressing using jsmin"
+            merged = jsmin.jsmin(merged)
+        print "\nIs being compressed using Closure Compiler Service."
+        try:
+            minimized = closure_ws.minimize(merged)
+        except Exception, E:
+            print "\nAbnormal termination."
+            sys.exit("ERROR: Closure Compilation using Web service failed!\n%s" % E)
+        if len(minimized) <= 2:
+            print "\nAbnormal termination due to compilation errors."
+            sys.exit("ERROR: Closure Compilation using Web service failed!")
+        else:
+            print "Closure Compilation using Web service has completed successfully."
     elif use_compressor == "closure":
-        minimized = closure.minimize(merged)      
+        jscompilerJar = "../tools/closure-compiler.jar"
+        if not os.path.isfile(jscompilerJar):
+            print "\nNo closure-compiler.jar; read README.txt!"
+            sys.exit("ERROR: Closure Compiler \"%s\" does not exist! Read README.txt" % jscompilerJar)
+        minimized = closureCompiler.Compile(
+            jscompilerJar, 
+            sourceFiles, [
+                "--externs", "closure-compiler/Externs.js",
+                "--jscomp_warning", "checkVars",   # To enable "undefinedVars"
+                "--jscomp_error",   "checkRegExp", # Also necessary to enable "undefinedVars"
+                "--jscomp_error",   "undefinedVars"
+            ]
+        )
+        if minimized is None:
+            print "\nAbnormal termination due to compilation errors." 
+            sys.exit("ERROR: Closure Compilation failed! See compilation errors.") 
+        print "Closure Compilation has completed successfully."
     else: # fallback
         minimized = merged 
-    print "Adding license file."
+
+    print "\nAdding license file."
     minimized = file("license.txt").read() + minimized
 
     print "Writing to %s." % outputFilename

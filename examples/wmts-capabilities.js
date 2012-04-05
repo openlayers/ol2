@@ -43,16 +43,11 @@ function init() {
             alert("Trouble getting capabilities doc");
             OpenLayers.Console.error.apply(OpenLayers.Console, arguments);
         }
-    })
+    });
     
     map = new OpenLayers.Map({
         div: "map",
-        projection: "EPSG:900913",
-        units: "m",
-        maxExtent: new OpenLayers.Bounds(
-            -20037508.34, -20037508.34, 20037508.34, 20037508.34
-        ),
-        maxResolution: 156543.0339
+        projection: "EPSG:900913"
     });    
     
     var osm = new OpenLayers.Layer.OSM();

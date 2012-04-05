@@ -31,7 +31,7 @@
 #
 # Note: This is a very rough initial version of this code.
 #
-# -- Copyright 2005-2011 OpenLayers contributors / OpenLayers project --
+# -- Copyright 2005-2012 OpenLayers contributors / OpenLayers project --
 #
 
 # TODO: Allow files to be excluded. e.g. `Crossbrowser/DebugMode.js`?
@@ -43,7 +43,7 @@ import sys
 
 SUFFIX_JAVASCRIPT = ".js"
 
-RE_REQUIRE = "@requires?:? (.*)\n" # TODO: Ensure in comment?
+RE_REQUIRE = "@requires?:?\s+(\S*)\s*\n" # TODO: Ensure in comment?
 
 class MissingImport(Exception):
     """Exception raised when a listed import is not found in the lib."""
@@ -53,11 +53,20 @@ class SourceFile:
     Represents a Javascript source code file.
     """
 
-    def __init__(self, filepath, source):
+    def __init__(self, filepath, source, cfgExclude):
         """
         """
         self.filepath = filepath
         self.source = source
+
+        self.excludedFiles = [] 
+        self.requiredFiles = [] 
+        auxReq = re.findall(RE_REQUIRE, self.source) 
+        for filename in auxReq: 
+            if undesired(filename, cfgExclude): 
+                self.excludedFiles.append(filename) 
+            else: 
+                self.requiredFiles.append(filename) 
 
         self.requiredBy = []
 
@@ -67,8 +76,7 @@ class SourceFile:
         Extracts the dependencies specified in the source code and returns
         a list of them.
         """
-        # TODO: Cache?
-        return re.findall(RE_REQUIRE, self.source)
+        return self.requiredFiles
 
     requires = property(fget=_getRequirements, doc="")
 
@@ -139,9 +147,14 @@ def undesired(filepath, excludes):
                 exclude = True
                 break
     return exclude
+
+
+def getNames (sourceDirectory, configFile = None):
+    return run(sourceDirectory, None, configFile, True)
             
 
-def run (sourceDirectory, outputFilename = None, configFile = None):
+def run (sourceDirectory, outputFilename = None, configFile = None,
+                                                returnAsListOfNames = False):
     cfg = None
     if configFile:
         cfg = Config(configFile)
@@ -171,7 +184,7 @@ def run (sourceDirectory, outputFilename = None, configFile = None):
         print "Importing: %s" % filepath
         fullpath = os.path.join(sourceDirectory, filepath).strip()
         content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF?
-        files[filepath] = SourceFile(filepath, content) # TODO: Chop path?
+        files[filepath] = SourceFile(filepath, content, cfg.exclude) # TODO: Chop path?
 
     print
 
@@ -195,7 +208,7 @@ def run (sourceDirectory, outputFilename = None, configFile = None):
                     if os.path.exists(fullpath):
                         print "Importing: %s" % path
                         content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF?
-                        files[path] = SourceFile(path, content) # TODO: Chop path?
+                        files[path] = SourceFile(path, content, cfg.exclude) # TODO: Chop path?
                     else:
                         raise MissingImport("File '%s' not found (required by '%s')." % (path, filepath))
         
@@ -219,9 +232,24 @@ def run (sourceDirectory, outputFilename = None, configFile = None):
     ## Output the files in the determined order
     result = []
 
+    # Return as a list of filenames
+    if returnAsListOfNames:
+        for fp in order:
+            fName = os.path.normpath(os.path.join(sourceDirectory, fp)).replace("\\","/")
+            print "Append: ", fName
+            f = files[fp]
+            for fExclude in f.excludedFiles: 
+                print "  Required file \"%s\" is excluded." % fExclude 
+            result.append(fName)
+        print "\nTotal files: %d " % len(result)
+        return result
+        
+    # Return as merged source code
     for fp in order:
         f = files[fp]
         print "Exporting: ", f.filepath
+        for fExclude in f.excludedFiles: 
+            print "  Required file \"%s\" is excluded." % fExclude 
         result.append(HEADER % f.filepath)
         source = f.source
         result.append(source)

@@ -4,7 +4,7 @@
   <script type="text/javascript">
     var bounds; 
     function test_Bounds_constructor (t) {
-        t.plan( 21 );
+        t.plan( 26 );
         
         bounds = new OpenLayers.Bounds();
         t.ok( bounds instanceof OpenLayers.Bounds, "new OpenLayers.Bounds returns Bounds object" );
@@ -44,6 +44,15 @@
         t.eq( bounds.bottom, -20037508.34, "bounds.bottom adjusted for floating precision");
         t.eq( bounds.right, 40075016.68, "bounds.right adjusted for floating precision");
         t.eq( bounds.top, 20037508.34, "bounds.top adjusted for floating precision");
+        
+        // allow construction from a single arg
+        bounds = new OpenLayers.Bounds([-180, -90, 180, 90]);
+        t.ok(bounds instanceof OpenLayers.Bounds, "(array) correct instance");
+        t.eq(bounds.left, -180, "(array) left");
+        t.eq(bounds.bottom, -90, "(array) bottom");
+        t.eq(bounds.right, 180, "(array) right");
+        t.eq(bounds.top, 90, "(array) top");
+        
     }
 
     function test_Bounds_constructorFromStrings(t) {
@@ -123,6 +132,43 @@
         var ll = new OpenLayers.LonLat(15,30);
         t.eq( bounds.containsLonLat(ll), bounds.contains(ll.lon, ll.lat), "containsLonLat works");
 
+    }
+    
+    function test_containsLonLat_wraped(t) {
+        
+        var worldBounds = new OpenLayers.Bounds(-180, -90, 180, 90);
+
+        var cases = [{
+            ll: [0, 0], bbox: [-10, -10, 10, 10], contained: true
+        }, {
+            ll: [20, 0], bbox: [-10, -10, 10, 10], contained: false
+        }, {
+            ll: [360, 0], bbox: [-10, -10, 10, 10], contained: true
+        }, {
+            ll: [380, 0], bbox: [-10, -10, 10, 10], contained: false
+        }, {
+            ll: [725, 5], bbox: [-10, -10, 10, 10], contained: true
+        }, {
+            ll: [-355, -5], bbox: [-10, -10, 10, 10], contained: true
+        }, {
+            ll: [-715, 5], bbox: [-10, -10, 10, 10], contained: true
+        }, {
+            ll: [-735, 5], bbox: [-10, -10, 10, 10], contained: false
+        }, {
+            ll: [-180 * 50, 5], bbox: [-10, -10, 10, 10], contained: true
+        }];
+        
+        var len = cases.length;
+        t.plan(len);
+        
+        var c, bounds, loc;
+        for (var i=0; i<len; ++i) {
+            c = cases[i];
+            loc = new OpenLayers.LonLat(c.ll[0], c.ll[1]);
+            bounds = new OpenLayers.Bounds.fromArray(c.bbox);
+            t.eq(bounds.containsLonLat(loc, {worldBounds: worldBounds}), c.contained, "case " + i);
+        }
+        
     }
 
     function test_Bounds_fromString(t) {
@@ -555,7 +601,8 @@
     //straddling right
         testBounds = simpleBounds.add(10,0);
         wrappedBounds = testBounds.wrapDateLine(maxExtent);
-        t.ok(wrappedBounds.equals(testBounds), "wrapping a bounds that straddles the right of maxextent does nothing");
+        desiredBounds = testBounds.add(-maxExtent.getWidth(), 0)
+        t.ok(wrappedBounds.equals(desiredBounds), "wrapping a bounds that straddles the right of maxextent moves extent to left side of the world");
     
     //right leftTolerance
         testBounds = simpleBounds.add(14,0);
@@ -583,7 +630,7 @@
 
     }
     function test_Bounds_transform(t) {
-        t.plan( 3 );
+        t.plan( 5 );
         bounds = new OpenLayers.Bounds(10, -10, 20, 10);
         bounds.transform(new OpenLayers.Projection("foo"), new OpenLayers.Projection("Bar")); 
         t.eq(bounds.toBBOX(), "10,-10,20,10", "null transform okay");
@@ -591,10 +638,18 @@
         t.eq(bounds.toBBOX(), "1113194.907778,-1118889.974702,2226389.815556,1118889.974702", "bounds for spherical mercator transform are correct");
         bounds.transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326")); 
         t.eq(bounds.toBBOX(), "10,-10,20,10", "bounds for inverse spherical mercator transform are correct");
+
+        // transform with string
+        bounds = new OpenLayers.Bounds(10, -10, 20, 10);
+        bounds.transform("EPSG:4326", "EPSG:900913"); 
+        t.eq(bounds.toBBOX(), "1113194.907778,-1118889.974702,2226389.815556,1118889.974702", "(string) bounds for spherical mercator transform are correct");
+        bounds.transform("EPSG:900913", "EPSG:4326"); 
+        t.eq(bounds.toBBOX(), "10,-10,20,10", "(string) bounds for inverse spherical mercator transform are correct");
+        
     }
 
     function test_Bounds_add(t) {
-        t.plan( 8 );
+        t.plan( 6 );
 
         origBounds = new OpenLayers.Bounds(1,2,3,4);
         testBounds = origBounds.clone();
@@ -606,19 +661,19 @@
         t.ok( bounds.equals(b), "bounds is set correctly");
         
     //null values
-        OpenLayers.Lang.setCode('en');
-        var desiredMsg = "You must pass both x and y values to the add function.";
-        OpenLayers.Console.error = function(msg) {
-            t.eq(msg, desiredMsg, "error correctly reported");
+        try {
+            bounds = testBounds.add(null, 50);
+        } catch(e) {
+            t.ok("exception thrown when passing null value to add()");
         }
-    
-        bounds = testBounds.add(null, 50);
         t.ok( testBounds.equals(origBounds), "testBounds is not modified by erroneous add operation (null x)");
-        t.ok(bounds == null, "returns null on erroneous add operation (null x)");
  
-        bounds = testBounds.add(5, null);
+        try {
+            bounds = testBounds.add(5, null);
+        } catch(e) {
+            t.ok("exception thrown when passing null value to add()");
+        }            
         t.ok( testBounds.equals(origBounds), "testBounds is not modified by erroneous add operation (null y)");
-        t.ok(bounds == null, "returns null on erroneous add operation (null y)");
     }
 
     function test_Bounds_scale(t) {
