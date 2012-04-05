@@ -1,6 +1,6 @@
 var marble = new OpenLayers.Layer.WMS(
     "Blue Marble",
-    "/geoserver/gwc/service/wms",
+    "/geoserver/wms",
     {layers: "topp:bluemarble", format: "image/png"}
 );
 

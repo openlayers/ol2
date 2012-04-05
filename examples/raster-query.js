@@ -2,7 +2,7 @@
 var osm = new OpenLayers.Layer.OSM();
 var veg = new OpenLayers.Layer.WMS(
     "Vegetation",
-    "/geoserver/gwc/service/wms",
+    "/geoserver/wms",
     {layers: "za:za_vegetation", format: "image/png8", transparent: "TRUE"},
     {isBaseLayer: false, opacity: 0.5}
 );
