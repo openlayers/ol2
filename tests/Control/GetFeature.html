@@ -169,6 +169,28 @@
         control.events.unregister("outfeature", this, outTest);
     }
     
+    function test_Control_GetFeature_selectBestFeature(t) {
+        t.plan(1);
+
+        var point = new OpenLayers.Feature.Vector(
+            new OpenLayers.Geometry.Point(10, 10)
+        );
+        var polygon = new OpenLayers.Feature.Vector(
+            new OpenLayers.Geometry.Polygon(new OpenLayers.Geometry.LinearRing([
+                new OpenLayers.Geometry.Point(0, 0),
+                new OpenLayers.Geometry.Point(20, 0),
+                new OpenLayers.Geometry.Point(20, 20),
+                new OpenLayers.Geometry.Point(0, 20),
+                new OpenLayers.Geometry.Point(0, 0)
+            ]))
+        );
+        var control = new OpenLayers.Control.GetFeature({
+            select: function(feature) {
+                t.ok(feature == point, "point correctly takes precedence");
+            }
+        });
+        control.selectBestFeature([point, polygon], new OpenLayers.LonLat(9, 9));
+    }
     </script>
 </head>
 <body>
