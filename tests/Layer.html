@@ -728,8 +728,8 @@
         l1.setVisibility(false);
         log = {};
         l1.setVisibility(true);
-        t.eq(log.moveTo.zoomChanged, false,
-             "[c] redraw calls moveTo with zoomChanged false");
+        t.eq(log.moveTo.zoomChanged, true,
+             "[c] redraw calls moveTo with zoomChanged true");
 
         l1.setVisibility(false);
         map.zoomIn();
