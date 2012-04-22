@@ -275,7 +275,130 @@
             context: new OpenLayers.Feature.Vector(null, {prop: "FOO"}),
             expect: false
         }];
+        t.plan(cases.length);
+
+        var c;
+        for(var i=0; i<cases.length; ++i) {
+            c = cases[i];
+            t.eq(c.filter.evaluate(c.context), c.expect, "case " + i + ": " + c.filter.type);
+        }
+    }        
+
+    function test_evaluate_with_null(t) {
         
+        var cases = [{
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                property: "prop",
+                value: "foo"
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: false
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.NOT_EQUAL_TO,
+                property: "prop",
+                value: "foo"
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: true
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.LESS_THAN,
+                property: "prop",
+                value: "foo"
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: false
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.GREATER_THAN,
+                property: "prop",
+                value: "foo"
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: false
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO,
+                property: "prop",
+                value: "foo"
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: false
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO,
+                property: "prop",
+                value: "foo"
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: false
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.BETWEEN,
+                property: "prop",
+                value: "foo"
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: false
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.LIKE,
+                property: "prop",
+                value: "foo"
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: false
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.NOT_EQUAL_TO,
+                property: "prop",
+                value: null
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: false
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                property: "prop",
+                value: null
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: true
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.NOT_EQUAL_TO,
+                property: "prop",
+                value: null
+            }),
+            context: new OpenLayers.Feature.Vector(null, {prop: "FOO"}),
+            expect: true
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                property: "prop",
+                value: null
+            }),
+            context: new OpenLayers.Feature.Vector(null, {prop: "FOO"}),
+            expect: false
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.LIKE,
+                property: "prop",
+                value: '.+'
+            }),
+            context: new OpenLayers.Feature.Vector(null, {prop: "FOO"}),
+            expect: true
+        }, {
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.LIKE,
+                property: "prop",
+                value: '.+'
+            }),
+            context: new OpenLayers.Feature.Vector(null, {}),
+            expect: false
+        }];
         t.plan(cases.length);
 
         var c;
