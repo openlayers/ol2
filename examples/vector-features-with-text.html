@@ -39,7 +39,9 @@
                     fontWeight: "bold",
                     labelAlign: "${align}",
                     labelXOffset: "${xOffset}",
-                    labelYOffset: "${yOffset}"
+                    labelYOffset: "${yOffset}",
+                    labelOutlineColor: "white",
+                    labelOutlineWidth: 3
                 }}),
                 renderers: renderer
             });
@@ -123,7 +125,7 @@
   <body onload="init()">
     <h1 id="title">OpenLayers Labeled features example</h1>
     <div id="tags">
-        vector, feature, labeling, symbolizer
+        vector, feature, labeling, symbolizer, light
     </div>
     <p id="shortdesc">
         Label vector features with a text symbolizer.

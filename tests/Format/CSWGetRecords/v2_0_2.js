@@ -1,5 +1,5 @@
 var csw_request = 
-'<csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2" resultType="results" startPosition="10" maxRecords="20">' +
+'<csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2" resultType="results" startPosition="10" maxRecords="20" xmlns:gmd="http://www.isotc211.org/2005/gmd">' +
   '<csw:Query typeNames="csw:Record">' +
     '<csw:ElementSetName>brief</csw:ElementSetName>' +
     '<csw:Constraint version="1.1.0">' +
@@ -21,6 +21,8 @@ var csw_response =
     '<csw:BriefRecord xmlns:geonet="http://www.fao.org/geonetwork" xmlns:ows="http://www.opengis.net/ows" xmlns:dc="http://purl.org/dc/elements/1.1/">' +
       '<dc:identifier>895ac38b-7aef-4a21-b593-b35a6fc7bba9</dc:identifier>' +
       '<dc:title>Sample title</dc:title>' +
+      '<dc:subject />' +
+      '<dc:subject />' +
       '<ows:BoundingBox crs="::Lambert Azimuthal Projection">' +
         '<ows:LowerCorner>156 -3</ows:LowerCorner>' +
         '<ows:UpperCorner>37 83</ows:UpperCorner>' +

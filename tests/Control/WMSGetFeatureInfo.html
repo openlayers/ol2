@@ -291,18 +291,18 @@
         t.plan(5);
         var map = new OpenLayers.Map("map", {
             getExtent: function() {return(new OpenLayers.Bounds(-180,-90,180,90));}
-            }
-        );
+        });
+        var geographic = new OpenLayers.Projection("EPSG:4326");
 
         var a = new OpenLayers.Layer.WMS("dummy","http://localhost/wms", {
             layers: "a,b,c,d",
             styles: "a,b,c,d"
-        });
+        }, {projection: geographic});
 
         var b = new OpenLayers.Layer.WMS("dummy","http://localhost/wms", {
             layers: ["a","b","c","d"],
             styles: ["a","b","c","d"]
-        });
+        }, {projection: geographic});
 
         var c = new OpenLayers.Layer.WMS("dummy","http://localhost/wms", {
             layers: ["a","b","c","d"]
@@ -310,13 +310,13 @@
 
         var d = new OpenLayers.Layer.WMS("dummy","http://localhost/wms", {
             layers: "a,b,c,d"
-        });
+        }, {projection: geographic});
 
         var click = new OpenLayers.Control.WMSGetFeatureInfo({
             featureType: 'type',
             featureNS: 'ns',
             layers: [a, b, c, d]
-        });
+        }, {projection: geographic});
 
         map.addControl(click);
 
@@ -399,6 +399,7 @@
         var c = new OpenLayers.Layer.WMS(
             null, ["http://c.mirror/wms", "http://d.mirror/wms"], {layers: "c"}
         );
+        map.addLayers([a, b, c]);
 
         var control = new OpenLayers.Control.WMSGetFeatureInfo({
             url: "http://host/wms",
@@ -472,6 +473,35 @@
         
         map.destroy();
         
+    }
+
+    function test_exceptions(t) {
+        t.plan(1);
+        var map = new OpenLayers.Map("map", {
+            getExtent: function() {return(new OpenLayers.Bounds(-180,-90,180,90));}
+            }
+        );
+
+        var a = new OpenLayers.Layer.WMS("dummy","http://myhost/wms", {
+            layers: "x",
+            exceptions: "text/xml"
+        });
+
+        map.addLayer(a);
+
+        var click = new OpenLayers.Control.WMSGetFeatureInfo({
+        });
+
+        map.addControl(click);
+
+        var _request = OpenLayers.Request.GET;
+        OpenLayers.Request.GET = function(options) {
+            t.eq(options.params["EXCEPTIONS"], "text/xml", "Exceptions parameter taken from the WMS layer if provided");
+        };
+        click.activate();
+        click.getInfoForClick({xy: {x: 50, y: 50}});
+        OpenLayers.Request.GET = _request;
+        map.destroy();
     }
 
     function test_drillDown(t) {

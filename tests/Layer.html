@@ -174,6 +174,16 @@
         t.eq(log, 0, "addOptions doesn't call initResolutions when layer is not in map");
     }
     
+    function test_addOptionsScale(t) {
+        t.plan(1);
+        var map = new OpenLayers.Map("map");
+        var layer = new OpenLayers.Layer.WMS();
+        map.addLayer(layer);
+        map.zoomToMaxExtent();
+        layer.addOptions({maxResolution: 0.5, numZoomLevels: 15});
+        t.eq(layer.alwaysInRange, false, "alwaysInRange should not be true anymore");
+    }
+    
     function test_Layer_StandardOptionsAccessors (t) {
 
         t.plan( 4 );
@@ -197,6 +207,39 @@
         t.eq(layer.numZoomLevels, numZoomLevels, "numZoomLevels set correctly");
     }
     
+    function test_maxExtent(t) {
+        t.plan(5);
+        
+        var layer = new OpenLayers.Layer(
+            null, {maxExtent: [-180, 0, 0, 90]}
+        );
+        
+        t.ok(layer.maxExtent instanceof OpenLayers.Bounds, "(array) bounds instance");
+        t.eq(layer.maxExtent.left, -180, "(array) bounds left");
+        t.eq(layer.maxExtent.bottom, 0, "(array) bounds left");
+        t.eq(layer.maxExtent.right, 0, "(array) bounds right");
+        t.eq(layer.maxExtent.top, 90, "(array) bounds top");
+        
+        layer.destroy();
+    }
+
+    function test_minExtent(t) {
+        t.plan(5);
+        
+        var layer = new OpenLayers.Layer(
+            null, {minExtent: [-180, 0, 0, 90]}
+        );
+        
+        t.ok(layer.minExtent instanceof OpenLayers.Bounds, "(array) bounds instance");
+        t.eq(layer.minExtent.left, -180, "(array) bounds left");
+        t.eq(layer.minExtent.bottom, 0, "(array) bounds left");
+        t.eq(layer.minExtent.right, 0, "(array) bounds right");
+        t.eq(layer.minExtent.top, 90, "(array) bounds top");
+        
+        layer.destroy();
+    }
+
+
     function test_eventListeners(t) {
         t.plan(1);
         
@@ -235,10 +278,10 @@
         map.destroy();
 
         map = new OpenLayers.Map("map");
-        layer = new OpenLayers.Layer("test", {projection: "EPSG:4326"});
+        layer = new OpenLayers.Layer("test", {projection: "unknown"});
         map.addLayer(layer);
         t.eq(layer.alwaysInRange, true,
-             "alwaysInRange true if only get projection.");
+             "alwaysInRange true if unknown projection is set.");
         map.destroy();
 
         map = new OpenLayers.Map("map");
@@ -364,6 +407,9 @@
         ], [
             "1.20",  null, {maxScale: 100000, numZoomLevels: 3, units: "m"},
             [141.11103491115225, 70.55551745557612, 35.27775872778806], 35.27775872778806, 141.11103491115225
+        ], [
+            "1.21", null, {numZoomLevels: 2},  // maxResolution calculated based on the projection's maxExtent here
+           [1.40625, 0.703125], 0.703125, 1.40625
         ], [
 
         /*
@@ -508,8 +554,8 @@
         /*
          * Batch 2.8: numZoomLevels set in the layer options
          */
-            "2.8.0",  {maxResolution: 80}, {numZoomLevels: 4},
-            [80, 40, 20, 10], 10, 80
+            "2.8.0",  {maxResolution: 80}, {numZoomLevels: 4},  // maxResolution calculated based on the projection's maxExtent here
+            [1.40625, 0.703125, 0.3515625, 0.17578125], 0.17578125, 1.40625
         ], [
             "2.8.1", {maxResolution: 80, numZoomLevels: 4}, {numZoomLevels: null},
             [80, 40, 20, 10], 10, 80
@@ -668,7 +714,7 @@
     }
       
     function test_layer_setTileSize(t) {
-        t.plan(6);
+        t.plan(4);
 
         layer = new OpenLayers.Layer();
         
@@ -688,7 +734,6 @@
         var size = new OpenLayers.Size(2,2);
         layer.setTileSize(size);
         t.ok(layer.tileSize.equals(size), "size paramater set correctly to layer's tile size");
-        t.ok(layer.imageOffset == null, "imageOffset and imageSize null when no gutters")
       
       //set on layer
         layer.tileSize = layerTileSize;
@@ -707,10 +752,8 @@
         size = new OpenLayers.Size(10,100);
         layer.setTileSize(size);
 
-        var desiredImageOffset = new OpenLayers.Pixel(-15, -15); 
         var desiredImageSize = new OpenLayers.Size(40, 130); 
 
-        t.ok(layer.imageOffset.equals(desiredImageOffset), "image offset correctly calculated");
         t.ok(layer.imageSize.equals(desiredImageSize), "image size correctly calculated");
     }
     

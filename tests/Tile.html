@@ -22,7 +22,7 @@
 
     
     function test_Tile_constructor (t) {
-        t.plan( 12 );
+        t.plan( 13 );
      
         setUp();
         
@@ -33,7 +33,11 @@
         var url = "bobob";
         var size = new OpenLayers.Size(5,6);
         
-        tile = new OpenLayers.Tile(layer, position, bounds, url, size);
+        tile = new OpenLayers.Tile(layer, position, bounds, url, size, {
+            eventListeners: {
+                loadstart: OpenLayers.Function.False
+            }
+        });
 
         t.ok(tile instanceof OpenLayers.Tile, "new OpenLayers.Tile returns Tile object");
         t.ok(tile.layer === layer, "tile.layer set correctly");
@@ -48,10 +52,45 @@
         t.ok(tile.id != null, "tile is given an id");
         t.ok(OpenLayers.String.startsWith(tile.id, "Tile_"),
              "tile's id starts correctly");
-        t.ok(tile.events != null, "tile's events intitialized");
+        t.ok(tile.events != null, "tile's events initialized");
+        t.ok(tile.events.listeners.loadstart.length == 1, 
+             "tile's events initialized from eventListeners option");
         
         tearDown();
         
+    }
+    
+    function test_Tile_draw(t) {
+        t.plan(6);
+        setUp();
+
+        var position = new OpenLayers.Pixel(10,20);
+        var bounds = new OpenLayers.Bounds(1,2,3,4);
+        var url = "bobob";
+        var size = new OpenLayers.Size(5,6);
+        
+        tile = new OpenLayers.Tile(layer, position, bounds, url, size);
+        var log = [];
+        tile.clear = function() {
+            log.push("clear");
+        }
+        tile.draw();
+        t.eq(log.length, 1, "Tile cleared before drawing");
+        
+        log = [];
+        tile.events.register("beforedraw", this, function() {
+            log.push("beforedraw");
+            return false;
+        });
+        var drawn = tile.draw();
+        t.eq(log[0], "clear", "tile cleared");
+        t.eq(log[1], "beforedraw", "beforedraw event fired");
+        t.eq(drawn, false, "tile not drawn when beforedraw listener returns false");
+        drawn = tile.draw(true);
+        t.eq(log.length, 2, "no beforedraw event fired and tile not cleared when draw called with 'deferred' argument set to true");
+        t.eq(drawn, true, "tile drawn when draw called with 'deferred' argument set to true");
+
+        tearDown();
     }
 
     function test_Tile_destroy(t) {

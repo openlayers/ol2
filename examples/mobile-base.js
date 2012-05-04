@@ -15,7 +15,7 @@ var init = function (onSelectFeatureFunction) {
         styleMap: new OpenLayers.StyleMap({
             externalGraphic: "img/mobile-loc.png",
             graphicOpacity: 1.0,
-            graphicWith: 16,
+            graphicWidth: 16,
             graphicHeight: 26,
             graphicYOffset: -26
         })
@@ -41,12 +41,7 @@ var init = function (onSelectFeatureFunction) {
         div: "map",
         theme: null,
         projection: sm,
-        units: "m",
         numZoomLevels: 18,
-        maxResolution: 156543.0339,
-        maxExtent: new OpenLayers.Bounds(
-            -20037508.34, -20037508.34, 20037508.34, 20037508.34
-        ),
         controls: [
             new OpenLayers.Control.Attribution(),
             new OpenLayers.Control.TouchNavigation({

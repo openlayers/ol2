@@ -41,8 +41,8 @@
 
         layer = new OpenLayers.Layer.XYZ(name, url, options);
 
-        var bl = { bounds: new OpenLayers.Bounds(1,2,0,0)};
-        var tr = { bounds: new OpenLayers.Bounds(0,0,3,4)};
+        var bl = { bounds: new OpenLayers.Bounds(1,2,2,3)};
+        var tr = { bounds: new OpenLayers.Bounds(2,3,3,4)};
         layer.grid = [ [6, tr], 
                        [bl, 7]];
 
@@ -195,7 +195,7 @@
         
         var map = new OpenLayers.Map({
             div: "map",
-            maxResolution: OpenLayers.Map.prototype.maxResolution / Math.pow(2, offset)
+            maxResolution: 1.40625 / Math.pow(2, offset)
         });
         var layer = new OpenLayers.Layer.XYZ(name, url, {zoomOffset: offset});
         map.addLayer(layer);
@@ -211,7 +211,7 @@
         
         var map = new OpenLayers.Map({
             div: "map",
-            maxResolution: OpenLayers.Map.prototype.maxResolution / Math.pow(2, offset)
+            maxResolution: 1.40625 / Math.pow(2, offset)
         });
         var layer = new OpenLayers.Layer.XYZ(name, url, {zoomOffset: offset});
         map.addLayer(layer);
@@ -251,17 +251,11 @@
     }
     
     function test_clone(t) {
-        t.plan(2);
-        
-        var clone;
+        t.plan(1);
         
         layer = new OpenLayers.Layer.XYZ(name, url, options);
-        clone = layer.clone();
+        var clone = layer.clone();
         t.ok(clone instanceof OpenLayers.Layer.XYZ, "clone is a Layer.XYZ instance");
-
-        layer = new OpenLayers.Layer.OSM();
-        clone = layer.clone();
-        t.ok(clone instanceof OpenLayers.Layer.OSM, "clone is a Layer.OSM instance");
     }
 
   </script>
