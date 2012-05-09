@@ -493,6 +493,51 @@
         });
     }
 
+    function test_drawOrder(t) {
+        if (!supported) { t.plan(0); return; }
+        t.plan(8);
+
+        setUp();
+        var renderer = layer.renderer;
+
+        var f1 = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(0, 0));
+        var f2 = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(0, 1));
+        exp = renderer.drawFeature(f1, {});
+        t.eq(exp, true, 'drawFeature f1 returns true');
+
+        exp = renderer.drawFeature(f2, {});
+        t.eq(exp, true, 'drawFeature f2 returns true');
+
+        renderer.eraseFeatures(f1);
+
+        var orderList = [];
+        var drawGeometry = renderer.drawGeometry;
+        renderer.drawGeometry = function(geometry, style, featureId) {
+            orderList.push(featureId);
+            return drawGeometry.apply(this, arguments);
+        }
+
+        exp = renderer.drawFeature(f1, {});
+        t.eq(exp, true, 'drawFeature f1 returns again true');
+
+        t.eq(f2.id, orderList[0], 'feature f2 drawn first');
+        t.eq(f1.id, orderList[1], 'feature f1 drawn second');
+
+        orderList = [];
+        var f3 = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(0, 2));
+        f1.style = {graphicZIndex: 1};
+        f3.style = {graphicZIndex: 3};
+        renderer.locked = true;
+        renderer.drawFeature(f1, {});
+        renderer.locked = false;
+        renderer.drawFeature(f3, {});
+        t.eq(f2.id, orderList[0], 'feature f2 drawn first');
+        t.eq(f1.id, orderList[1], 'feature f1(zIndex=1) drawn second');
+        t.eq(f3.id, orderList[2], 'feature f3(zIndex=3) drawn third');
+
+        tearDown();
+    }
+
   </script>
 </head>
 <body>
