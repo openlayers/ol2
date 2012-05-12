@@ -175,12 +175,12 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
     files = {}
 
     ## Import file source code
-    cfg.forceFirst = importFiles("[first]", cfg.forceFirst, cfg, files) 
-    cfg.forceLast = importFiles("[last]", cfg.forceLast, cfg, files) 
+    cfg.forceFirst = importFiles("[first]", cfg.forceFirst, False, cfg, files) 
+    cfg.forceLast = importFiles("[last]", cfg.forceLast, False, cfg, files) 
     if len(cfg.include) == 0:
-        importFiles("[include]", ["."], cfg, files)
+        importFiles("[include]", ["."], True, cfg, files)
     else:
-        importFiles("[include]", cfg.include, cfg, files) 
+        importFiles("[include]", cfg.include, True, cfg, files) 
 
     print "\nImport required files:"
     complete = False
@@ -195,7 +195,7 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
                 if not files.has_key(path):
                     complete = False
                     try:
-                        importFile("", path, cfg, files)
+                        importFile("", path, True, cfg, files)
                     except MissingImport:
                         raise MissingImport("File '%s' not found (required by '%s')." % (path, filepath))
         
@@ -249,17 +249,17 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
         open(outputFilename, "w").write("".join(result))
     return "".join(result)
 
-def importFiles(sectionName, inputFiles, cfg, files): 
+def importFiles(sectionName, inputFiles, excludeFiles, cfg, files): 
     print "\nImport \"%s\" files:" % sectionName
     outputFiles = [] 
     for filepath in inputFiles: 
         if filepath.endswith(SUFFIX_JAVASCRIPT):
-            outputFiles += importFile(sectionName, filepath, cfg, files)
+            outputFiles += importFile(sectionName, filepath, excludeFiles, cfg, files)
         else:
-            outputFiles += importDirectory(sectionName, filepath, cfg, files)
+            outputFiles += importDirectory(sectionName, filepath, excludeFiles, cfg, files)
     return outputFiles
     
-def importDirectory(sectionName, directoryName, cfg, files):
+def importDirectory(sectionName, directoryName, excludeFiles, cfg, files):
     # Normalize directory name
     directoryName = directoryName.replace("\\", "/")
     if directoryName.startswith("./"):
@@ -278,14 +278,14 @@ def importDirectory(sectionName, directoryName, cfg, files):
         for filename in directoryFiles:
             if filename.endswith(SUFFIX_JAVASCRIPT) and not filename.startswith("."):
                 filepath = os.path.join(root, filename)[len(cfg.sourceDirectory)+1:]
-                outputFiles += importFile(sectionName, filepath, cfg, files)
+                outputFiles += importFile(sectionName, filepath, excludeFiles, cfg, files)
     print "End of directory"
     return outputFiles
 
-def importFile(sectionName, filepath, cfg, files):
+def importFile(sectionName, filepath, excludeFiles, cfg, files):
     # Normalize file name
     filepath = filepath.replace("\\", "/")
-    if filepath in files or undesired(filepath, cfg.exclude):
+    if excludeFiles and (filepath in files or undesired(filepath, cfg.exclude)):
         return []
     else:
         fullpath = os.path.join(cfg.sourceDirectory, filepath).strip().replace("\\","/")
