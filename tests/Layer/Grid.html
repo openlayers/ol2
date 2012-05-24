@@ -3,8 +3,8 @@
   <script src="../OLLoader.js"></script>
   <script type="text/javascript">
     // turn off animation frame handling, so we can check img urls in tests
-    var origQueueTileDraw = OpenLayers.Layer.Grid.prototype.queueTileDraw;
-    delete OpenLayers.Layer.Grid.prototype.queueTileDraw;
+    var origQueueTileDraw = OpenLayers.Map.prototype.queueTileDraw;
+    delete OpenLayers.Map.prototype.queueTileDraw;
 
     var isMozilla = (navigator.userAgent.indexOf("compatible") == -1);
     var layer; 
@@ -101,23 +101,25 @@
     }
     
     function test_queueTileDraw(t) {
-        t.plan(3);
-        OpenLayers.Layer.Grid.prototype.queueTileDraw = origQueueTileDraw;
+        t.plan(4);
+        OpenLayers.Map.prototype.queueTileDraw = origQueueTileDraw;
 
         var map = new OpenLayers.Map('map');
         layer = new OpenLayers.Layer.WMS(name, url, params);
         map.addLayer(layer);
         map.setCenter([0, 0], 3);
-        var queued = layer.tileQueue.length;
-        t.ok(layer.tileQueue.length, "Tiles queued for drawing");
+        var queued = map.tileQueue.length;
+        t.ok(map.tileQueue.length, map.tileQueue.length + " tiles queued for drawing");
         map.zoomIn();
-        t.eq(layer.tileQueue.length, queued, "Tile queue has same length after immediate zoom change");
+        map.zoomOut();
+        t.eq(map.tileQueue.length, queued, "Tile queue has same length after zooming in and immediately zooming back out");
         t.delay_call(1, function() {
-            t.eq(layer.tileQueue.length, 0, "Tiles from queue processed");
+            t.eq(map.tileQueue.length, 0, "Tiles from queue processed");
+            t.eq(map.tileFIFO.length, queued, "Tile urls added to FIFO");
+            map.destroy();
         });
         
-        map.destroy();
-        delete OpenLayers.Layer.Grid.prototype.queueTileDraw;
+        delete OpenLayers.Map.prototype.queueTileDraw;
     }
 
     function test_Layer_Grid_clearTiles (t) {
@@ -438,7 +440,7 @@
      */
 
     function test_Layer_Grid_clone(t) {
-        t.plan(7);
+        t.plan(6);
         
         var options = {tileSize: new OpenLayers.Size(500,50)};
         var map = new OpenLayers.Map('map', options);
@@ -453,7 +455,6 @@
         t.ok( clone.grid != layer.grid, "clone does not copy grid");
         t.ok( clone.grid.length == 0, "clone creates a new array instead");
         
-        t.ok(clone.tileQueue !== layer.tileQueue, "new tileQueue for clone");
         t.eq(clone.backBuffer, null, "no backbuffer from original");
 
         t.ok( clone.tileSize.equals(layer.tileSize), "tileSize correctly cloned");
@@ -516,7 +517,8 @@
                 return translatedPX;        
             },
             getResolution: function() {
-            }
+            },
+            clearTileQueue: function() {}
         }
 
         var newTile = {

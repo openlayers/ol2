@@ -108,7 +108,7 @@
             isBaseLayer: false
         }, options));
         map.addLayer(layer);
-        var tile = layer.tileQueue[0];
+        var tile = map.tileQueue[0];
         
         t.delay_call(5, function() {
             t.ok(tile.url, "Tile not empty");
