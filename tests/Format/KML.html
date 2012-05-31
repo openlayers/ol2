@@ -32,6 +32,7 @@
             internalProjection: new OpenLayers.Projection("EPSG:900913"),
             externalProjection: new OpenLayers.Projection("EPSG:4326")
         });
+        f.style = {};
         var data = format.write(f);
         var found = (data.search('139.734') != -1);
         t.ok(found, "Found 139.734 (correct reprojection) in data output.");
