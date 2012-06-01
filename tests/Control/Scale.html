@@ -22,9 +22,10 @@
     
         control = new OpenLayers.Control.Scale('scale');
         t.ok( control instanceof OpenLayers.Control.Scale, "new OpenLayers.Control returns object" );
-        map = new OpenLayers.Map('map');
+        map = new OpenLayers.Map('map', {zoomMethod: null});
         layer = new OpenLayers.Layer.WMS('Test Layer', "http://octo.metacarta.com/cgi-bin/mapserv", {map: '/mapdata/vmap_wms.map', layers: 'basic', format: 'image/jpeg'});
         map.addLayer(layer);
+        debugger
         map.zoomTo(0);
         map.addControl(control);
         t.eq(OpenLayers.Util.getElement('scale').innerHTML, "Scale = 1 : 443M", "Scale set by default."  );
@@ -38,7 +39,7 @@
         t.plan(2);
         control = new OpenLayers.Control.Scale();
         t.ok( control instanceof OpenLayers.Control.Scale, "new OpenLayers.Control returns object" );
-        map = new OpenLayers.Map('map');
+        map = new OpenLayers.Map('map', {zoomMethod: null});
         layer = new OpenLayers.Layer.WMS('Test Layer', "http://octo.metacarta.com/cgi-bin/mapserv", {map: '/mapdata/vmap_wms.map', layers: 'basic', format: 'image/jpeg'});
         map.addLayer(layer);
         map.zoomTo(0);

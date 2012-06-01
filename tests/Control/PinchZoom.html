@@ -39,15 +39,15 @@
 
         var control = new OpenLayers.Control.PinchZoom();
 
+        var log = [];
+
         var map = new OpenLayers.Map({
             div: "map",
-            controls: [control]
+            controls: [control],
+            applyTransform: function(dx, dy, scale) {
+                log.push([dx, dy, scale]);
+            }
         });
-        
-        var log = [];
-        control.applyTransform = function(transform) {
-            log.push(transform);
-        }
         
         control.containerCenter = {
             x: 0, y: 0
@@ -58,12 +58,12 @@
         };
 
         var cases = [
-            {x: 100, y: 60, scale: 1, transform: "translate(0px, 10px) scale(1)"},
-            {x: 150, y: 60, scale: 1, transform: "translate(50px, 10px) scale(1)"},
-            {x: 150, y: 60, scale: 2, transform: "translate(-50px, -40px) scale(2)"},
-            {x: 50, y: 20, scale: 2.5, transform: "translate(-200px, -105px) scale(2.5)"},
-            {x: 150, y: 60, scale: 2, transform: "translate(-50px, -40px) scale(2)"},
-            {x: 50, y: 20, scale: 0.25, transform: "translate(25px, 8px) scale(0.25)"}
+            {x: 100, y: 60, scale: 1, transform: [0, 10, 1]},
+            {x: 150, y: 60, scale: 1, transform: [50, 10, 1]},
+            {x: 150, y: 60, scale: 2, transform: [-50, -40, 2]},
+            {x: 50, y: 20, scale: 2.5, transform: [-200, -105, 2.5]},
+            {x: 150, y: 60, scale: 2, transform: [-50, -40, 2]},
+            {x: 50, y: 20, scale: 0.25, transform: [25, 8, 0.25]}
         ];
         
         var len = cases.length;

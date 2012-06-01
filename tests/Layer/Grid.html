@@ -656,7 +656,7 @@
     }
     function test_Layer_Grid_getTileBounds(t) {
         t.plan(2);
-        var map = new OpenLayers.Map("map2");
+        var map = new OpenLayers.Map("map2", {zoomMethod: null});
         var url = "http://octo.metacarta.com/cgi-bin/mapserv";
         layer = new OpenLayers.Layer.WMS(name, url, params);
         
@@ -862,7 +862,8 @@
         t.plan(11);
 
         var map = new OpenLayers.Map('map', {
-            resolutions: [32, 16, 8, 4, 2, 1]
+            resolutions: [32, 16, 8, 4, 2, 1],
+            zoomMethod: null
         });
         var layer = new OpenLayers.Layer.WMS('', '', {}, {
             isBaseLayer: true,
@@ -923,7 +924,8 @@
         t.plan(4);
 
         var map = new OpenLayers.Map('map', {
-            resolutions: [1, 0.5, 0.025]
+            resolutions: [1, 0.5, 0.025],
+            zoomMethod: null
         });
         var resolution;
         var layer = new OpenLayers.Layer.WMS('', '', {}, {
@@ -967,7 +969,8 @@
         t.plan(4);
 
         var map = new OpenLayers.Map('map', {
-            resolutions: [1, 0.5, 0.025]
+            resolutions: [1, 0.5, 0.025],
+            zoomMethod: null
         });
         var resolution;
         var layer = new OpenLayers.Layer.WMS('', '', {}, {
@@ -1227,7 +1230,7 @@
 
         t.plan(4);
 
-        var map = new OpenLayers.Map('map');
+        var map = new OpenLayers.Map('map', {zoomMethod: null});
         var layer = new OpenLayers.Layer.WMS('', '', {}, {
             isBaseLayer: true,
             singleTile: true,
@@ -1258,7 +1261,8 @@
         //
 
         var map = new OpenLayers.Map('map', {
-            resolutions: [32, 16, 8, 4, 2, 1]
+            resolutions: [32, 16, 8, 4, 2, 1],
+            zoomMethod: null
         });
         var layer = new OpenLayers.Layer.WMS(
             "WMS",
@@ -1364,7 +1368,8 @@
         // set up
 
         var map = new OpenLayers.Map('map', {
-            resolutions: [32, 16, 8, 4, 2, 1]
+            resolutions: [32, 16, 8, 4, 2, 1],
+            zoomMethod: null
         });
         var layer = new OpenLayers.Layer.WMS('', '', {}, {
             isBaseLayer: true,
