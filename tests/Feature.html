@@ -21,7 +21,7 @@
 
         t.ok( feature instanceof OpenLayers.Feature, "new OpenLayers.Feature returns Feature object" );
         t.eq( feature.layer, layer, "feature.layer set correctly" );
-        t.ok(OpenLayers.String.startsWith(feature.id, "OpenLayers.Feature_"),
+        t.ok(OpenLayers.String.startsWith(feature.id, "OpenLayers_Feature_"),
              "feature.id set correctly");
         t.ok( feature.lonlat.equals(lonlat), "feature.lonlat set correctly" );
         t.eq( feature.data.iconURL, iconURL, "feature.data.iconURL set correctly" );
@@ -44,7 +44,7 @@
         //Safari 3 separates style overflow into overflow-x and overflow-y
         var prop = (OpenLayers.BROWSER_NAME == 'safari') ? 'overflowX' : 'overflow';
         t.eq(popup.contentDiv.style[prop], "auto", 'overflow on popup is correct');
-        t.ok( popup instanceof OpenLayers.Popup.AnchoredBubble, "popup is an AnchoredBubble by defaults");
+        t.ok( popup instanceof OpenLayers.Popup.Anchored, "popup is a Popup.Anchored by default");
         feature.destroyPopup();
         
         feature.popupClass = OpenLayers.Popup.FramedCloud;

@@ -33,7 +33,7 @@
     }
 
     function test_update(t) {
-        t.plan(5);
+        t.plan(7);
 
         // Create a dummy layer that can act as the map base layer.
         // This will be unnecessary if #1921 is addressed (allowing
@@ -43,9 +43,10 @@
         var strategy = new OpenLayers.Strategy.BBOX({
             ratio: 1 // makes for easier comparison to map bounds
         });
+        var log = [];
         var layer = new OpenLayers.Layer.Vector(null, {
             isBaseLayer: true,
-            protocol: new OpenLayers.Protocol(),
+            protocol: new OpenLayers.Protocol({abort: function(response) { log.push(response); }}),
             strategies: [strategy]
         });
 
@@ -61,7 +62,14 @@
          * should be removed when the issue(s) described in #1835 are addressed.
          */
         strategy.update({force: true});
-        
+        strategy.response = {};
+        strategy.update({force: true});
+        t.eq(log.length, 1, "Response aborted");
+        log = [];
+        strategy.update({force: true});
+        strategy.update({force: true, noAbort: true}); 
+        t.eq(log.length, 0, "Response not aborted when noAbort is true");
+
         // test that the strategy bounds were set
         t.ok(map.getExtent().equals(strategy.bounds), "[set center] bounds set to map extent");
         
@@ -80,9 +88,26 @@
         strategy.update({force: true});
         var from = map.getProjectionObject();
         var to = layer.projection;
-        t.ok(strategy.bounds.equals(map.getExtent().transform(from, to)), "[force update different proj] bounds transformed");
         
-
+        var strategyBounds = strategy.bounds,
+            mapExtent = map.getExtent().transform(from, to),
+            // we don't use bounds::toString because we might run into 
+            // precision issues
+            precision = 7,
+            strategyBoundsGot = [
+                strategyBounds.left.toFixed( precision ),
+                strategyBounds.bottom.toFixed( precision ),
+                strategyBounds.right.toFixed( precision ),
+                strategyBounds.top.toFixed( precision )
+            ].join(','),
+            mapExtentExpected = [
+                mapExtent.left.toFixed( precision ),
+                mapExtent.bottom.toFixed( precision ),
+                mapExtent.right.toFixed( precision ),
+                mapExtent.top.toFixed( precision )
+            ].join(',');
+        t.eq(strategyBoundsGot, mapExtentExpected, 
+            "[force update different proj] bounds transformed");
     }
     
     function test_events(t) {
@@ -280,7 +305,7 @@
 
     // Test fix for Ticket #3142
     function test_layerLoadedAfterBeingAdded(t) {
-        t.plan(2);
+        t.plan(3);
 
         var dummy = new OpenLayers.Layer(null, {isBaseLayer: true});
 
@@ -316,6 +341,11 @@
         // test that the strategy bounds were set
         t.ok(map.getExtent().equals(strategy.bounds), "[set center] bounds set to map extent");
         t.eq(layerOutOfRange.strategies[0].bounds, null, "Data not requested if layer is out of range");
+
+        layerOutOfRange.setVisibility(false);
+        layerOutOfRange.setVisibility(true);
+        t.eq(layerOutOfRange.strategies[0].bounds, null, "Data not requested if layer is out of range when switching visibility");
+
         map.destroy();
     }
 

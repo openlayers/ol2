@@ -48,7 +48,6 @@
     </style>
     <script defer="defer" type="text/javascript">
     OpenLayers.ProxyHost = "proxy.cgi?url=";
-    
     var map, infocontrols, water, highlightlayer;
     
     function load() {
@@ -105,7 +104,7 @@
                 },
                 queryVisible: true
             })
-        }
+        };
 
         map.addLayers([political, roads, cities, water, highlightLayer]); 
         for (var i in infoControls) { 
@@ -125,7 +124,7 @@
              highlightLayer.addFeatures(evt.features);
              highlightLayer.redraw();
         } else {
-            $('responseText').innerHTML = evt.text;
+            document.getElementById('responseText').innerHTML = evt.text;
         }
     }
 

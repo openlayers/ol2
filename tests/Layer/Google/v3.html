@@ -1,6 +1,6 @@
 <html>
 <head>
-    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=false&amp;v=3.6"></script>
     <script src="../../OLLoader.js"></script>
     <script type="text/javascript">
 
@@ -65,11 +65,7 @@
     //  works correctly both ways.
        var gLatLng = new google.maps.LatLng(50,100);
        // v3 uses sphericalMercator by default
-       var correspondingOLLonLat = new OpenLayers.LonLat(100,50).transform(
-           new OpenLayers.Projection("EPSG:4326"),
-           map.getProjectionObject()
-       );
-    
+       var correspondingOLLonLat = layer.forwardMercator(100, 50);
     
        olLonLat = layer.getOLLonLatFromMapObjectLonLat(gLatLng);
        t.ok(olLonLat.equals(correspondingOLLonLat), "Translation from GLatLng to OpenLayers.LonLat works");
@@ -146,9 +142,9 @@
         { controls: [] , 'numZoomLevels':20});
     
         var satellite = new OpenLayers.Layer.Google( "Google Satellite" , {type: google.maps.MapTypeId.SATELLITE, 'maxZoomLevel':18} );
-        var layer = new OpenLayers.Layer.WMS.Untiled( "OpenLayers WMS", 
+        var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS", 
                 "http://labs.metacarta.com/wms/vmap0", {layers: 'basic', 'transparent':true}, 
-                  {isBaseLayer: false} );
+                  {isBaseLayer: false, singleTile: true, displayOutsideMaxExtent: true} );
     
         map.addLayers([satellite, layer]);
         map.setCenter(new OpenLayers.LonLat(10.205188,48.857593), 5);

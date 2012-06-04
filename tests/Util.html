@@ -2,10 +2,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
   <script>
-    var custom$ = function() {};
-    window.$ = custom$;
-  </script>
-  <script>
     var OpenLayers = [
         "OpenLayers/BaseTypes/Class.js",
         "OpenLayers/Util.js",
@@ -75,11 +71,6 @@
         t.ok(!!testArray, "testArray created");
         t.ok(!(testArray instanceof Array), "instanceof check doesn't work");
         t.eq(OpenLayers.Util.isArray(testArray), true, "isArray works");
-    }
-    
-    function test_$(t) {
-        t.plan(1);
-        t.ok($ === custom$, "OpenLayers doesn't clobber existing definition of $.");
     }
     
     function test_Util_getImagesLocation (t) {
@@ -507,9 +498,8 @@
 
         t.eq(element.style.opacity, '', 
              "element.style.opacity is removed when opacity = " + opacity);
-        //Safari 3 returns null for this value, which is okay
-        var filterString = (OpenLayers.BROWSER_NAME == 'safari') ? null : '';
-        t.eq(element.style.filter, filterString, 
+        // Some browser returns null instead of '', which is okay
+        t.ok(element.style.filter == '' || element.style.filter == null,
              "element.style.filter is removed when opacity = " + opacity);
     }
 
@@ -1019,33 +1009,6 @@
 
     }
 
-    function test_Util_getArgs(t) {
-        //DEPRECATED -- to be removed in 3.0
-        t.plan(3);
-        
-        OpenLayers.Lang.setCode(OpenLayers.Lang.defaultCode);
-        
-        var temp = OpenLayers.Console.warn;
-        OpenLayers.Console.warn = function(err) {
-            t.ok(err != null, "warning is fired on use of getArgs()");
-        }
-
-        var temp2 = OpenLayers.Util.getParameters;
-        OpenLayers.Util.getParameters = function(url) {
-            t.eq(url, g_Url, "correct url passed to getParameters()");
-            return g_Params;
-        }
-        
-        g_Params = {};
-        g_Url = {};
-        
-        var ret = OpenLayers.Util.getArgs(g_Url);
-        t.ok( ret == g_Params, "correctly returns value from getParameters");
-
-        OpenLayers.Console.warn = temp;
-        OpenLayers.Util.getParameters = temp2;
-    }
-
     function tests_Util_extend(t) {
         t.plan(7);
 
@@ -1147,6 +1110,31 @@
         t.eq(OpenLayers.Util.getFormattedLonLat(-181, "lon"), "179°00'00\"E", "crossing dateline from the west results in correct east coordinate");
         t.eq(OpenLayers.Util.getFormattedLonLat(181, "lon"), "179°00'00\"W", "crossing dateline from the east results in correct west coordinate");
     }
+
+    /**
+     * To test that we can safely call OpenLayers.Util.extend with an Event
+     * instance, we need to capture a real event.
+     */
+    var loadEvent;
+    window.onload = function(evt) {
+        loadEvent = evt || window.event;
+    }
+    function test_extend_event(t) {
+        t.plan(2);
+        t.ok(loadEvent, "loadEvent recorded");
+        var extended, err;
+        try {
+            extended = OpenLayers.Util.extend({foo: "bar"}, loadEvent);
+        } catch (e) {
+            err = e;
+        }
+        if (err) {
+            t.fail("Failed to extend with an event: " + err.message);
+        } else {
+            t.eq(extended && extended.foo, "bar", "extended with event");
+        }
+    }
+
   </script>
 </head>
 <body>
