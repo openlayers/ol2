@@ -76,7 +76,7 @@
                 OpenLayers.Util.extend({}, gmlOptions),
                 out_options
             );
-            var kmlOptionsIn = OpenLayers.Util.extend(
+            var kmlOptions = OpenLayers.Util.extend(
                 {extractStyles: true}, in_options);
             formats = {
               'in': {
@@ -85,7 +85,7 @@
                 georss: new OpenLayers.Format.GeoRSS(in_options),
                 gml2: new OpenLayers.Format.GML.v2(gmlOptionsIn),
                 gml3: new OpenLayers.Format.GML.v3(gmlOptionsIn),
-                kml: new OpenLayers.Format.KML(kmlOptionsIn),
+                kml: new OpenLayers.Format.KML(kmlOptions),
                 atom: new OpenLayers.Format.Atom(in_options),
                 gpx: new OpenLayers.Format.GPX(in_options)
               }, 
@@ -95,7 +95,7 @@
                 georss: new OpenLayers.Format.GeoRSS(out_options),
                 gml2: new OpenLayers.Format.GML.v2(gmlOptionsOut),
                 gml3: new OpenLayers.Format.GML.v3(gmlOptionsOut),
-                kml: new OpenLayers.Format.KML(out_options),
+                kml: new OpenLayers.Format.KML(kmlOptions),
                 atom: new OpenLayers.Format.Atom(out_options),
                 gpx: new OpenLayers.Format.GPX(out_options)
               } 
