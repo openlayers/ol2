@@ -99,6 +99,7 @@
         t.plan(2);
         var nav = new OpenLayers.Control.Navigation();
         var zb = new OpenLayers.Control.ZoomBox({});
+        zb.handler = null;
         nav.zoomBox = zb;
         zb.activate();
         nav.disableZoomBox();
@@ -110,6 +111,7 @@
         t.plan(2);
         var nav = new OpenLayers.Control.Navigation();
         var zb = new OpenLayers.Control.ZoomBox({});
+        zb.handler = null;
         nav.zoomBox = zb;
         nav.active = true;
         nav.enableZoomBox();

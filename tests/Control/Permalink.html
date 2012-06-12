@@ -443,6 +443,62 @@
         window.location.hash = previous;
     }
     
+    function test_Permalink_AddControl(t) {
+        t.plan(5);
+
+        var map = new OpenLayers.Map('map', {controls: []});
+
+        function inViewPortDiv(div) {
+            for(var i=0; i < map.viewPortDiv.childNodes.length; i++) {
+                var childNode = map.viewPortDiv.childNodes[i];
+                if (childNode == control.div) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        var control, childNodesLength;
+
+        childNodesLength = map.viewPortDiv.childNodes.length;
+
+        // add a HTML Permalink to the map
+        control = new OpenLayers.Control.Permalink({anchor: false});
+        map.addControlToMap(control);
+        t.eq(map.viewPortDiv.childNodes.length, childNodesLength + 1,
+             'one child node added to viewport div');
+        t.ok(inViewPortDiv(control.div), 'Permalink div is in viewport div');
+        control.destroy();
+
+        childNodesLength = map.viewPortDiv.childNodes.length;
+
+        // add to the map a Permalink using anchor.
+        control = new OpenLayers.Control.Permalink({anchor: true});
+        map.addControlToMap(control);
+        t.eq(map.viewPortDiv.childNodes.length, childNodesLength,
+             'no child node added to viewport div');
+        control.destroy();
+
+        childNodesLength = map.viewPortDiv.childNodes.length;
+
+        // add to the map a Permalink using HTML element outside viewport and anchor
+        control = new OpenLayers.Control.Permalink({element: "permalink", anchor: true});
+        map.addControlToMap(control);
+        t.eq(map.viewPortDiv.childNodes.length, childNodesLength,
+             'no child node added to viewport div');
+        control.destroy();
+        
+        childNodesLength = map.viewPortDiv.childNodes.length;
+
+        // add to the map a Permalink using a HTML element outside viewport
+        control = new OpenLayers.Control.Permalink({element: "permalink", anchor: false});
+        map.addControlToMap(control);
+        t.eq(map.viewPortDiv.childNodes.length, childNodesLength,
+             'no child node added to viewport div');
+        control.destroy();
+        
+        map.destroy();
+    }
   </script>
 </head>
 <body>

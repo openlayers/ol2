@@ -99,6 +99,81 @@
         
     }
 
+    function test_draw(t) {
+        t.plan(28);
+
+        var control, div;
+
+        // case [a]
+        control = new OpenLayers.Control();
+        control.div = null;
+        control.allowSelection = true;
+        control.title = '';
+        control.position = null;
+
+        div = control.draw();
+        t.ok(OpenLayers.Util.isElement(div), '[a0] draw returns a DOM element');
+        t.eq(div.className, 'olControl', '[a0] className as expected');
+        t.eq(div.getAttribute('unselectable'), undefined,
+             '[a0] unselectable attribute as expected');
+        t.eq(div.title, '', '[a0] title as expected');
+        t.eq(div.style.left, '', '[a0] style.left as expected');
+        t.eq(div.style.top, '', '[a0] style.top as expected');
+        t.eq(control.position, null, '[a0] control position as expected');
+
+        div = control.draw(new OpenLayers.Pixel(3, 6));
+        t.eq(div.style.left, '3px', '[a1] style.left as expected');
+        t.eq(div.style.top, '6px', '[a1] style.top as expected');
+        t.eq(control.position.x, 3 , '[a1] control position x as expected');
+        t.eq(control.position.y, 6 , '[a1] control position y as expected');
+
+        // case [b]
+        control = new OpenLayers.Control();
+        control.div = null;
+        control.allowSelection = true;
+        control.title = '';
+        control.position = new OpenLayers.Pixel(5, 8);
+
+        div = control.draw();
+        t.ok(OpenLayers.Util.isElement(div), '[b0] draw returns a DOM element');
+        t.eq(div.style.left, '5px', '[b0] style.left as expected');
+        t.eq(div.style.top, '8px', '[b0] style.top as expected');
+
+        div = control.draw(new OpenLayers.Pixel(3, 6));
+        t.eq(div.style.left, '3px', '[b1] style.left as expected');
+        t.eq(div.style.top, '6px', '[b1] style.top as expected');
+        t.eq(control.position.x, 3 , '[b1] control position x as expected');
+        t.eq(control.position.y, 6 , '[b1] control position y as expected');
+
+        // case [c]
+        control = new OpenLayers.Control();
+        control.div = null;
+        control.allowSelection = false;
+        control.title = 'title';
+        control.position = null;
+
+        div = control.draw();
+        t.ok(OpenLayers.Util.isElement(div), '[c0] draw returns a DOM element');
+        t.eq(div.className, 'olControl olControlNoSelect',
+             '[c0] className as expected');
+        t.eq(div.getAttribute('unselectable'), 'on',
+             '[c0] unselectable attribute as expected');
+        t.eq(div.title, 'title', '[c0] title as expected');
+
+        // case [d]
+        control = new OpenLayers.Control();
+        control.div = document.createElement('div');
+        control.position = null;
+
+        div = control.draw(new OpenLayers.Pixel(3, 6));
+        t.ok(OpenLayers.Util.isElement(div), '[d0] draw returns a DOM element');
+        t.ok(control.div === div, '[d0] returned div is div set in control');
+        t.eq(div.style.left, '3px', '[d0] style.left as expected');
+        t.eq(div.style.top, '6px', '[d0] style.top as expected');
+        t.eq(control.position.x, 3 , '[d0] control position x as expected');
+        t.eq(control.position.y, 6 , '[d0] control position y as expected');
+    }
+
   </script>
 </head>
 <body>
