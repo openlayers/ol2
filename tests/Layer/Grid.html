@@ -24,8 +24,8 @@
      */
 
 
-    function test_Layer_Grid_constructor (t) {
-        t.plan( 6 );
+    function test_constructor (t) {
+        t.plan( 8 );
                        
         layer = new OpenLayers.Layer.Grid(name, url, params, null);
         t.ok( layer instanceof OpenLayers.Layer.Grid, "returns OpenLayers.Layer.Grid object" );
@@ -33,6 +33,8 @@
         t.eq( layer.ratio, 1.5, "ratio default is 1.5");
         t.eq( layer.numLoadingTiles, 0, "numLoadingTiles starts at 0");
         t.ok( layer.tileClass === OpenLayers.Tile.Image, "tileClass default is OpenLayers.Tile.Image");
+        t.eq( layer.className, 'olLayerGrid', "className default is olLayerGrid");
+        t.eq( layer.removeBackBufferDelay, 2500, "removeBackBufferDelay default is 2500");
 
         var obj = {};
         var func = function() {};
@@ -41,6 +43,32 @@
         t.ok( layer.events.listeners['tileloaded'].length == 1, "one listener for tileloaded after register");        
     }
 
+    function test_constructor_singleTile(t) {
+        t.plan(2);
+        layer = new OpenLayers.Layer.Grid(name, url, params, {singleTile: true});
+        t.eq( layer.className, 'olLayerGridSingleTile', "className default is olLayerGridSingleTile");
+        t.eq( layer.removeBackBufferDelay, 0, "removeBackBufferDelay default is 0");
+    }
+
+    function test_setMap(t) {
+        t.plan(1);
+        var map = new OpenLayers.Map('map');
+        layer = new OpenLayers.Layer.Grid(name, url, params, null);
+        map.addLayer(layer);
+        t.ok(OpenLayers.Element.hasClass(layer.div, "olLayerGrid"),
+             "olLayerGrid class assigned to layer div");
+        map.destroy();
+    }
+
+    function test_setMap_singleTile(t) {
+        t.plan(1);
+        var map = new OpenLayers.Map('map');
+        layer = new OpenLayers.Layer.Grid(name, url, params, {singleTile: true});
+        map.addLayer(layer);
+        t.ok(OpenLayers.Element.hasClass(layer.div, "olLayerGridSingleTile"),
+             "olLayerGridSingleTile class assigned to layer div");
+        map.destroy();
+    }
 
     function test_Layer_Grid_inittiles (t) {
         t.plan( 2 );
@@ -809,12 +837,12 @@
         layer.serverResolutions = [2, 1];
         resolution = 1;
         zoom = layer.getServerZoom();
-        t.eq(zoom, 3, '[3] getServerZoom return value is correct');
+        t.eq(zoom, 1, '[3] getServerZoom return value is correct');
 
         layer.serverResolutions = [2];
         resolution = 0.5;
         zoom = layer.getServerZoom();
-        t.eq(zoom, 2, '[4] getServerZoom return value is correct');
+        t.eq(zoom, 0, '[4] getServerZoom return value is correct');
 
         var exc;
         layer.serverResolutions = [0.5];
@@ -1203,17 +1231,17 @@
         var layer = new OpenLayers.Layer.WMS('', '', {}, {
             isBaseLayer: true,
             singleTile: true,
-            ratio: 1
+            ratio: 1.1
         });
         map.addLayer(layer);
         map.setCenter(new OpenLayers.LonLat(0, 0), 0);
 
         // move
-        map.setCenter(new OpenLayers.LonLat(10, 10));
+        map.setCenter(new OpenLayers.LonLat(50, 50));
         t.ok(layer.backBuffer && layer.backBuffer.parentNode === layer.div,
                 'backbuffer inserted after map move');
-        t.eq(layer.backBuffer.style.left, '121%');
-        t.eq(layer.backBuffer.style.top, '211%');
+        t.eq(layer.backBuffer.style.left, '-25%');
+        t.eq(layer.backBuffer.style.top, '-28%');
         // zoom
         map.zoomTo(1);
         t.eq(layer.backBuffer, null,
@@ -1334,7 +1362,7 @@
         t.plan(5);
 
         // set up
-
+        
         var map = new OpenLayers.Map('map', {
             resolutions: [32, 16, 8, 4, 2, 1]
         });
@@ -1347,28 +1375,28 @@
 
         map.zoomTo(1);
 
-        t.delay_call(1, function() {
+        // Mark one tile loaded, to see if back buffer removal gets scheduled.
+        layer.grid[1][1].onImageLoad();
 
-            t.ok(layer.backBuffer.parentNode === layer.div,
-                 '[a] back buffer is a child of layer div');
-            t.ok(layer.backBufferTimerId !== null,
-                 '[a] back buffer scheduled for removal');
+        t.ok(layer.backBuffer.parentNode === layer.div,
+             '[a] back buffer is a child of layer div');
+        t.ok(layer.backBufferTimerId !== null,
+             '[a] back buffer scheduled for removal');
 
-            var backBuffer = layer.backBuffer;
+        var backBuffer = layer.backBuffer;
 
-            map.zoomTo(2);
+        map.zoomTo(2);
 
-            t.ok(layer.backBuffer !== backBuffer,
-                 '[b] a new back buffer was created');
-            t.ok(layer.backBuffer.parentNode === layer.div,
-                 '[b] back buffer is a child of layer div');
-            t.ok(layer.backBufferTimerId === null,
-                 '[b] back buffer no longer scheduled for removal');
+        t.ok(layer.backBuffer !== backBuffer,
+             '[b] a new back buffer was created');
+        t.ok(layer.backBuffer.parentNode === layer.div,
+             '[b] back buffer is a child of layer div');
+        t.ok(layer.backBufferTimerId === null,
+             '[b] back buffer no longer scheduled for removal');
 
-            // tear down
+        // tear down
 
-            map.destroy();
-        });
+        map.destroy();
     }
     
     function test_getGridData(t) {
@@ -1494,6 +1522,70 @@
         
         map.destroy();
         
+    }
+
+    function test_removeExcessTiles(t) {
+        t.plan(15);
+
+        /*
+         * Set up
+         */
+
+        var map = new OpenLayers.Map('map');
+        var layer = new OpenLayers.Layer.Grid('name', '/url',
+                                              {}, {isBaseLayer: true});
+        map.addLayer(layer);
+
+        function newTile(id) {
+            var t = new OpenLayers.Tile(layer,
+                        new OpenLayers.Pixel(1, 1),
+                        new OpenLayers.Bounds(1, 1, 1, 1));
+            t._id = id;
+            return t;
+        }
+
+        layer.grid = [
+            [newTile(1), newTile(2), newTile(3)],
+            [newTile(4), newTile(5)],
+            [newTile(6), newTile(7), newTile(8)]
+        ];
+
+        // create a clone to be able to test whether
+        // tiles have been destroyed or not
+        var grid = [
+            layer.grid[0].slice(),
+            layer.grid[1].slice(),
+            layer.grid[2].slice()
+        ];
+
+        /*
+         * Test
+         */
+
+        layer.removeExcessTiles(2, 2);
+
+        t.eq(layer.grid.length, 2, 'grid has two rows');
+        t.eq(layer.grid[0].length, 2, 'row #1 has two columns');
+        t.eq(layer.grid[0][0]._id, 1, 'row #1 col #1 includes expected tile');
+        t.eq(layer.grid[0][1]._id, 2, 'row #1 col #2 includes expected tile');
+        t.eq(layer.grid[1].length, 2, 'row #2 has two columns');
+        t.eq(layer.grid[1][0]._id, 4, 'row #2 col #1 includes expected tile');
+        t.eq(layer.grid[1][1]._id, 5, 'row #2 col #2 includes expected tile');
+
+        t.ok(grid[0][0].events != null, 'tile 0,0 not destroyed');
+        t.ok(grid[0][1].events != null, 'tile 0,1 not destroyed');
+        t.ok(grid[0][2].events == null, 'tile 0,2 destroyed');
+        t.ok(grid[1][0].events != null, 'tile 1,0 not destroyed');
+        t.ok(grid[1][1].events != null, 'tile 1,1 not destroyed');
+        t.ok(grid[2][0].events == null, 'tile 2,0 destroyed');
+        t.ok(grid[2][1].events == null, 'tile 2,1 destroyed');
+        t.ok(grid[2][2].events == null, 'tile 2,2 destroyed');
+
+        /*
+         * Tear down
+         */
+
+        map.destroy();
     }
     
   </script>
