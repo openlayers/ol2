@@ -8,7 +8,13 @@
     var test_style_fill = '<kml xmlns="http://earth.google.com/kml/2.0"> <Placemark>    <Style> <PolyStyle> <fill>1</fill> <color>870000ff</color> <width>10</width> </PolyStyle> </Style>  <LineString> <coordinates> -112,36 -113,37 </coordinates> </LineString> </Placemark><Placemark>    <Style> <PolyStyle> <fill>0</fill> <color>870000ff</color> <width>10</width> </PolyStyle> </Style>  <LineString> <coordinates> -112,36 -113,37 </coordinates> </LineString> </Placemark></kml>';
     var test_style_outline = '<kml xmlns="http://earth.google.com/kml/2.0"> <Placemark>    <Style> <PolyStyle> <outline>0</outline> <color>870000ff</color> <width>10</width> </PolyStyle> </Style>  <LineString> <coordinates> -112,36 -113,37 </coordinates> </LineString> </Placemark></kml>';
     var test_style_font = '<kml xmlns="http://earth.google.com/kml/2.0"> <Placemark><Style><LabelStyle><color>870000ff</color><scale>1.5</scale></LabelStyle></Style><LineString><coordinates> -112,36 -113,37 </coordinates></LineString></Placemark></kml>';
-    var test_nl = '<kml xmlns="http://earth.google.com/kml/2.2"> <Document> <NetworkLink> <Link> <href>http://maker.geocommons.com/maps/1717/overlays/0</href> </Link> </NetworkLink> </Document></kml>';
+    var test_nl = '<kml xmlns="http://earth.google.com/kml/2.2"> '+
+                  '<Document> <Name>name of the document</Name><visibility>1</visibility><open>1</open>'+
+                  '<address>Stree 5, 111111 State</address>'+
+                  '<phoneNumber>+555 555 555</phoneNumber>'+
+                  '<phoneNumber>+555 555 555</phoneNumber>'+
+                  '<description>some description</description>'+
+                  '<NetworkLink> <Link> <href>http://maker.geocommons.com/maps/1717/overlays/0</href> </Link> </NetworkLink> </Document></kml>';
     function test_Format_KML_constructor(t) { 
         t.plan(5); 
          
