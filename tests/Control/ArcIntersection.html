@@ -1,0 +1,229 @@
+<html>
+<head>
+    <script src="../OLLoader.js"></script>
+    <script type="text/javascript">
+
+    function setup_test() {
+        var map = new OpenLayers.Map("map");
+        var layer = new OpenLayers.Layer.Vector();
+        map.addLayer(layer);
+        var control = new OpenLayers.Control.ArcIntersection(layer);
+        map.addControl(control);
+
+        return {
+            map: map,
+            layer: layer,
+            control: control
+        }
+    }
+
+    function test_Control_ArcIntersection_initialize(t) {
+        t.plan(2);
+        var test = setup_test();
+
+        t.ok(test.control instanceof OpenLayers.Control.ArcIntersection,
+             "constructor returns an instance");
+        t.ok(test.control.layer == test.layer,
+             "constructor sets layer correctly");
+    }
+
+    function test_Control_ArcIntersection_destroy(t) {
+        t.plan(2);
+        var test = setup_test();
+
+        test.control.handlers.setCenter.deactivate = function() {
+            t.ok(true,
+                 "control.deactivate calls deactivate on setCenter handler");
+            return true;
+        }
+        test.control.handlers.intersectionFeature.deactivate = function() {
+            t.ok(true,
+                 "control.deactivate calls deactivate on intersectionFeature handler");
+            return true;
+        }
+
+        test.control.destroy();
+        test.map.destroy();
+    }
+
+    function test_Control_ArcIntersection_activate(t) {
+        t.plan(4);
+        var test = setup_test();
+
+        t.ok(!test.control.handlers.setCenter.active,
+             "setCenter handler is not active prior to activating control");
+        t.ok(!test.control.handlers.intersectionFeature.active,
+             "intersectionFeature handler is not active prior to activating control");
+
+        test.control.activate();
+
+        t.ok(test.control.handlers.setCenter.active,
+             "setCenter handler is active after activating control");
+        t.ok(test.control.handlers.intersectionFeature.active,
+             "intersectionFeature handler is active after activating control");
+    }
+
+    function test_Control_ArcIntersection_deactivate(t) {
+        t.plan(4);
+        var test = setup_test();
+        test.control.activate();
+        test.control.setCenter(new OpenLayers.Geometry.Point(0, 0));
+        test.control.setRadius(0, 1);
+        test.control.setCenter(new OpenLayers.Geometry.Point(1, 0));
+        test.control.setRadius(1, 1);
+
+        test.control.handlers.setCenter.deactivate = function() {
+            t.ok(true,
+                 "control.deactivate calls deactivate on setCenter handler");
+            return true;
+        }
+        test.control.handlers.intersectionFeature.deactivate = function() {
+            t.ok(true,
+                 "control.deactivate calls deactivate on intersectionFeature handler");
+            return true;
+        }
+
+        test.control.deactivate();
+
+        t.eq(test.control.virtualFeatures.length, 0, "virtualFeatures are removed on deactivate");
+        var centersCleared = true;
+        for (var i=0; i<test.control.circles.length; i++) {
+            centersCleared &= (test.control.circles[i].center == null);
+        }
+        t.ok(centersCleared, "circle centers are reset on deactivate")
+    }
+
+    function test_Control_ArcIntersection_setCenter(t) {
+        t.plan(10);
+        var test = setup_test();
+
+        t.eq(test.control.circles[0].center, null, "first circle center undefined before setCenter");
+        t.eq(test.control.circles[1].center, null, "second circle center undefined before setCenter");
+
+        test.control.activate();
+        var center0 = new OpenLayers.Geometry.Point(0, 0);
+        test.control.setCenter(center0);
+
+        t.eq(test.control.circles[0].center, center0, "first circle center updated after first setCenter");
+        t.eq(test.control.circles[1].center, null, "second circle center undefined after first setCenter");
+
+        var center1 = new OpenLayers.Geometry.Point(1, 0);
+        test.control.setCenter(center1);
+
+        t.eq(test.control.circles[0].center, center0, "first circle center unchanged after second setCenter");
+        t.eq(test.control.circles[1].center, center1, "second circle center updated after second setCenter");
+
+        var center2 = new OpenLayers.Geometry.Point(2, 0);
+        test.control.setCenter(center2);
+
+        t.eq(test.control.circles[0].center, center2, "first circle center updated after third setCenter");
+        t.eq(test.control.circles[1].center, center1, "second circle center unchanged after third setCenter");
+
+        var center3 = new OpenLayers.Geometry.Point(3, 0);
+        test.control.setCenter(center3);
+
+        t.eq(test.control.circles[0].center, center2, "first circle center unchanged after fourth setCenter");
+        t.eq(test.control.circles[1].center, center3, "second circle center updated after fourth setCenter");
+    }
+
+    function test_Control_ArcIntersection_setRadius(t) {
+        t.plan(8);
+        var test = setup_test();
+
+        t.eq(test.control.circles[0].radius, null, "first circle radius undefined before setRadius");
+        t.eq(test.control.circles[1].radius, null, "second circle radius undefined before setRadius");
+
+        test.control.activate();
+        var radius0 = 1;
+        test.control.setRadius(0, radius0);
+
+        t.eq(test.control.circles[0].radius, radius0, "first circle radius updated after setRadius on circleIndex 0");
+        t.eq(test.control.circles[1].radius, null, "second circle radius undefined after setRadius on circleIndex 0");
+
+        var radius1 = 2;
+        test.control.setRadius(1, radius1);
+
+        t.eq(test.control.circles[0].radius, radius0, "first circle radius unchanged after setRadius on circleIndex 1");
+        t.eq(test.control.circles[1].radius, radius1, "second circle radius updated after setRadius on circleIndex 1");
+
+        test.control.setRadius(2, 10);
+
+        t.eq(test.control.circles[0].radius, radius0, "first circle radius unchanged after setRadius on invalid circleIndex");
+        t.eq(test.control.circles[1].radius, radius1, "second circle radius unchanged after setRadius on invalid circleIndex");
+    }
+
+    function test_Control_ArcIntersection_intersection(t) {
+        t.plan(11);
+        var test = setup_test();
+
+        function getIntersections() {
+            var intersections = [];
+            for (var i = 0; i < test.control.virtualFeatures.length; i++) {
+                var feature = test.control.virtualFeatures[i];
+                if (feature._intersection) {
+                    intersections.push(feature.geometry.toString());
+                }
+            }
+            return intersections;
+        }
+
+        // intersection
+        test.control.activate();
+        test.control.setCenter(new OpenLayers.Geometry.Point(5, 10));
+        test.control.setRadius(0, 5);
+        test.control.setCenter(new OpenLayers.Geometry.Point(10, 20));
+        test.control.setRadius(1, 8);
+
+        var intersections = getIntersections();
+        t.eq(intersections.length, 2, "two intersection points found");
+        t.eq(intersections[0], "POINT(9.577691375918679 12.01115431204066)", "first intersection position correct")
+        t.eq(intersections[1], "POINT(3.8623086240813196 14.86884568795934)", "second intersection position correct")
+
+        // no intersection
+        test.control.setCenter(new OpenLayers.Geometry.Point(0, 0));
+        test.control.setRadius(0, 1);
+        test.control.setCenter(new OpenLayers.Geometry.Point(5, 0));
+        test.control.setRadius(1, 1);
+
+        intersections = getIntersections();
+        t.eq(intersections.length, 0, "no intersection points found");
+
+        // no intersection (circle inside circle)
+        test.control.setCenter(new OpenLayers.Geometry.Point(0, 0));
+        test.control.setRadius(0, 4);
+        test.control.setCenter(new OpenLayers.Geometry.Point(1, 0));
+        test.control.setRadius(1, 2);
+
+        intersections = getIntersections();
+        t.eq(intersections.length, 0, "no intersection points found (circle inside circle)");
+
+        // single intersection (circles touching outside)
+        test.control.setCenter(new OpenLayers.Geometry.Point(0, 0));
+        test.control.setRadius(0, 3);
+        test.control.setCenter(new OpenLayers.Geometry.Point(0, 5));
+        test.control.setRadius(1, 2);
+
+        intersections = getIntersections();
+        t.eq(intersections.length, 2, "intersection points found (circles touching outside)");
+        t.eq(intersections[0], intersections[1], "intersection points identical (circles touching outside)");
+        t.eq(intersections[0], "POINT(0 3)", "intersection points identical (circles touching outside)");
+
+        // single intersection (circles touching inside)
+        test.control.setCenter(new OpenLayers.Geometry.Point(0, 0));
+        test.control.setRadius(0, 3);
+        test.control.setCenter(new OpenLayers.Geometry.Point(1, 0));
+        test.control.setRadius(1, 2);
+
+        intersections = getIntersections();
+        t.eq(intersections.length, 2, "intersection points found (circles touching inside)");
+        t.eq(intersections[0], intersections[1], "intersection points identical (circles touching inside)");
+        t.eq(intersections[0], "POINT(3 0)", "intersection points identical (circles touching inside)");
+    }
+
+    </script>
+</head>
+<body>
+    <div id="map" style="width: 400px; height: 250px;"/>
+</body>
+</html>
+
