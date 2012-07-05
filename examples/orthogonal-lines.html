@@ -28,6 +28,10 @@
                 name="abscissa" value="15" onchange="update()" /> distance along line<br/>
             ordinate: <input id="ordinate" type="text" size="2" maxlength="4"
                 name="ordinate" value="10" onchange="update()" /> distance perpendicular to line
+            <p/>
+            <input id="snapping" type="checkbox"
+                name="snapping" onchange="toggleSnapping(this)" />
+            <label for="snapping">Snapping for base points</label>
         </div>
         <div id="docs">
             <p>
