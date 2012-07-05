@@ -1,0 +1,211 @@
+<html>
+<head>
+    <script src="../OLLoader.js"></script>
+    <script type="text/javascript">
+
+    function setup_test() {
+        var map = new OpenLayers.Map("map");
+        var layer = new OpenLayers.Layer.Vector();
+        map.addLayer(layer);
+        var control = new OpenLayers.Control.OrthogonalLines(layer);
+        map.addControl(control);
+
+        return {
+            map: map,
+            layer: layer,
+            control: control
+        }
+    }
+
+    function test_Control_OrthogonalLines_initialize(t) {
+        t.plan(2);
+        var test = setup_test();
+
+        t.ok(test.control instanceof OpenLayers.Control.OrthogonalLines,
+             "constructor returns an instance");
+        t.ok(test.control.layer == test.layer,
+             "constructor sets layer correctly");
+    }
+
+    function test_Control_OrthogonalLines_destroy(t) {
+        t.plan(2);
+        var test = setup_test();
+
+        test.control.handlers.setBasePoint.deactivate = function() {
+            t.ok(true,
+                 "control.deactivate calls deactivate on setBasePoint handler");
+            return true;
+        }
+        test.control.handlers.orthogonalLinesFeature.deactivate = function() {
+            t.ok(true,
+                 "control.deactivate calls deactivate on orthogonalLinesFeature handler");
+            return true;
+        }
+
+        test.control.destroy();
+        test.map.destroy();
+    }
+
+    function test_Control_OrthogonalLines_activate(t) {
+        t.plan(4);
+        var test = setup_test();
+
+        t.ok(!test.control.handlers.setBasePoint.active,
+             "setBasePoint handler is not active prior to activating control");
+        t.ok(!test.control.handlers.orthogonalLinesFeature.active,
+             "orthogonalLinesFeature handler is not active prior to activating control");
+
+        test.control.activate();
+
+        t.ok(test.control.handlers.setBasePoint.active,
+             "setBasePoint handler is active after activating control");
+        t.ok(test.control.handlers.orthogonalLinesFeature.active,
+             "orthogonalLinesFeature handler is active after activating control");
+    }
+
+    function test_Control_OrthogonalLines_deactivate(t) {
+        t.plan(4);
+        var test = setup_test();
+        test.control.activate();
+        test.control.setBasePoint(new OpenLayers.Geometry.Point(0, 0));
+        test.control.setBasePoint(new OpenLayers.Geometry.Point(1, 0));
+        test.control.setAbscissa(1);
+        test.control.setOrdinate(1);
+
+        test.control.handlers.setBasePoint.deactivate = function() {
+            t.ok(true,
+                 "control.deactivate calls deactivate on setBasePoint handler");
+            return true;
+        }
+        test.control.handlers.orthogonalLinesFeature.deactivate = function() {
+            t.ok(true,
+                 "control.deactivate calls deactivate on orthogonalLinesFeature handler");
+            return true;
+        }
+
+        test.control.deactivate();
+
+        t.eq(test.control.virtualFeatures.length, 0, "virtualFeatures are removed on deactivate");
+        t.eq(test.control.basePoints.length, 0, "base points are reset on deactivate");
+    }
+
+    function test_Control_OrthogonalLines_setBasePoint(t) {
+        t.plan(9);
+        var test = setup_test();
+
+        t.eq(test.control.basePoints.length, 0, "no base points before setBasePoint");
+
+        test.control.activate();
+        var basePoint0 = new OpenLayers.Geometry.Point(0, 0);
+        test.control.setBasePoint(basePoint0);
+
+        t.eq(test.control.basePoints.length, 1, "one base point after first setBasePoint");
+        t.ok(test.control.basePoints[0] == basePoint0, "base point added after first setBasePoint");
+
+        var basePoint1 = new OpenLayers.Geometry.Point(1, 0);
+        test.control.setBasePoint(basePoint1);
+
+        t.eq(test.control.basePoints.length, 2, "two base points after second setBasePoint");
+        t.ok(test.control.basePoints[0] == basePoint0, "first base point unchanged after second setBasePoint");
+        t.ok(test.control.basePoints[1] == basePoint1, "second base point added after second setBasePoint");
+
+        var basePoint2 = new OpenLayers.Geometry.Point(2, 0);
+        test.control.setBasePoint(basePoint2);
+
+        t.eq(test.control.basePoints.length, 2, "two base points after third setBasePoint");
+        t.ok(test.control.basePoints[0] == basePoint1, "first base point updated after third setBasePoint");
+        t.ok(test.control.basePoints[1] == basePoint2, "second base point updated after third setBasePoint");
+    }
+
+    function test_Control_OrthogonalLines_orthogonal_lines(t) {
+        t.plan(14);
+        var test = setup_test();
+
+        function getOrthogonalLines() {
+            var orthogonalLines = [];
+            for (var i = 0; i < test.control.virtualFeatures.length; i++) {
+                var feature = test.control.virtualFeatures[i];
+                if (feature._orthogonalLines) {
+                    orthogonalLines.push(feature.geometry.toString());
+                }
+            }
+            return orthogonalLines;
+        }
+
+        // positive abscissa and ordinate
+        test.control.activate();
+        test.control.setBasePoint(new OpenLayers.Geometry.Point(10, 8));
+        test.control.setBasePoint(new OpenLayers.Geometry.Point(12, 9));
+        test.control.setAbscissa(5.2);
+        test.control.setOrdinate(3.1);
+
+        var orthogonalLines = getOrthogonalLines();
+        t.eq(orthogonalLines.length, 1, "orthogonal lines constructed (positive abscissa and ordinate)");
+        t.eq(orthogonalLines[0], "LINESTRING(10 8,14.651021393199564 10.325510696599782,13.264659247149694 13.09823498869952)",
+            "orthogonal lines geometry correct (positive abscissa and ordinate)");
+
+        // negative abscissa, positive ordinate
+        test.control.setBasePoint(new OpenLayers.Geometry.Point(1, 1));
+        test.control.setBasePoint(new OpenLayers.Geometry.Point(2, 1));
+        test.control.setAbscissa(-4);
+        test.control.setOrdinate(2);
+
+        orthogonalLines = getOrthogonalLines();
+        t.eq(orthogonalLines.length, 1, "orthogonal lines constructed (negative abscissa, positive ordinate)");
+        t.eq(orthogonalLines[0], "LINESTRING(1 1,-3 1,-3 3)", "orthogonal lines geometry correct (negative abscissa, positive ordinate)");
+
+        // positive abscissa, negative ordinate
+        test.control.setAbscissa(2);
+        test.control.setOrdinate(4);
+
+        orthogonalLines = getOrthogonalLines();
+        t.eq(orthogonalLines.length, 1, "orthogonal lines constructed (positive abscissa, negative ordinate)");
+        t.eq(orthogonalLines[0], "LINESTRING(1 1,3 1,3 5)", "orthogonal lines geometry correct (positive abscissa, negative ordinate)");
+
+        // negative abscissa and ordinate
+        test.control.setAbscissa(-1);
+        test.control.setOrdinate(-5);
+
+        orthogonalLines = getOrthogonalLines();
+        t.eq(orthogonalLines.length, 1, "orthogonal lines constructed (negative abscissa and ordinate)");
+        t.eq(orthogonalLines[0], "LINESTRING(1 1,0 1,0 -4)", "orthogonal lines geometry correct (negative abscissa and ordinate)");
+
+        // abscissa zero
+        test.control.setAbscissa(0);
+        test.control.setOrdinate(3);
+
+        orthogonalLines = getOrthogonalLines();
+        t.eq(orthogonalLines.length, 1, "orthogonal lines constructed (abscissa zero)");
+        t.eq(orthogonalLines[0], "LINESTRING(1 1,1 4)", "orthogonal lines geometry correct (abscissa zero)");
+
+        // ordinate zero
+        test.control.setAbscissa(5);
+        test.control.setOrdinate(0);
+
+        orthogonalLines = getOrthogonalLines();
+        t.eq(orthogonalLines.length, 1, "orthogonal lines constructed (ordinate zero)");
+        t.eq(orthogonalLines[0], "LINESTRING(1 1,6 1)", "orthogonal lines geometry correct (ordinate zero)");
+
+        // abscissa and ordinate both zero
+        test.control.setAbscissa(0);
+        test.control.setOrdinate(0);
+
+        orthogonalLines = getOrthogonalLines();
+        t.eq(orthogonalLines.length, 0, "no orthogonal lines (abscissa and ordinate both zero)");
+
+        // base points identical
+        test.control.setBasePoint(new OpenLayers.Geometry.Point(2, 3));
+        test.control.setBasePoint(new OpenLayers.Geometry.Point(2, 3));
+        test.control.setAbscissa(1);
+        test.control.setOrdinate(2);
+
+        orthogonalLines = getOrthogonalLines();
+        t.eq(orthogonalLines.length, 0, "no orthogonal lines (base points identical)");
+    }
+
+    </script>
+</head>
+<body>
+    <div id="map" style="width: 400px; height: 250px;"/>
+</body>
+</html>
