@@ -176,8 +176,8 @@
 
         var intersections = getIntersections();
         t.eq(intersections.length, 2, "two intersection points found");
-        t.eq(intersections[0], "POINT(9.577691375918679 12.01115431204066)", "first intersection position correct")
-        t.eq(intersections[1], "POINT(3.8623086240813196 14.86884568795934)", "second intersection position correct")
+        t.eq(intersections[0], "POINT(9.577691375918679 12.01115431204066)", "first intersection position correct");
+        t.eq(intersections[1], "POINT(3.8623086240813196 14.86884568795934)", "second intersection position correct");
 
         // no intersection
         test.control.setCenter(new OpenLayers.Geometry.Point(0, 0));
@@ -226,4 +226,3 @@
     <div id="map" style="width: 400px; height: 250px;"/>
 </body>
 </html>
-
