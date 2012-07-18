@@ -272,6 +272,48 @@
              "OpenLayers.Layer.Vector.getFeaturesByAttribute found the correct featuren that has a certain attribute not set");
     }
 
+    function test_Layer_Vector_getFeaturesBy(t) {
+        t.plan(4);
+        var layer = new OpenLayers.Layer.Vector(name);
+
+        // feature_1
+        var geometry_1 = new OpenLayers.Geometry.Point(-28.63, 153.64);
+        var attributes_1 = {
+            miles: {"value": 10, "displayName": "miles"}
+        };
+        var feature_1 = new OpenLayers.Feature.Vector(geometry_1, attributes_1);
+        
+        // feature_2
+        var geometry_2 = new OpenLayers.Geometry.Point(-27.48, 153.05);
+        var attributes_2 = {
+            miles: {"value": "10"}
+        };
+        var feature_2 = new OpenLayers.Feature.Vector(geometry_2, attributes_2);
+
+        // feature_3
+        var geometry_3 = new OpenLayers.Geometry.Point(-33.74, 150.3);
+        var attributes_3 = {
+            miles: {"value": "10", "displayName": "miles"}
+        };
+        var feature_3 = new OpenLayers.Feature.Vector(geometry_3, attributes_3);
+
+        t.ok(layer.getFeaturesBy('attributes.miles.value', 10).length === 0,
+             "OpenLayers.Layer.Vector.getFeaturesBy returns an empty array while the layer is empty");
+
+        layer.addFeatures([feature_1, feature_2, feature_3]);
+
+        var strOneResults = layer.getFeaturesBy('attributes.miles.value', "10");
+        var numOneResults = layer.getFeaturesBy('attributes.miles.value', 10);
+        var notSetResults = layer.getFeaturesBy('attributes.miles.displayName', undefined);
+
+        t.ok(strOneResults.length === 2,
+             "OpenLayers.Layer.Vector.getFeaturesBy returns an array with two features for attribute 'attributes.miles.value' with value '10' (a string)");
+        t.ok(numOneResults.length === 1,
+             "OpenLayers.Layer.Vector.getFeaturesBy returns an array with one feature for attribute 'attributes.miles.value' with value 10 (a number)");
+        t.ok(notSetResults.length === 1,
+             "OpenLayers.Layer.Vector.getFeaturesBy can be used to find features that have certain attributes not set");
+    }
+
     function test_Layer_Vector_getDataExtent(t) {
         t.plan(1);
         var layer = new OpenLayers.Layer.Vector(name);
