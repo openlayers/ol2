@@ -57,16 +57,39 @@
         map.destroy();     
     }
     function test_formatOutput(t) {
-        t.plan(1);
+        t.plan(4);
         var control = new OpenLayers.Control.MousePosition({
             prefix: 'prefix',
             suffix: 'suffix',
             separator: 'separator',
-            numDigits: 3
+            numDigits: 3,
+            showProjection: true
         });
         var lonlat = new OpenLayers.LonLat(0.75699, 0.37365);
+        var projection = new OpenLayers.Projection("EPSG:4326");
+        var map = new OpenLayers.Map('map', {displayProjection: projection});
+        map.addControl(control);
         var val = control.formatOutput(lonlat);
-        t.eq(val, 'prefix0.757separator0.374suffix', 'formatOutput correctly formats the mouse position output');
+        t.eq(val, 'EPSG:4326separatorprefix0.757separator0.374suffix', 'formatOutput correctly formats the mouse position output with map displayProjection');
+        projection = new OpenLayers.Projection("EPSG:3857");
+        control.displayProjection = projection;
+		val = control.formatOutput(lonlat);
+        t.eq(val, 'EPSG:3857separatorprefix0.757separator0.374suffix', 'formatOutput correctly formats the mouse position output with control displayProjection');
+        control.displayProjection = null;
+        projection = new OpenLayers.Projection("EPSG:900913");
+        map = new OpenLayers.Map('map');
+        var layer = new OpenLayers.Layer('test-layer', {
+        	isBaseLayer: true,
+        	projection: projection
+        })
+        map.addLayer(layer);
+        map.addControl(control);
+        val = control.formatOutput(lonlat);
+        t.eq(val, 'EPSG:900913separatorprefix0.757separator0.374suffix', 'formatOutput correctly formats the mouse position output with map projection');       
+        control.showProjection = false;
+        val = control.formatOutput(lonlat);
+        t.eq(val, 'prefix0.757separator0.374suffix', 'formatOutput correctly formats the mouse position output without showProjection');
+
     }
     function test_deactivate(t) {
         t.plan(4);         
