@@ -1731,11 +1731,58 @@ OpenLayers.Map = OpenLayers.Class({
      * dy - {Number}
      */
     moveByPx: function(dx, dy) {
+<<<<<<< HEAD
+        var hw = this.size.w / 2;
+        var hh = this.size.h / 2;
+        var x = hw + dx;
+        var y = hh + dy;
+        var wrapDateLine = this.baseLayer.wrapDateLine;
+        var xRestriction = 0;
+        var yRestriction = 0;
+        if (this.restrictedExtent) {
+            xRestriction = hw;
+            yRestriction = hh;
+            // wrapping the date line makes no sense for restricted extents
+            wrapDateLine = false;
+        }
+        dx = wrapDateLine ||
+                    x <= this.maxPx.x - xRestriction &&
+                    x >= this.minPx.x + xRestriction ? Math.round(dx) : 0;
+        dy = y <= this.maxPx.y - yRestriction &&
+                    y >= this.minPx.y + yRestriction ? Math.round(dy) : 0;
+        if (dx || dy) {
+            if (!this.dragging) {
+                this.dragging = true;
+                this.events.triggerEvent("movestart");
+            }
+            this.center = null;
+            if (dx) {
+                this.layerContainerDiv.style.left =
+                    (this.layerContainerOriginPx.x -= dx) + "px";
+                this.minPx.x -= dx;
+                this.maxPx.x -= dx;
+            }
+            if (dy) {
+                this.layerContainerDiv.style.top =
+                    (this.layerContainerOriginPx.y -= dy) + "px";
+                this.minPx.y -= dy;
+                this.maxPx.y -= dy;
+            }
+            var layer, i, len;
+            for (i=0, len=this.layers.length; i<len; ++i) {
+                layer = this.layers[i];
+                if (layer.visibility &&
+                    (layer === this.baseLayer || layer.inRange)) {
+                    layer.moveByPx(dx, dy);
+                    layer.events.triggerEvent("move");
+=======
         var me = this;
         if ('_animationDx' in me) {
             me._animationDx += dx;
             me._animationDy += dy;
+            console.log('accumulating delta')
         } else {
+            console.log('fresh draw')
             me._animationDx = dx;
             me._animationDy = dy;
             OpenLayers.Animation.requestFrame(function() {    
@@ -1755,6 +1802,7 @@ OpenLayers.Map = OpenLayers.Class({
                     yRestriction = hh;
                     // wrapping the date line makes no sense for restricted extents
                     wrapDateLine = false;
+>>>>>>> Accumulate drag deltas and use animation frames to draw.
                 }
                 dx = wrapDateLine ||
                             x <= me.maxPx.x - xRestriction &&
@@ -1769,13 +1817,13 @@ OpenLayers.Map = OpenLayers.Class({
                     me.center = null;
                     if (dx) {
                         me.layerContainerDiv.style.left =
-                            (me.layerContainerOriginPx.x -= dx) + "px";
+                            parseInt(me.layerContainerDiv.style.left) - dx + "px";
                         me.minPx.x -= dx;
                         me.maxPx.x -= dx;
                     }
                     if (dy) {
                         me.layerContainerDiv.style.top =
-                            (me.layerContainerOriginPx.y -= dy) + "px";
+                            parseInt(me.layerContainerDiv.style.top) - dy + "px";
                         me.minPx.y -= dy;
                         me.maxPx.y -= dy;
                     }
@@ -1783,7 +1831,7 @@ OpenLayers.Map = OpenLayers.Class({
                     for (i=0, len=me.layers.length; i<len; ++i) {
                         layer = me.layers[i];
                         if (layer.visibility &&
-                           (layer === me.baseLayer || layer.inRange)) {
+                            (layer === me.baseLayer || layer.inRange)) {
                             layer.moveByPx(dx, dy);
                             layer.events.triggerEvent("move");
                         }

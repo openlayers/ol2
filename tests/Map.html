@@ -1937,6 +1937,8 @@
 
     function test_moveByPx(t) {
         t.plan(16);
+        var origRequestFrame = OpenLayers.Animation.requestFrame;
+        OpenLayers.Animation.requestFrame = function(fn) { fn(); }
 
         var moved;
         var Layer = OpenLayers.Class(OpenLayers.Layer, {
@@ -2008,6 +2010,7 @@
 
 
         map.destroy();
+        OpenLayers.Animation.requestFrame = origRequestFrame;
     }
 
     // test for http://trac.osgeo.org/openlayers/ticket/3388
@@ -2025,8 +2028,11 @@
         map.zoomToExtent(new OpenLayers.Bounds(-11.25, 0, 11.25, 11.25));
 
         map.moveByPx(-10, -10);
-        t.eq(map.layerContainerDiv.style.left, '10px', 'layer container left correct');
-        t.eq(map.layerContainerDiv.style.top, '0px', 'layer container top correct');
+        
+        t.delay_call(0.1, function() {
+            t.eq(map.layerContainerDiv.style.left, '10px', 'layer container left correct');
+            t.eq(map.layerContainerDiv.style.top, '0px', 'layer container top correct');
+        });
     }
 
     function test_options(t) {
