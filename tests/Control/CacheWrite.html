@@ -31,17 +31,19 @@
     }
     
     function test_cache_clearCache(t) {
-
+        
+        var cacheControl = new OpenLayers.Control.Cache.LocalStorage();
+        
         if (!window.localStorage) {
             t.plan(2);
             var scope = {active: true};
             t.eq(OpenLayers.Control.CacheWrite.prototype.cache.call(scope), undefined, "no tiles cached when localStorage is not supported.");
-            t.ok(!OpenLayers.Control.CacheWrite.clearCache(), "clearCache does nothing when localStorage is not supported.");
+            t.ok(!OpenLayers.Control.CacheWrite.clearCache(cacheControl), "clearCache does nothing when localStorage is not supported.");
             return;
         }
 
         t.plan(3);
-        OpenLayers.Control.CacheWrite.clearCache();
+        OpenLayers.Control.CacheWrite.clearCache(cacheControl);
         var length = window.localStorage.length;
         
         var tiles = 0;
@@ -52,7 +54,7 @@
                 }
             }
         });
-        var control = new OpenLayers.Control.CacheWrite({autoActivate: true});
+        var control = new OpenLayers.Control.CacheWrite({autoActivate: true, cacheControl: cacheControl});
         var map = new OpenLayers.Map({
             div: "map",
             projection: "EPSG:900913",
@@ -71,7 +73,7 @@
             
             var key = Math.random();
             window.localStorage.setItem(key, "bar");
-            OpenLayers.Control.CacheWrite.clearCache();
+            OpenLayers.Control.CacheWrite.clearCache(cacheControl);
             t.eq(window.localStorage.length, length + 1, "cache cleared, but foreign entries left in localStorage");
             window.localStorage.removeItem(key);
             
