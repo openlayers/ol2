@@ -19,30 +19,48 @@ function init() {
         center: [0, 0],
         zoom: 1
     });
+    
+    var cacheMap = {
+        "Local Storage": new OpenLayers.Control.Cache.LocalStorage(),
+        "Session Storage": new OpenLayers.Control.Cache.SessionStorage(),
+        "IndexDB": new OpenLayers.Control.Cache.IndexDB(),
+        "WebSQL": new OpenLayers.Control.Cache.WebSQL()
+    };
+    
     cacheWrite = new OpenLayers.Control.CacheWrite({
         autoActivate: true,
         imageFormat: "image/jpeg",
+        cacheControl: cacheMap["Local Storage"],
         eventListeners: {
             cachefull: function() { status.innerHTML = "Cache full."; }
         }
     });
     map.addControl(cacheWrite);
 
-
+    
 
     // User interface
     var status = document.getElementById("status");
     document.getElementById("clear").onclick = function() {
-        OpenLayers.Control.CacheWrite.clearCache();
+        cacheWrite.clearCache();
         updateStatus();
     };
 
     // update the number of cached tiles and detect local storage support
     function updateStatus() {
-        if (window.localStorage) {
-            status.innerHTML = localStorage.length + " entries in cache.";
+        if (cacheWrite.cacheControl.isAvailable()) {
+            cacheWrite.cacheControl.length(function(num) {
+                status.innerHTML = num + " entries in cache.";
+            });
         } else {
-            status.innerHTML = "Local storage not supported. Try a different browser.";
+            status.innerHTML = cacheWrite.cacheControl.CLASS_NAME + " not supported. Try a different browser.";
         }
     }
+    
+    var cacheType = document.getElementById("cacheType");
+    cacheType.onchange = function(e) {
+        var type = cacheType.value;
+        cacheWrite.cacheControl = cacheMap[type];
+        updateStatus();
+    };
 }
