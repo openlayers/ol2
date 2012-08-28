@@ -18,7 +18,7 @@ var Click = OpenLayers.Class(OpenLayers.Control, {
     }, 
     trigger: function(event) {
         var pixel = event.xy;
-        pixelValues = vegData.getValue(pixel.x, pixel.y);
+        pixelValues = vegData.getValue(Math.round(pixel.x), Math.round(pixel.y));
         selected.events.triggerEvent("update");
     }
 });
