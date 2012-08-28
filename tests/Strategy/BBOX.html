@@ -112,43 +112,46 @@
     
     function test_events(t) {
         
-        t.plan(3);
-        var log = {
-            loadstart: 0,
-            loadend: 0
-        };
+        t.plan(6);
+
+        var log = [];
+
+        var response = new OpenLayers.Protocol.Response();
 
         var map = new OpenLayers.Map("map");
         var layer = new OpenLayers.Layer.Vector(null, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol({
                 read: function(config) {
-                    config.callback.call(config.scope, {});
+                    config.callback.call(config.scope, response);
                 }
             }),
             isBaseLayer: true,
             eventListeners: {
-                loadstart: function() {
-                    ++log.loadstart;
+                loadstart: function(event) {
+                    log.push(event);
                 },
-                loadend: function() {
-                    ++log.loadend;
+                loadend: function(event) {
+                    log.push(event);
                 }
             }            
         });
         map.addLayer(layer);
         map.zoomToMaxExtent();
+
+        t.eq(log.length, 2, "2 events logged");
+        t.eq(log[0].type, "loadstart", "loadstart first");
+        t.eq(log[1].type, "loadend", "loadend second");
+        t.ok(log[1].response == response, "loadend includes response");
         
-        t.eq(log.loadstart, 1, "loadstart triggered");
-        t.eq(log.loadend, 1, "loadend triggered");
-        
-        log = {};
+        var calls = [];
         layer.protocol.read = function(obj) {
-            log.obj = obj;
+            calls.push(obj);
         }
         layer.refresh({force: true, whee: 'chicken'});
 
-        t.eq(log.obj && log.obj.whee, "chicken", "properties passed to read on refresh correctly.");
+        t.eq(calls.length, 1, "1 call to read");
+        t.eq(calls[0].whee, "chicken", "properties passed to read");
 
         map.destroy();
         
@@ -305,7 +308,7 @@
 
     // Test fix for Ticket #3142
     function test_layerLoadedAfterBeingAdded(t) {
-        t.plan(2);
+        t.plan(3);
 
         var dummy = new OpenLayers.Layer(null, {isBaseLayer: true});
 
@@ -341,6 +344,11 @@
         // test that the strategy bounds were set
         t.ok(map.getExtent().equals(strategy.bounds), "[set center] bounds set to map extent");
         t.eq(layerOutOfRange.strategies[0].bounds, null, "Data not requested if layer is out of range");
+
+        layerOutOfRange.setVisibility(false);
+        layerOutOfRange.setVisibility(true);
+        t.eq(layerOutOfRange.strategies[0].bounds, null, "Data not requested if layer is out of range when switching visibility");
+
         map.destroy();
     }
 
