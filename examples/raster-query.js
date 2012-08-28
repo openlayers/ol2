@@ -47,7 +47,6 @@ var map = new OpenLayers.Map({
     maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508),
     maxResolution: 156543.0339,
     controls: [
-        new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.Navigation(),
         new OpenLayers.Control.Zoom(),
         new Click()

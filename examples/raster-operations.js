@@ -89,11 +89,6 @@ var raster = new OpenLayers.Layer.Raster({
 var map = new OpenLayers.Map({
     div: "map",
     theme: null,
-    controls: [
-        new OpenLayers.Control.Attribution(),
-        new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.Zoom(),
-    ],
     layers: [
         marble, raster
     ],
