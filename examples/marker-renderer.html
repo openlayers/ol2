@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+        <title>OpenLayers Marker Renderer Example</title>
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <script src="../lib/OpenLayers.js"></script>
+        <script src="animator.js"></script>
+        <script type="text/javascript">
+        
+            var map, template;
+
+            /**
+             * A specific format for parsing Flickr API JSON responses.
+             */
+            OpenLayers.Format.Flickr = OpenLayers.Class(OpenLayers.Format, {
+                read: function(obj) {
+                    if(obj.stat === 'fail') {
+                        throw new Error(
+                            ['Flickr failure response (',
+                             obj.code,
+                             '): ',
+                             obj.message].join(''));
+                    }
+                    if(!obj || !obj.photos ||
+                       !OpenLayers.Util.isArray(obj.photos.photo)) {
+                        throw new Error(
+                            'Unexpected Flickr response');
+                    }
+                    var photos = obj.photos.photo, photo,
+                        x, y, point,
+                        feature, features = [];
+                    for(var i=0,l=photos.length; i<l; i++) {
+                        photo = photos[i];
+                        x = photo.longitude;
+                        y = photo.latitude;
+                        point = new OpenLayers.Geometry.Point(x, y);
+                        feature = new OpenLayers.Feature.Vector(point, {});
+                        features.push(feature);
+                    }
+                    return features;
+                }
+            });
+
+            function init() {
+                map = new OpenLayers.Map('map');
+                var base = new OpenLayers.Layer.OSM();
+
+                var style = new OpenLayers.Style({
+                    graphicWidth: 24,
+                    graphicHeight: 20,
+                    graphicXOffset: 10,
+                    graphicYOffset: -20,
+                    externalGraphic: "../img/marker.png"
+                });
+
+                var selectStyle = new OpenLayers.Style({
+                    graphicWidth: 24,
+                    graphicHeight: 20,
+                    graphicXOffset: 10,
+                    graphicYOffset: -20,
+                    externalGraphic: "../img/marker-green.png"
+                });
+
+                var styleMap = new OpenLayers.StyleMap({
+                    "default": style,
+                    "select": selectStyle
+                });
+
+                var photos = new OpenLayers.Layer.Vector("Photos", {
+                    projection: "EPSG:4326",
+                    strategies: [
+                        new OpenLayers.Strategy.Fixed()
+                    ],
+                    renderers: ["Marker"],
+                    protocol: new OpenLayers.Protocol.Script({
+                        url: "http://api.flickr.com/services/rest",
+                        params: {
+                            api_key: 'b5e8c0e287e678671c3d8b2c0f3ced85',
+                            format: 'json',
+                            method: 'flickr.photos.search',
+                            extras: 'geo,url_s',
+                            per_page: 150,
+                            page: 1,
+                            bbox: [-180, -90, 180, 90]
+                        },
+                        callbackKey: 'jsoncallback',
+                        format: new OpenLayers.Format.Flickr()
+                    }),
+                    styleMap: styleMap
+                });
+                
+                var select = new OpenLayers.Control.SelectFeature(photos);
+                map.addControl(select);
+                select.activate();
+                map.addLayers([base, photos]);
+                map.setCenter(new OpenLayers.LonLat(0, 0), 1);
+            }
+            
+        </script>
+    </head>
+    <body onload="init()">
+        <h1 id="title">Marker Renderer Example</h1>
+        <div id="tags">
+            vector, feature, stylemap, marker, strategy, flickr, script, renderer
+        </div>         
+        <p id="shortdesc">
+            Uses a Marker renderer to display points on a map.
+        </p>
+        <div id="map" class="smallmap"></div>
+        <div id="docs">
+            <p>The Marker renderer lets you display point geometries using an image by using an
+            OpenLayers.Layer.Vector.</p>
+            <p>This particular example uses the <a
+                href="http://www.flickr.com/services/api/">Flickr API.</a></p>
+        </div>
+    </body>
+</html>
