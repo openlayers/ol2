@@ -1,29 +1,42 @@
-var map = new OpenLayers.Map('map');
-var wms = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-    "http://vmap0.tiles.osgeo.org/wms/vmap0?", {layers: 'basic'});
+var marble = new OpenLayers.Layer.WMS(
+    "Blue Marble",
+    "http://demo.opengeo.org/geoserver/wms",
+    {layers: "topp:bluemarble", format: "image/png"}
+);
 
-var vectors = new OpenLayers.Layer.Vector("Vector Layer");
+var vector = new OpenLayers.Layer.Vector("Vector Features");
 
-var zones = OpenLayers.Raster.Composite.fromLayer(vectors, {
+var composite = OpenLayers.Raster.Composite.fromLayer(vector, {
     mapping: function(feature) {
+        // return a 4 element array based on feature
         return [255, 255, 255, 150];
     }
 });
 
-map.addLayers([wms, vectors]);
+var raster = new OpenLayers.Layer.Raster({
+    name: "Rasterized Features",
+    data: composite
+});
+
+var map = new OpenLayers.Map({
+    div: "map",
+    layers: [marble, vector, raster],
+    center: [0, 0],
+    zoom: 1
+});
+
 map.addControl(new OpenLayers.Control.LayerSwitcher());
 
 var controls = {
-    polygon: new OpenLayers.Control.DrawFeature(vectors,
+    polygon: new OpenLayers.Control.DrawFeature(vector,
                 OpenLayers.Handler.Polygon),
-    drag: new OpenLayers.Control.DragFeature(vectors)
+    drag: new OpenLayers.Control.DragFeature(vector)
 };
 
 for(var key in controls) {
     map.addControl(controls[key]);
 }
 
-map.setCenter(new OpenLayers.LonLat(0, 0), 3);
 document.getElementById('noneToggle').checked = true;
 
 function toggleControl(element) {
