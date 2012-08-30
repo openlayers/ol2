@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OpenLayers Raster PDF Example</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <script src="../OpenLayers.js"></script>
+        <script src="jspdf.js"></script>
+        <style>
+            p {
+                padding-top: 1em;
+                width: 512px;
+            }
+            button {
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="title">Download PDF</h1>
+        <div id="tags">
+            Raster, PDF, Download
+        </div>
+        <p id="shortdesc">This demo shows how raster data can be downloaded as a PDF.</p>
+        <div id="map" class="smallmap"></div>
+        <p>
+            <label for="map-title">Title</label>
+            <input id="map-title" type="text" value="My Map">
+            <a id="pdf-link" href="#" download="raster.pdf" title="Download PDF"><button type="button">Save</button></a>
+        </p>
+        <div class="docs">
+            <p>
+                See the <a href="raster-pdf.js" target="_blank">raster-pdf.js</a> 
+                source for details on how this is done.
+            </p>
+        </div>
+        <script src="raster-pdf.js"></script>
+    </body>
+</html>
