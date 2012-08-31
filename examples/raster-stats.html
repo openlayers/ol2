@@ -9,10 +9,18 @@
     <link rel="stylesheet" href="style.css" type="text/css">
     <style>
         #stats {
-            margin: 1em 0;
-            padding: 5px;
+            margin: 1em;
             width: 500px;
-            height: 250px;
+        }
+        #stats th {
+            padding: 0 0.5em;
+        }
+        #stats td {
+            font-size: smaller;
+            padding: 0 1em;
+        }
+        #template-wrapper {
+            display: none;
         }
     </style>
 </head>
@@ -25,7 +33,16 @@
         Raster, Statistics
     </div>
     <div id="map" class="smallmap"></div>
-    <textarea id="stats">land cover stats ...</textarea>
+    <div id="stats"></div>
+    <div id="template-wrapper">
+        <table id="template">
+            <tr><th>Area (sq. m)</th><th>Land Cover</th></tr>
+            <tr jugl:repeat="entry entries">
+                <td jugl:content="Math.round(entry[0])">area</td>
+                <td jugl:content="entry[1]">cover</td>
+            </tr>
+        </table>
+    </div>
     <div id="docs">
         <p>
         See the <a href="raster-stats.js" target="_blank">raster-stats.js source</a> for 
@@ -33,5 +50,6 @@
         </p>
     </div>
     <script src="../lib/OpenLayers.js"></script>
+    <script src="Jugl.js"></script>
     <script src="raster-stats.js"></script>
 </body>

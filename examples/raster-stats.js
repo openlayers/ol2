@@ -1,7 +1,8 @@
 var nlcd = new OpenLayers.Layer.WMS(
     "Land Cover",
     "/geoserver/wms",
-    {layers: "usgs:nlcd", format: "image/png8"}
+    {layers: "usgs:nlcd", format: "image/png8"},
+    {singleTile: true}
 );
 
 var data = OpenLayers.Raster.Composite.fromLayer(nlcd);
@@ -11,25 +12,65 @@ function deferredStats() {
     if (pending) {
         window.clearTimeout(pending);
     }
-    pending = window.setTimeout(generateStats, 900);
+    pending = window.setTimeout(generateStats, 200);
 }
+
+var classes = {
+    "255,255,255": "Background",
+    "0,0,0": "Background", // 0
+    "73,109,163": "Open Water", // 11
+    "224,204,204": "Developed, Open Space", // 21
+    "219,153,130": "Developed, Low Intensity", // 22
+    "242,0,0": "Developed, Medium Intensity", // 23
+    "170,0,0": "Developed, High Intensity", // 24
+    "181,175,163": "Barren Land (Rock/Sand/Clay)", // 31
+    "107,170,102": "Deciduous Forest", // 41
+    "28,102,51": "Evergreen Forest", // 42
+    "186,204,145": "Mixed Forest", // 43
+    "165,140,48": "Dwarf Scrub", // 51
+    "209,186,130": "Shrub/Scrub", // 52
+    "229,229,193": "Grassland/Herbaceous", // 71
+    "201,201,119": "Sedge/Herbaceous", // 72
+    "221,216,60": "Pasture/Hay", // 81
+    "173,112,40": "Cultivated Crops", // 82
+    "186,216,237": "Woody Wetlands", // 90
+    "112,163,191": "Emergent Herbaceous Wetlands" // 95
+};
 
 var stats = {};
 function generateStats() {
     stats = {};
+    var area = Math.pow(map.getResolution(), 2);
     data.forEach(function(pixel) {
         var rgb = pixel.slice(0, 3).join(",");
-        if (rgb in stats) {
-            stats[rgb] += 1;
+        var cls = classes[rgb] || rgb
+        if (cls in stats) {
+            stats[cls] += area;
         } else {
-            stats[rgb] = 0;
+            stats[cls] = area;
         }
     });
-    var txt = "RGB\tCount\n";
-    for (var rgb in stats) {
-        txt += rgb + "\t" + stats[rgb] + "\n";
+    var txt = "Area (sq. m)\tLand Cover\n";
+    for (var cls in stats) {
+        txt += Math.round(stats[cls]) + "\t\t" + cls + "\n";
     }
-    document.getElementById("stats").value = txt;
+    displayStats(stats);
+}
+
+var template = new jugl.Template("template");
+var target = document.getElementById("stats");
+function displayStats(stats) {
+    var entries = [];
+    for (var cls in stats) {
+        entries.push([stats[cls], cls]);
+    }
+    entries.sort(function(a, b) {return b[0]-a[0]});
+    target.innerHTML = "";
+    template.process({
+        context: {entries: entries},
+        clone: true,
+        parent: target
+    });
 }
 
 data.events.on({update: deferredStats});
@@ -41,4 +82,3 @@ var map = new OpenLayers.Map({
     center: [-8606289, 4714070],
     zoom: 11
 });
-
