@@ -5,15 +5,15 @@ var nlcd = new OpenLayers.Layer.WMS(
     {singleTile: true}
 );
 
-var data = OpenLayers.Raster.Composite.fromLayer(nlcd);
+var map = new OpenLayers.Map({
+    div: "map",
+    projection: "EPSG:900913",
+    layers: [nlcd],
+    center: [-8606289, 4714070],
+    zoom: 11
+});
 
-var pending;
-function deferredStats() {
-    if (pending) {
-        window.clearTimeout(pending);
-    }
-    pending = window.setTimeout(generateStats, 200);
-}
+var data = OpenLayers.Raster.Composite.fromLayer(nlcd);
 
 var classes = {
     "255,255,255": "Background",
@@ -50,10 +50,6 @@ function generateStats() {
             stats[cls] = area;
         }
     });
-    var txt = "Area (sq. m)\tLand Cover\n";
-    for (var cls in stats) {
-        txt += Math.round(stats[cls]) + "\t\t" + cls + "\n";
-    }
     displayStats(stats);
 }
 
@@ -73,12 +69,5 @@ function displayStats(stats) {
     });
 }
 
-data.events.on({update: deferredStats});
+data.events.on({update: generateStats});
 
-var map = new OpenLayers.Map({
-    div: "map",
-    projection: "EPSG:900913",
-    layers: [nlcd],
-    center: [-8606289, 4714070],
-    zoom: 11
-});
