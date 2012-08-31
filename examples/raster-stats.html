@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>OpenLayers Raster Stats</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <style>
+        #stats {
+            margin: 1em 0;
+            padding: 5px;
+            width: 500px;
+            height: 250px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="title">OpenLayers Raster Stats</h1>
+    <div id="shortdesc">
+        This example demonstrates how statistics can be generated from raster data.
+    </div>
+    <div id="tags">
+        Raster, Statistics
+    </div>
+    <div id="map" class="smallmap"></div>
+    <textarea id="stats">land cover stats ...</textarea>
+    <div id="docs">
+        <p>
+        See the <a href="raster-stats.js" target="_blank">raster-stats.js source</a> for 
+        detail on generating statistics from raster data.
+        </p>
+    </div>
+    <script src="../lib/OpenLayers.js"></script>
+    <script src="raster-stats.js"></script>
+</body>
