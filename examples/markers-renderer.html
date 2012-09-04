@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-        <title>OpenLayers Marker Renderer Example</title>
+        <title>OpenLayers Markers Renderer Example</title>
         <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
         <link rel="stylesheet" href="style.css" type="text/css">
         <script src="../lib/OpenLayers.js"></script>
@@ -75,7 +75,7 @@
                     strategies: [
                         new OpenLayers.Strategy.Fixed()
                     ],
-                    renderers: ["Marker"],
+                    renderers: ["Markers"],
                     protocol: new OpenLayers.Protocol.Script({
                         url: "http://api.flickr.com/services/rest",
                         params: {
@@ -103,16 +103,16 @@
         </script>
     </head>
     <body onload="init()">
-        <h1 id="title">Marker Renderer Example</h1>
+        <h1 id="title">Markers Renderer Example</h1>
         <div id="tags">
             vector, feature, stylemap, marker, strategy, flickr, script, renderer
         </div>         
         <p id="shortdesc">
-            Uses a Marker renderer to display points on a map.
+            Uses a Markers renderer to display points on a map.
         </p>
         <div id="map" class="smallmap"></div>
         <div id="docs">
-            <p>The Marker renderer lets you display point geometries using an image by using an
+            <p>The Markers renderer lets you display point geometries using an image by using an
             OpenLayers.Layer.Vector.</p>
             <p>This particular example uses the <a
                 href="http://www.flickr.com/services/api/">Flickr API.</a></p>
