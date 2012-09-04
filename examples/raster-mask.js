@@ -44,7 +44,7 @@ var tracts = new OpenLayers.Layer.Vector("Census Tracts", {
     protocol: new OpenLayers.Protocol.WFS({
         url: "/geoserver/wfs",
         version: "1.1.0",
-        featureNS: "http://www.usgs.gov/#opengeo",
+        featureNS: "http://www.usgs.gov/",
         srsName: "EPSG:900913",
         featureType: "tracts"
     }),
