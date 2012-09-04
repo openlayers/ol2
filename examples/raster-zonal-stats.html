@@ -7,9 +7,6 @@
     <title>OpenLayers Raster Zonal Stats</title>
     <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
     <link rel="stylesheet" href="style.css" type="text/css">
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" type="text/css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
     <style>
         .widget-wrapper {
             width: 492px;
@@ -34,6 +31,12 @@
             font-size: smaller;
             padding: 0 1em;
         }
+        td.num {
+            text-align: right;
+        }
+        th.center {
+            text-align: center;
+        }
         #template-wrapper {
             display: none;
         }
@@ -48,17 +51,23 @@
         Raster, Statistics
     </div>
     <div id="map" class="smallmap"></div>
-    <div class="widget-wrapper ui-widget ui-corner-all">
-        <span>min elevation:</span>
-        <div id="ned-slider" class="slider"></div>
-    </div>
     <div id="stats"></div>
     <div id="template-wrapper">
         <table id="template">
-            <tr><th>Area (sq. m)</th><th>Land Cover</th></tr>
+            <tr>
+                <th rowspan="2">Landcover Type</th>
+                <th class="center" colspan="3">Area (sq. meters)</th>
+            </tr>
+            <tr>
+                <th>Low Elevation</th>
+                <th>Mid Elevation</th>
+                <th>High Elevation</th>
+            </tr>
             <tr jugl:repeat="entry entries">
-                <td jugl:content="Math.round(entry[0])">area</td>
-                <td jugl:content="entry[1]">cover</td>
+                <td jugl:content="entry.cover">landcover type</td>
+                <td class="num" jugl:content="Math.round(entry.area[0] || 0)">low area</td>
+                <td class="num" jugl:content="Math.round(entry.area[1] || 0)">mid area</td>
+                <td class="num" jugl:content="Math.round(entry.area[2] || 0)">high area</td>
             </tr>
         </table>
     </div>

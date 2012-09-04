@@ -1,4 +1,5 @@
 var op = OpenLayers.Raster.Operation;
+var fromLayer = OpenLayers.Raster.Composite.fromLayer;
 
 var streets = new OpenLayers.Layer.XYZ(
     "OpenStreetMap", 
@@ -33,21 +34,21 @@ var ned = new OpenLayers.Layer.WMS(
     "Elevation",
     "/geoserver/wms",
     {layers: "usgs:ned", format: "image/png", transparent: true},
-    {singleTile: true, isBaseLayer: false, visibility: false}
+    {singleTile: true, isBaseLayer: false}
 );
 
 var nlcd = new OpenLayers.Layer.WMS(
     "Land Cover",
     "/geoserver/wms",
     {layers: "usgs:nlcd", format: "image/png8", transparent: true},
-    {singleTile: true, isBaseLayer: false, visibility: false}
+    {singleTile: true, isBaseLayer: false}
 );
 
 var map = new OpenLayers.Map({
     div: "map",
     projection: "EPSG:900913",
     layers: [streets, imagery, ned, nlcd],
-    center: [-8606289, 4714070],
+    center: [-8690522, 4714451], //[-8606289, 4714070],
     zoom: 11
 });
 
@@ -63,43 +64,44 @@ var map = new OpenLayers.Map({
  *
  * Transparent pixels are areas of no data (grid value will be NaN).
  */
-var getElevation = op.create(function(rgba) {
+var getElevation = op.create(function(pixel) {
     var elevation = NaN,
         delta = 420,
         min = -20;
 
-    if (rgba[3] == 255) {
-        elevation = (delta * (rgba[0] + rgba[1] + rgba[2]) / 255) + min;
+    if (pixel[3] == 255) {
+        elevation = (delta * (pixel[0] + pixel[1] + pixel[2]) / 255) + min;
     }
-    return elevation;
+    return [elevation];
 });
 
 /**
  * This operation is used to transform an elevation grid into a grid
  * with values representing an elevation zone.
  * 
- * 0: e < 250m
- * 1: 250m <= e < 500m
- * 2: e >= 500m
+ * 0: e < 150m
+ * 1: 150m <= e < 400m
+ * 2: e >= 400m
  *
  * Areas of no data will have NaN value.
  */
-var getZone = op.create(function(elevation) {
-    var e = elevation[0],
+var getZone = op.create(function(pixel) {
+    var elevation = pixel[0],
         zone = NaN;
-    if (!isNaN(e)) {
-        if (e < 250) {
+    if (!isNaN(elevation)) {
+        if (elevation < 150) {
             zone = 0;
-        } else if (e < 500) {
+        } else if (elevation < 400) {
             zone = 1;
         } else {
             zone = 2;
         }
     }
-    return zone;
-};
+    return [zone];
+});
 
-var zones = getZone(getElevation(OpenLayers.Raster.Composite.fromLayer(ned)));
+var elevation = getElevation(fromLayer(ned));
+var zones = getZone(elevation);
 
 var classes = {
     "255,255,255": "Background",
@@ -125,10 +127,10 @@ var classes = {
 
 var getCover = op.create(function(pixel) {
     var rgb = pixel.slice(0, 3).join(",");
-    var cover = classes[rgb] || rgb;
+    return [classes[rgb] || rgb];
 });
 
-var landcover = getCover(OpenLayers.Raster.Composite.fromLayer(nlcd));
+var landcover = getCover(fromLayer(nlcd));
 
 var getZoneCover = op.create(function(zonesPixel, coverPixel) {
     return [zonesPixel[0], coverPixel[0]];
@@ -136,17 +138,31 @@ var getZoneCover = op.create(function(zonesPixel, coverPixel) {
 
 var zoneCover = getZoneCover(zones, landcover);
 
-var stats = {};
+var pending = null;
+function deferredStats() {
+    if (pending != null) {
+        window.clearTimeout(pending);
+        pending = null;
+    }
+    pending = window.setTimeout(generateStats, 500);
+}
+
 function generateStats() {
-    stats = {};
+    var stats = {};
     var area = Math.pow(map.getResolution(), 2);
     zoneCover.forEach(function(pixel) {
-        var rgb = pixel.slice(0, 3).join(",");
-        var cls = classes[rgb] || rgb
-        if (cls in stats) {
-            stats[cls] += area;
-        } else {
-            stats[cls] = area;
+        var zone = pixel[0];
+        var cover = pixel[1];
+        if (!isNaN(zone) && cover) {
+            if (!(cover in stats)) {
+                stats[cover] = [];
+            }
+            var sums = stats[cover];
+            if (zone in sums) {
+                sums[zone] += area;
+            } else {
+                sums[zone] = area;
+            }
         }
     });
     displayStats(stats);
@@ -154,12 +170,20 @@ function generateStats() {
 
 var template = new jugl.Template("template");
 var target = document.getElementById("stats");
-function displayStats(stats) {
+function displayStats(stats) {    
     var entries = [];
-    for (var cls in stats) {
-        entries.push([stats[cls], cls]);
+    for (var cover in stats) {
+        entries.push({
+            cover: cover,
+            area: stats[cover]
+        });
     }
-    entries.sort(function(a, b) {return b[0]-a[0]});
+    function sum(area) {
+        return (area[0] || 0) + (area[1] || 0) + (area[2] || 0);
+    }
+    entries.sort(function(a, b) {
+        return sum(b.area) - sum(a.area);
+    });
     target.innerHTML = "";
     template.process({
         context: {entries: entries},
@@ -168,19 +192,6 @@ function displayStats(stats) {
     });
 }
 
-landcover.events.on({update: generateStats});
+zoneCover.events.on({update: deferredStats});
 
-var Click = OpenLayers.Class(OpenLayers.Control, {
-    autoActivate: true,
-    initialize: function(options) {
-        OpenLayers.Control.prototype.initialize.apply(this, arguments); 
-        this.handler = new OpenLayers.Handler.Click(this, {click: this.trigger});
-    }, 
-    trigger: function(event) {
-        var xy = event.xy;
-        pixel = elevation.getValue(Math.round(xy.x), Math.round(xy.y));
-        console.log(pixel);
-    }
-});
-map.addControl(new Click());
 map.addControl(new OpenLayers.Control.LayerSwitcher());
