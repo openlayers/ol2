@@ -1,3 +1,5 @@
+var op = OpenLayers.Raster.Operation;
+
 var streets = new OpenLayers.Layer.XYZ(
     "OpenStreetMap", 
     [
@@ -27,24 +29,77 @@ var imagery = new OpenLayers.Layer.XYZ(
 );
 
 
+var ned = new OpenLayers.Layer.WMS(
+    "Elevation",
+    "/geoserver/wms",
+    {layers: "usgs:ned", format: "image/png", transparent: true},
+    {singleTile: true, isBaseLayer: false, visibility: false}
+);
+
 var nlcd = new OpenLayers.Layer.WMS(
     "Land Cover",
     "/geoserver/wms",
-    {layers: "usgs:nlcd", format: "image/png8"},
-    {singleTile: true, isBaseLayer: false}
+    {layers: "usgs:nlcd", format: "image/png8", transparent: true},
+    {singleTile: true, isBaseLayer: false, visibility: false}
 );
 
 var map = new OpenLayers.Map({
     div: "map",
     projection: "EPSG:900913",
-    layers: [streets, imagery, nlcd],
+    layers: [streets, imagery, ned, nlcd],
     center: [-8606289, 4714070],
     zoom: 11
 });
 
-map.addControl(new OpenLayers.Control.LayerSwitcher());
+/**
+ * The NED dataset is symbolized by a color ramp that maps the following
+ * elevations to corresponding RGB values.  This operation is used to
+ * invert the mapping - returning elevations in meters for a pixel RGB array.
+ *
+ *  -20m : 0, 0, 0
+ *  400m : 0, 0, 255
+ *  820m : 0, 255, 255
+ * 1240m : 255, 255, 255
+ *
+ * Transparent pixels are areas of no data (grid value will be NaN).
+ */
+var getElevation = op.create(function(rgba) {
+    var elevation = NaN,
+        delta = 420,
+        min = -20;
 
-var data = OpenLayers.Raster.Composite.fromLayer(nlcd);
+    if (rgba[3] == 255) {
+        elevation = (delta * (rgba[0] + rgba[1] + rgba[2]) / 255) + min;
+    }
+    return elevation;
+});
+
+/**
+ * This operation is used to transform an elevation grid into a grid
+ * with values representing an elevation zone.
+ * 
+ * 0: e < 250m
+ * 1: 250m <= e < 500m
+ * 2: e >= 500m
+ *
+ * Areas of no data will have NaN value.
+ */
+var getZone = op.create(function(elevation) {
+    var e = elevation[0],
+        zone = NaN;
+    if (!isNaN(e)) {
+        if (e < 250) {
+            zone = 0;
+        } else if (e < 500) {
+            zone = 1;
+        } else {
+            zone = 2;
+        }
+    }
+    return zone;
+};
+
+var zones = getZone(getElevation(OpenLayers.Raster.Composite.fromLayer(ned)));
 
 var classes = {
     "255,255,255": "Background",
@@ -68,11 +123,24 @@ var classes = {
     "112,163,191": "Emergent Herbaceous Wetlands" // 95
 };
 
+var getCover = op.create(function(pixel) {
+    var rgb = pixel.slice(0, 3).join(",");
+    var cover = classes[rgb] || rgb;
+});
+
+var landcover = getCover(OpenLayers.Raster.Composite.fromLayer(nlcd));
+
+var getZoneCover = op.create(function(zonesPixel, coverPixel) {
+    return [zonesPixel[0], coverPixel[0]];
+});
+
+var zoneCover = getZoneCover(zones, landcover);
+
 var stats = {};
 function generateStats() {
     stats = {};
     var area = Math.pow(map.getResolution(), 2);
-    data.forEach(function(pixel) {
+    zoneCover.forEach(function(pixel) {
         var rgb = pixel.slice(0, 3).join(",");
         var cls = classes[rgb] || rgb
         if (cls in stats) {
@@ -100,5 +168,19 @@ function displayStats(stats) {
     });
 }
 
-data.events.on({update: generateStats});
+landcover.events.on({update: generateStats});
 
+var Click = OpenLayers.Class(OpenLayers.Control, {
+    autoActivate: true,
+    initialize: function(options) {
+        OpenLayers.Control.prototype.initialize.apply(this, arguments); 
+        this.handler = new OpenLayers.Handler.Click(this, {click: this.trigger});
+    }, 
+    trigger: function(event) {
+        var xy = event.xy;
+        pixel = elevation.getValue(Math.round(xy.x), Math.round(xy.y));
+        console.log(pixel);
+    }
+});
+map.addControl(new Click());
+map.addControl(new OpenLayers.Control.LayerSwitcher());

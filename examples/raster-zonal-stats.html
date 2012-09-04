@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>OpenLayers Raster Zonal Stats</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+    <style>
+        .widget-wrapper {
+            width: 492px;
+            background-color: #f9f9f9;
+            border: solid 1px #ddd;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .slider {
+            margin-top: 5px;
+            float: right;
+            width: 80%;
+        }
+        #stats {
+            margin: 1em;
+            width: 500px;
+        }
+        #stats th {
+            padding: 0 0.5em;
+        }
+        #stats td {
+            font-size: smaller;
+            padding: 0 1em;
+        }
+        #template-wrapper {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="title">OpenLayers Raster Zonal Stats</h1>
+    <div id="shortdesc">
+        This example demonstrates how statistics can be generated from raster data.
+    </div>
+    <div id="tags">
+        Raster, Statistics
+    </div>
+    <div id="map" class="smallmap"></div>
+    <div class="widget-wrapper ui-widget ui-corner-all">
+        <span>min elevation:</span>
+        <div id="ned-slider" class="slider"></div>
+    </div>
+    <div id="stats"></div>
+    <div id="template-wrapper">
+        <table id="template">
+            <tr><th>Area (sq. m)</th><th>Land Cover</th></tr>
+            <tr jugl:repeat="entry entries">
+                <td jugl:content="Math.round(entry[0])">area</td>
+                <td jugl:content="entry[1]">cover</td>
+            </tr>
+        </table>
+    </div>
+    <div id="docs">
+        <p>
+        See the <a href="raster-stats.js" target="_blank">raster-zonal-stats.js source</a> for 
+        detail on generating statistics from raster data.
+        </p>
+    </div>
+    <script src="../OpenLayers.js"></script>
+    <script src="Jugl.js"></script>
+    <script src="raster-zonal-stats.js"></script>
+</body>
