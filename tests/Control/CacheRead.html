@@ -48,7 +48,7 @@
     
     function test_local_storage(t) {
         var cache = new OpenLayers.Control.Cache.LocalStorage();
-        t.equal(window.localStorage ? true: false, cache.isAvailable(), "OpenLayers.Control.Cache.LocalStorage should be available if window.localStorage is available");
+        t.eq(window.localStorage ? true: false, cache.isAvailable(), "OpenLayers.Control.Cache.LocalStorage should be available if window.localStorage is available");
         if (cache.isAvailable()) {
             cache.clear(function() {
                 var data = "data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
@@ -74,7 +74,7 @@
     
     function test_session_storage(t) {
         var cache = new OpenLayers.Control.Cache.SessionStorage();
-        t.equal(window.sessionStorage ? true: false, cache.isAvailable(), "OpenLayers.Control.Cache.SessionStorage should be available if window.sessionStorage is available");
+        t.eq(window.sessionStorage ? true: false, cache.isAvailable(), "OpenLayers.Control.Cache.SessionStorage should be available if window.sessionStorage is available");
         if (cache.isAvailable()) {
             cache.clear(function() {
                 var data = "data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
@@ -100,7 +100,7 @@
     
     function test_websql(t) {
         var cache = new OpenLayers.Control.Cache.WebSQL({dbName: "tilecache_openlayers_test_db"});
-        t.equal(window['openDatabase'] ? true: false, cache.isAvailable(), "OpenLayers.Control.Cache.WebSQL should be available if window.openDatabase is available");
+        t.eq(window['openDatabase'] ? true: false, cache.isAvailable(), "OpenLayers.Control.Cache.WebSQL should be available if window.openDatabase is available");
         if (cache.isAvailable()) {
             cache.clear(function() {
                 var data = "data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
@@ -126,7 +126,7 @@
     
     function test_indexdb(t) {
         var cache = new OpenLayers.Control.Cache.IndexDB({dbName: "tilecache_openlayers_test_db"});
-        t.equal(window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB ? true: false, cache.isAvailable(), "OpenLayers.Control.Cache.IndexDB should be available if indexDB is available");
+        t.eq(window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB ? true: false, cache.isAvailable(), "OpenLayers.Control.Cache.IndexDB should be available if indexDB is available");
         if (cache.isAvailable()) {
             // The delayed call is necessary because creating the indexdb database was taking too long and clear was
             // getting called before it was ready. What do to?
