@@ -111,10 +111,7 @@ var getCover = op.create(function(pixel) {
     return [classes[rgb]];
 });
 
-var lc = fromLayer(nlcd);
-
-var landcover = getCover(lc);
-
+var landcover = getCover(fromLayer(nlcd));
 
 var landcoverOutput = document.getElementById("landcover");
 var elevationOutput = document.getElementById("elevation");

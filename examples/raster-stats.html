@@ -33,20 +33,27 @@
         Raster, Statistics
     </div>
     <div id="map" class="smallmap"></div>
+    <p>
+        <input type="checkbox" id="show"><label for="show">Show landcover layer.</label>
+    </p>
     <div id="stats"></div>
     <div id="template-wrapper">
         <table id="template">
-            <tr><th>Area (sq. m)</th><th>Land Cover</th></tr>
+            <tr><th>Area (m<sup>2</sup>)</th><th>Land Cover</th></tr>
             <tr jugl:repeat="entry entries">
-                <td jugl:content="Math.round(entry[0])">area</td>
-                <td jugl:content="entry[1]">cover</td>
+                <td jugl:content="Math.round(entry.area)">area</td>
+                <td jugl:content="entry.cover">cover</td>
             </tr>
         </table>
     </div>
     <div id="docs">
         <p>
-        See the <a href="raster-stats.js" target="_blank">raster-stats.js source</a> for 
-        detail on generating statistics from raster data.
+            This example loads landcover data with a hidden WMS layer.  A raster composite
+            is generated from this layer and landcover statistics are generated each time
+            the data is updated.
+        </p><p>
+            See the <a href="raster-stats.js" target="_blank">raster-stats.js source</a> for 
+            detail on generating statistics from raster data.
         </p>
     </div>
     <script src="../OpenLayers.js"></script>

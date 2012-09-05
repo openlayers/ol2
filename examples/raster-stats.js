@@ -1,3 +1,6 @@
+var op = OpenLayers.Raster.Operation;
+var fromLayer = OpenLayers.Raster.Composite.fromLayer;
+
 var streets = new OpenLayers.Layer.XYZ(
     "OpenStreetMap", 
     [
@@ -31,24 +34,27 @@ var nlcd = new OpenLayers.Layer.WMS(
     "Land Cover",
     "/geoserver/wms",
     {layers: "usgs:nlcd", format: "image/png8"},
-    {singleTile: true, isBaseLayer: false}
+    {singleTile: true, isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false}
 );
 
 var map = new OpenLayers.Map({
     div: "map",
     projection: "EPSG:900913",
     layers: [streets, imagery, nlcd],
+    restrictedExtent: [-8732354, 4647019, -8492897, 4782306],
     center: [-8606289, 4714070],
     zoom: 11
 });
 
 map.addControl(new OpenLayers.Control.LayerSwitcher());
 
-var data = OpenLayers.Raster.Composite.fromLayer(nlcd);
-
+/**
+ * The NLCD dataset is symbolized according to landcover type.  The mapping below
+ * links RGB values to landcover type.
+ */
 var classes = {
-    "255,255,255": "Background",
-    "0,0,0": "Background", // 0
+    "255,255,255": null,
+    "0,0,0": null, // 0
     "73,109,163": "Open Water", // 11
     "224,204,204": "Developed, Open Space", // 21
     "219,153,130": "Developed, Low Intensity", // 22
@@ -68,17 +74,25 @@ var classes = {
     "112,163,191": "Emergent Herbaceous Wetlands" // 95
 };
 
+var getCover = op.create(function(pixel) {
+    var rgb = pixel.slice(0, 3).join(",");
+    return [classes[rgb]];
+});
+
+var landcover = getCover(fromLayer(nlcd));
+
 var stats = {};
 function generateStats() {
     stats = {};
     var area = Math.pow(map.getResolution(), 2);
-    data.forEach(function(pixel) {
-        var rgb = pixel.slice(0, 3).join(",");
-        var cls = classes[rgb] || rgb
-        if (cls in stats) {
-            stats[cls] += area;
-        } else {
-            stats[cls] = area;
+    landcover.forEach(function(pixel) {
+        var cover = pixel[0];
+        if (cover) {
+            if (cover in stats) {
+                stats[cover] += area;
+            } else {
+                stats[cover] = area;
+            }
         }
     });
     displayStats(stats);
@@ -88,10 +102,13 @@ var template = new jugl.Template("template");
 var target = document.getElementById("stats");
 function displayStats(stats) {
     var entries = [];
-    for (var cls in stats) {
-        entries.push([stats[cls], cls]);
+    for (var cover in stats) {
+        entries.push({
+            cover: cover,
+            area: stats[cover]
+        });
     }
-    entries.sort(function(a, b) {return b[0]-a[0]});
+    entries.sort(function(a, b) {return b.area - a.area});
     target.innerHTML = "";
     template.process({
         context: {entries: entries},
@@ -100,5 +117,10 @@ function displayStats(stats) {
     });
 }
 
-data.events.on({update: generateStats});
+landcover.events.on({update: generateStats});
+
+// allow toggling of nlcd visibility
+document.getElementById("show").onclick = function() {
+    nlcd.setOpacity(this.checked ? 1 : 0);
+};
 

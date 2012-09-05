@@ -34,21 +34,22 @@ var ned = new OpenLayers.Layer.WMS(
     "Elevation",
     "/geoserver/wms",
     {layers: "usgs:ned", format: "image/png", transparent: true},
-    {singleTile: true, isBaseLayer: false}
+    {singleTile: true, isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false}
 );
 
 var nlcd = new OpenLayers.Layer.WMS(
     "Land Cover",
     "/geoserver/wms",
     {layers: "usgs:nlcd", format: "image/png8", transparent: true},
-    {singleTile: true, isBaseLayer: false}
+    {singleTile: true, isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false}
 );
 
 var map = new OpenLayers.Map({
     div: "map",
     projection: "EPSG:900913",
     layers: [streets, imagery, ned, nlcd],
-    center: [-8690522, 4714451], //[-8606289, 4714070],
+    center: [-8690522, 4714451],
+    restrictedExtent: [-8732354, 4647019, -8492897, 4782306],
     zoom: 11
 });
 
@@ -100,12 +101,15 @@ var getZone = op.create(function(pixel) {
     return [zone];
 });
 
-var elevation = getElevation(fromLayer(ned));
-var zones = getZone(elevation);
+var zones = getZone(getElevation(fromLayer(ned)));
 
+/**
+ * The NLCD dataset is symbolized according to landcover type.  The mapping below
+ * links RGB values to landcover type.
+ */
 var classes = {
-    "255,255,255": "Background",
-    "0,0,0": "Background", // 0
+    "255,255,255": null,
+    "0,0,0": null, // 0
     "73,109,163": "Open Water", // 11
     "224,204,204": "Developed, Open Space", // 21
     "219,153,130": "Developed, Low Intensity", // 22
@@ -127,7 +131,7 @@ var classes = {
 
 var getCover = op.create(function(pixel) {
     var rgb = pixel.slice(0, 3).join(",");
-    return [classes[rgb] || rgb];
+    return [classes[rgb]];
 });
 
 var landcover = getCover(fromLayer(nlcd));
@@ -195,3 +199,15 @@ function displayStats(stats) {
 zoneCover.events.on({update: deferredStats});
 
 map.addControl(new OpenLayers.Control.LayerSwitcher());
+
+
+// allow toggling of nlcd visibility
+document.getElementById("show-nlcd").onclick = function() {
+    nlcd.setOpacity(this.checked ? 1 : 0);
+};
+
+
+// allow toggling of nlcd visibility
+document.getElementById("show-ned").onclick = function() {
+    ned.setOpacity(this.checked ? 1 : 0);
+};
