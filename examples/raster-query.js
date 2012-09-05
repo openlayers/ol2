@@ -127,7 +127,7 @@ map.events.on({
             // get elevation data for mouse location
             var el = elevation.getValue(x, y);
             if (!isNaN(el)) {
-                elevationOutput.innerHTML = Math.round(el) + " m<sup>2</sup>";
+                elevationOutput.innerHTML = Math.round(el) + " m";
             } else {
                 elevationOutput.innerHTML = "<em>loading ...</em>"
             }
