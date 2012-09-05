@@ -125,7 +125,7 @@
     }
     
     function test_indexdb(t) {
-        var cache = new OpenLayers.Control.Cache.IndexDB({dbName: "tilecache_openlayers_test_db"});
+        var cache = new OpenLayers.Control.Cache.IndexDB({dbName: "tilecache_openlayers_test_db", dbVersion:"2"});
         t.eq(window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB ? true: false, cache.isAvailable(), "OpenLayers.Control.Cache.IndexDB should be available if indexDB is available");
         if (cache.isAvailable()) {
             // The delayed call is necessary because creating the indexdb database was taking too long and clear was
