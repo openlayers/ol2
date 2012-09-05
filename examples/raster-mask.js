@@ -34,7 +34,7 @@ var nlcd = new OpenLayers.Layer.WMS(
     "Land Cover",
     "/geoserver/wms",
     {layers: "usgs:nlcd", format: "image/png8"},
-    {singleTile: true, isBaseLayer: false}
+    {singleTile: true, isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false}
 );
 
 
@@ -197,5 +197,9 @@ tracts.events.on({
     }
 });
 
+// allow toggling of nlcd visibility
+document.getElementById("show").onclick = function() {
+    nlcd.setOpacity(this.checked ? 1 : 0);
+};
 
 
