@@ -141,3 +141,15 @@ body {
     -webkit-text-size-adjust: none;
 }
 
+/* LayerSwitcher modifications */
+.olControlLayerSwitcher .layersDiv {
+    border-radius:  10px 0 0 10px;
+    padding-bottom: 10px;
+    background: #130085; /* fallback for IE - IE6 requires background shorthand*/
+    background: rgba(0, 60, 136, 0.75);
+    filter: alpha(opacity=80);
+}
+.olControlLayerSwitcher img {
+    opacity: 0.6;
+    filter: alpha(opacity=75);
+}
