@@ -1,6 +1,5 @@
 // Use proxy to get same origin URLs for tiles that don't support CORS.
-// OpenLayers.ProxyHost = "proxy.cgi?url=";
-OpenLayers.ProxyHost = "/cgi-bin/proxy.py?url=";
+OpenLayers.ProxyHost = "proxy.cgi?url=";
 
 var map, cacheRead, cacheWrite;
 function init() {
