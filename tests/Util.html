@@ -1134,6 +1134,18 @@
             t.eq(extended && extended.foo, "bar", "extended with event");
         }
     }
+    function test_getProperty(t) {
+        t.plan(2);
+        var obj = {};
+        obj.A = {};
+        obj.A.B = {'property': 100};
+        global = {};
+        global.A = {'property': 200};
+        t.eq(OpenLayers.Util.getProperty('A.B.property', obj), 100,
+            "getProperty works correctly with passed context");
+        t.eq(OpenLayers.Util.getProperty('global.A.property'), 200,
+            "getProperty works correctly without passed context");
+    }
 
   </script>
 </head>
