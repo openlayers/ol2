@@ -429,17 +429,36 @@ span.olGoogleAttribution.hybrid a, span.olGoogleAttribution.satellite a {
     background-position: -26px -24px;
 }
 
+div.olControlZoom, div.olControlZoomInCnt, div.olControlZoomOutCnt, div.olControlZoomBarCnt {
+    background: rgba(255, 255, 255, 0.4);
+}
 div.olControlZoom {
     position: absolute;
     top: 8px;
     left: 8px;
-    background: rgba(255,255,255,0.4);
     border-radius: 4px;
     padding: 2px;
 }
-div.olControlZoom a {
+div.olControlZoomBar {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+div.olControlZoomInCnt {
+    border-radius: 4px 4px 2px 2px;
+    padding: 3px 3px 1px 3px;
+}
+div.olControlZoomOutCnt {
+    border-radius: 2px 2px 4px 4px;
+    padding: 1px 3px 3px 3px;
+}
+div.olControlZoomBarCnt {
+    padding: 0 3px;
+    margin: -7px 8px 0;
+    width: 2px;
+}
+div.olControlZoom a, div.olControlZoomInCnt a, div.olControlZoomOutCnt a, div.olControlZoomBar div.olControlZoomBarBarInternal {
     display: block;
-    margin: 1px;
     padding: 0;
     color: white;
     font-size: 18px;
@@ -447,28 +466,57 @@ div.olControlZoom a {
     font-weight: bold;
     text-decoration: none;
     text-align: center;
-    height: 22px;
-    width:22px;
     line-height: 19px;
     background: #130085; /* fallback for IE - IE6 requires background shorthand*/
     background: rgba(0, 60, 136, 0.5);
     filter: alpha(opacity=80);
 }
-div.olControlZoom a:hover {
+div.olControlZoom a, div.olControlZoomInCnt a, div.olControlZoomOutCnt a {
+    margin: 1px;
+    height: 22px;
+    width: 22px;
+}
+div.olControlZoomBar div.olControlZoomBarBar {
+    margin: 0;
+    padding: 0;
+    width: 22px;
+    display: block;
+    height: 100%;
+}
+div.olControlZoomBar div.olControlZoomBarBar {
+    margin: 0 2px;
+}
+div.olControlZoomBar div.olControlZoomBarBarInternal {
+    width: 2px;
+}
+div.olControlZoom a:hover, div.olControlZoomBar a:hover, div.olControlZoomBar a.olControlZoomSlider:hover {
     background: #130085; /* fallback for IE */
     background: rgba(0, 60, 136, 0.7);
     filter: alpha(opacity=100);
 }
 @media only screen and (max-width: 600px) {
-    div.olControlZoom a:hover {
+    div.olControlZoom a:hover, div.olControlZoomBar a:hover, div.olControlZoomBar a.olControlZoomSlider:hover {
         background: rgba(0, 60, 136, 0.5);
     }
+}
+div.olControlZoomInCnt a, div.olControlZoomOutCnt a {
+    margin: 0;
 }
 a.olControlZoomIn {
     border-radius: 4px 4px 0 0;
 }
 a.olControlZoomOut {
     border-radius: 0 0 4px 4px;
+}
+div.olControlZoomBar a.olControlZoomSlider {
+    height: 4px;
+    width: 22px;
+    border-radius: 2px;
+    border: 1px solid #ffffff;
+    margin-top: 1px;
+    background: #7b98bc;
+    position: relative;
+    display: block;
 }
 
 
