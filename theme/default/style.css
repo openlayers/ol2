@@ -518,6 +518,10 @@ div.olControlZoomBar a.olControlZoomSlider {
     position: relative;
     display: block;
     cursor: move;
+    color: #FFFFFF;
+    font-size: 17px;
+    line-height: 0px;
+    text-align: center;
 }
 div.olControlZoomBarMove {
     cursor: move;

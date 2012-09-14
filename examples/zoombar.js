@@ -29,4 +29,4 @@ var map2 = new OpenLayers.Map({
     zoom: 1
 });
 // test to build the zoombar after sets the baselayer
-map2.addControl(new OpenLayers.Control.ZoomBar());
+map2.addControl(new OpenLayers.Control.ZoomBar({ sliderText: '' }));
