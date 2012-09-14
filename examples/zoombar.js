@@ -23,9 +23,10 @@ var map2 = new OpenLayers.Map({
     ], { transitionEffect: 'resize' })],
     controls: [
         new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.Attribution(),
-        new OpenLayers.Control.ZoomBar()
+        new OpenLayers.Control.Attribution()
     ],
     center: [0, 0],
     zoom: 1
 });
+// test to build the zoombar after sets the baselayer
+map2.addControl(new OpenLayers.Control.ZoomBar());

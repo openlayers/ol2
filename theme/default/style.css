@@ -514,6 +514,7 @@ div.olControlZoomBar a.olControlZoomSlider {
     border-radius: 2px;
     border: 1px solid #ffffff;
     margin-top: 1px;
+    margin-bottom: 1px;
     background: #7b98bc;
     position: relative;
     display: block;
