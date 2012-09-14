@@ -444,20 +444,16 @@ div.olControlZoomBar {
     top: 8px;
     left: 8px;
 }
-div.olControlZoomInCnt {
-    border-radius: 4px 4px 2px 2px;
-    padding: 3px 3px 1px 3px;
-}
-div.olControlZoomOutCnt {
-    border-radius: 2px 2px 4px 4px;
-    padding: 1px 3px 3px 3px;
+div.olControlZoomInCnt, div.olControlZoomOutCnt {
+    padding: 3px;
+    border-radius: 4px;
 }
 div.olControlZoomBarCnt {
     padding: 0 3px;
-    margin: -7px 8px 0;
+    margin: -15px 8px -5px;
     width: 2px;
 }
-div.olControlZoom a, div.olControlZoomInCnt a, div.olControlZoomOutCnt a, div.olControlZoomBar div.olControlZoomBarBarInternal {
+div.olControlZoom a, div.olControlZoomInCnt a, div.olControlZoomOutCnt a, div.olControlZoomBar div.olControlZoomBarStroke {
     display: block;
     padding: 0;
     color: white;
@@ -477,17 +473,18 @@ div.olControlZoom a, div.olControlZoomInCnt a, div.olControlZoomOutCnt a {
     width: 22px;
 }
 div.olControlZoomBar div.olControlZoomBarBar {
-    margin: 0;
+    margin: 2px 0 -2px;
     padding: 0;
     width: 22px;
     display: block;
     height: 100%;
 }
 div.olControlZoomBar div.olControlZoomBarBar {
-    margin: 0 2px;
+    margin: 5px 2px;
 }
-div.olControlZoomBar div.olControlZoomBarBarInternal {
+div.olControlZoomBar div.olControlZoomBarStroke {
     width: 2px;
+    padding: 3px 0;
 }
 div.olControlZoom a:hover, div.olControlZoomBar a:hover, div.olControlZoomBar a.olControlZoomSlider:hover {
     background: #130085; /* fallback for IE */
@@ -502,24 +499,29 @@ div.olControlZoom a:hover, div.olControlZoomBar a:hover, div.olControlZoomBar a.
 div.olControlZoomInCnt a, div.olControlZoomOutCnt a {
     margin: 0;
 }
-a.olControlZoomIn {
+div.olControlZoom a.olControlZoomIn {
     border-radius: 4px 4px 0 0;
 }
-a.olControlZoomOut {
+div.olControlZoom a.olControlZoomOut {
     border-radius: 0 0 4px 4px;
 }
+div.olControlZoomBar a.olControlZoomIn, div.olControlZoomBar a.olControlZoomOut {
+    border-radius: 4px;
+}
 div.olControlZoomBar a.olControlZoomSlider {
-    height: 4px;
+    height: 10px;
     width: 22px;
-    border-radius: 2px;
-    border: 1px solid #ffffff;
-    margin-top: 1px;
-    margin-bottom: 1px;
+    border-radius: 4px;
+    border: 1px solid #FFFFFF;
+    margin: -2px 0;
     background: #7b98bc;
     position: relative;
     display: block;
+    cursor: move;
 }
-
+div.olControlZoomBarMove {
+    cursor: move;
+}
 
 /**
  * Animations

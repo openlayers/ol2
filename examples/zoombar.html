@@ -40,31 +40,23 @@
             /* Custom styling */
             #map2 div.olControlZoomInCnt, #map2 div.olControlZoomOutCnt {
                 border-radius: 14px;
-                padding: 3px;
             }
             #map2 div.olControlZoomInCnt a, #map2 div.olControlZoomOutCnt a {
                 border-radius: 11px;
                 padding-top: 1px;
+                line-height: 20px;
+                font-size: 20px;
             }
-            #map2 div.olControlZoomBarCnt {
-                margin-top: -12px;
-                margin-bottom: 2px;
-            }
-            #map2 div.olControlZoomBar div.olControlZoomBarBar {
-                margin-top: 2px;
-                margin-bottom: -2px;
-            }
-            #map2 div.olControlZoomBar a, #map2 div.olControlZoomBar div.olControlZoomBarBarInternal {
+            #map2 div.olControlZoomBar a, #map2 div.olControlZoomBar div.olControlZoomBarStroke {
                 background: #000; /* fallback for IE - IE6 requires background shorthand*/
                 background: rgba(0, 0, 0, 0.5);
             }
-            #map2 div.olControlZoom a:hover, #map2 div.olControlZoomBar a:hover {
+            #map2 div.olControlZoomInCnt a:hover, #map2 div.olControlZoomOutCnt a:hover {
                 background: #000; /* fallback for IE */
                 background: rgba(0, 0, 0, 0.7);
             }
             #map2 div.olControlZoomBar a.olControlZoomSlider {
                 background: #777;
-                height: 10px;
                 width: 10px;
                 border-radius: 5px;
                 margin: -2px 6px;
