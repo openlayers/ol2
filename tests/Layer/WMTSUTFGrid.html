@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <script>
+      /**
+      * Because browsers that implement requestAnimationFrame may not execute
+      * animation functions while a window is not displayed (e.g. in a hidden
+      * iframe as in these tests), we mask the native implementations here.  The
+      * native requestAnimationFrame functionality is tested in Util.html and
+      * in PanZoom.html (where a popup is opened before panning).  The panTo tests
+      * here will test the fallback setTimeout implementation for animation.
+      */
+      window.requestAnimationFrame =
+          window.webkitRequestAnimationFrame =
+          window.mozRequestAnimationFrame =
+          window.oRequestAnimationFrame =
+          window.msRequestAnimationFrame = null;
+  </script>
+  <script src="../OLLoader.js"></script>
+  <script type="text/javascript">
+
+    var map, layer;
+    function setUp() {
+        layer = new OpenLayers.Layer.WMTSUTFGrid({
+            name: "Blue Marble WMTS",
+            url: "http://example.com/wmts/",
+            layer: "world",
+            style: "blue_marble",
+            matrixSet: "arcgis_online",
+            requestEncoding: "REST",
+            isBaseLayer: true,
+            utfgridResolution: 4
+        });
+        map = new OpenLayers.Map({
+            div: "map",
+            projection: "EPSG:900913",
+            layers: [layer],
+            center: [0, 0],
+            zoom: 1
+        });
+    }
+
+    function tearDown() {
+        map.destroy();
+        map = null;
+        layer = null;
+    }
+
+    function test_constructor(t) {
+        t.plan(4);
+
+        var layer = new OpenLayers.Layer.WMTSUTFGrid({
+            name: "Blue Marble WMTS",
+            url: "http://example.com/wmts/",
+            layer: "world",
+            style: "blue_marble",
+            matrixSet: "arcgis_online",
+            requestEncoding: "REST",
+            utfgridResolution: 8
+        });
+        t.ok(layer instanceof OpenLayers.Layer.WMTSUTFGrid, "utfgrid instance");
+        t.eq(layer.name, "Blue Marble WMTS", "layer name");
+        t.eq(layer.url, "http://example.com/wmts/", "layer url");
+        t.eq(layer.utfgridResolution, 8, "layer utfgridResolution");
+
+        layer.destroy();
+
+    }
+
+    function test_clone(t) {
+        t.plan(3);
+        setUp();
+
+        var clone = layer.clone();
+        t.ok(layer instanceof OpenLayers.Layer.WMTSUTFGrid, "utfgrid instance");
+        t.eq(layer.url, "http://example.com/wmts/", "layer url");
+        t.eq(layer.utfgridResolution, 4, "layer utfgridResolution");
+        clone.destroy();
+
+        tearDown();
+    }
+
+
+    function test_capabilities(t) {
+        t.plan(5);
+        var format = new OpenLayers.Format.WMTSCapabilities();
+        var xml = document.getElementById("capabilities").firstChild.nodeValue;
+        var doc = new OpenLayers.Format.XML().read(xml);
+        var caps = format.read(doc);
+        var layer = format.createLayer(caps, {
+            layer: "grid"
+        });
+        t.eq(layer.matrixIds.length, 5, "correct matrixIds length");
+        t.eq(layer.name, "grid", "correct layer title");
+        t.eq(layer.style, "default", "correct style identifier");
+        t.eq(layer.requestEncoding, "REST", "correct requestEncoding");
+        t.ok(layer instanceof OpenLayers.Layer.WMTSUTFGrid, "correct layer type");
+    }
+
+  </script>
+</head>
+<body>
+<div id="map" style="height: 256px; width: 512px"></div>
+<div id="capabilities"><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<Capabilities version="1.0.0" xmlns="http://www.opengis.net/wmts/1.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+              xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:gml="http://www.opengis.net/gml"
+              xsi:schemaLocation="http://schemas.opengis.net/wmts/1.0/wmtsGetCapabilities_response.xsd">
+  <ows:ServiceIdentification> </ows:ServiceIdentification>
+  <ows:ServiceProvider> </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost/tiles/capabilities.xml">
+            <ows:Constraint name="GetEncoding">
+              <ows:AllowedValues>
+                <ows:Value>REST</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Get>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="GetTile">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost/tiles">
+            <ows:Constraint name="GetEncoding">
+              <ows:AllowedValues>
+                <ows:Value>REST</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Get>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+  </ows:OperationsMetadata>
+  <Contents>
+
+    <Layer>
+      <ows:Title>grid</ows:Title>
+      <ows:Identifier>grid</ows:Identifier>
+      <Style isDefault="true">
+        <ows:Identifier>default</ows:Identifier>
+      </Style>
+      <Format>application/utfgrid</Format>
+      <Dimension>
+        <ows:Identifier>VERSION</ows:Identifier>
+        <Default>1</Default>
+        <Value>1</Value>
+      </Dimension>
+      <ResourceURL format="application/utfgrid" resourceType="tile"
+                   template="http://localhost/tiles/1.0.0/grid/default/{VERSION}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.json" />
+      <TileMatrixSetLink>
+        <TileMatrixSet>swissgrid</TileMatrixSet>
+      </TileMatrixSetLink>
+    </Layer>
+
+    <Layer>
+      <ows:Title>mapnik</ows:Title>
+      <ows:Identifier>mapnik</ows:Identifier>
+      <Style isDefault="true">
+        <ows:Identifier>default</ows:Identifier>
+      </Style>
+      <Format>image/png</Format>
+      <Dimension>
+        <ows:Identifier>VERSION</ows:Identifier>
+        <Default>1</Default>
+        <Value>1</Value>
+      </Dimension>
+      <ResourceURL format="image/png" resourceType="tile"
+                   template="http://localhost/tiles/1.0.0/mapnik/default/{VERSION}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png" />
+      <TileMatrixSetLink>
+        <TileMatrixSet>swissgrid</TileMatrixSet>
+      </TileMatrixSetLink>
+    </Layer>
+
+
+
+    <TileMatrixSet>
+      <ows:Identifier>swissgrid</ows:Identifier>
+      <ows:SupportedCRS>urn:ogc:def:crs:epsg::21781</ows:SupportedCRS>
+      <TileMatrix>
+        <ows:Identifier>0</ows:Identifier>
+        <ScaleDenominator>2678571.42857</ScaleDenominator>
+        <TopLeftCorner>420000 414000</TopLeftCorner>
+        <TileWidth>256</TileWidth>
+        <TileHeight>256</TileHeight>
+        <MatrixWidth>3</MatrixWidth>
+        <MatrixHeight>2</MatrixHeight>
+      </TileMatrix>
+
+      <TileMatrix>
+        <ows:Identifier>1</ows:Identifier>
+        <ScaleDenominator>1785714.28571</ScaleDenominator>
+        <TopLeftCorner>420000 414000</TopLeftCorner>
+        <TileWidth>256</TileWidth>
+        <TileHeight>256</TileHeight>
+        <MatrixWidth>4</MatrixWidth>
+        <MatrixHeight>3</MatrixHeight>
+      </TileMatrix>
+
+      <TileMatrix>
+        <ows:Identifier>2</ows:Identifier>
+        <ScaleDenominator>892857.142857</ScaleDenominator>
+        <TopLeftCorner>420000 350000</TopLeftCorner>
+        <TileWidth>256</TileWidth>
+        <TileHeight>256</TileHeight>
+        <MatrixWidth>8</MatrixWidth>
+        <MatrixHeight>5</MatrixHeight>
+      </TileMatrix>
+
+      <TileMatrix>
+        <ows:Identifier>3</ows:Identifier>
+        <ScaleDenominator>357142.857143</ScaleDenominator>
+        <TopLeftCorner>420000 362800</TopLeftCorner>
+        <TileWidth>256</TileWidth>
+        <TileHeight>256</TileHeight>
+        <MatrixWidth>19</MatrixWidth>
+        <MatrixHeight>13</MatrixHeight>
+      </TileMatrix>
+
+      <TileMatrix>
+        <ows:Identifier>4</ows:Identifier>
+        <ScaleDenominator>178571.428571</ScaleDenominator>
+        <TopLeftCorner>420000 350000</TopLeftCorner>
+        <TileWidth>256</TileWidth>
+        <TileHeight>256</TileHeight>
+        <MatrixWidth>38</MatrixWidth>
+        <MatrixHeight>25</MatrixHeight>
+      </TileMatrix>
+
+    </TileMatrixSet>
+
+  </Contents>
+</Capabilities>
+--></div>
+</body>
+</html>
+
