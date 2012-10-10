@@ -1,9 +1,11 @@
 var osm = new OpenLayers.Layer.OSM();
 
-var utfgrid = new OpenLayers.Layer.UTFGrid({
-    url: "utfgrid/world_utfgrid/${z}/${x}/${y}.json",
-    utfgridResolution: 4, // default is 2
-    displayInLayerSwitcher: false
+var utfgrid = new OpenLayers.Layer.XYZ('UTFGrid', 'utfgrid/world_utfgrid/${z}/${x}/${y}.json', {
+    isBaseLayer: false,
+    tileClass: OpenLayers.Tile.UTFGrid,
+    tileOptions: {
+        utfgridResolution: 4 // default is 2
+    }
 });
 
 var map = new OpenLayers.Map({
