@@ -35,6 +35,17 @@ function test_Comparison_string(t) {
     t.eq(format.write(filter), test_cql, "write returned test cql");
 }
 
+function test_read_whitespace(t) {
+    t.plan(4);
+    var cql = "TYPEDESC = 'BOE Numbered Plans'";
+    var format = new OpenLayers.Format.CQL();
+    var filter = format.read(cql);
+    t.ok(filter instanceof OpenLayers.Filter.Comparison, "filter parsed correctly with whitespace in string");
+    t.eq(filter.property, 'TYPEDESC', "filter property parsed correctly");
+    t.eq(filter.value, 'BOE Numbered Plans', "value parsed correctly");
+    t.eq(filter.type, '==', 'filter type parsed correctly');
+}
+
 function test_Comparison_number(t) {
     t.plan(5);
     var test_cql, format, filter;
