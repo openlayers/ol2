@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+  <Folder>
+    <GroundOverlay> 
+      <Icon> 
+        <!-- relative link with './' -->
+        <href>../data/4_m_citylights_lg.gif</href> 
+      </Icon> 
+      <LatLonBox> 
+          <north>24</north> 
+          <south>15</south> 
+          <west>101</west> 
+          <east>116</east> 
+      </LatLonBox> 
+    </GroundOverlay>  
+  </Folder> 
+</kml>
