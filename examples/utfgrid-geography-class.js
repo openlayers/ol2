@@ -10,15 +10,20 @@ var osm = new OpenLayers.Layer.XYZ(
 );
 
 var utfgrid = new OpenLayers.Layer.UTFGrid({
-    url: "utfgrid/geography-class/${z}/${x}/${y}.grid.json",
+    url: [
+        "http://a.tiles.mapbox.com/v3/mapbox.geography-class/${z}/${x}/${y}.grid.json",
+        "http://b.tiles.mapbox.com/v3/mapbox.geography-class/${z}/${x}/${y}.grid.json",
+        "http://c.tiles.mapbox.com/v3/mapbox.geography-class/${z}/${x}/${y}.grid.json"
+    ],
     utfgridResolution: 4, // default is 2
-    displayInLayerSwitcher: false
+    useJSONP: true,
+    displayInLayerSwitcher: false,
+    numZoomLevels: 9
 });
 
 var map = new OpenLayers.Map({
     div: "map", 
     projection: "EPSG:900913",
-    numZoomLevels: 3,
     layers: [osm, utfgrid],
     controls: [
         new OpenLayers.Control.Navigation({
