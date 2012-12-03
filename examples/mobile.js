@@ -99,6 +99,13 @@ var Geolocate = OpenLayers.Class(OpenLayers.Control, {
                 timeout: 7000
             }
         });
+        this.geolocateControl.events.register("locationfailed", this, function(e) {
+            if (e.error.code == 1) {
+                this.geolocateControl.deactivate();
+                this.cancelAutoUpdate();
+                alert("This application is not allowed to use your position");
+            }
+        });
         this.geolocateControl.events.register("locationupdated", this, function(e) {
             this.layer.removeFeatures([this.circle, this.marker]);
             this.circle.geometry = new OpenLayers.Geometry.Polygon.createRegularPolygon(
