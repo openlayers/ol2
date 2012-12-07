@@ -12,6 +12,10 @@ html, body, #map {
 #title, #tags, #shortdesc {
     display: none;
 }
+/* Prevent tile scaling on Android 4 when d-pad keys are pressed */
+.olMapViewport > div > * {
+    outline-width: 0;
+}
 .olLayerGrid .olTileImage {
     -webkit-transition: opacity 0.2s linear;
     -moz-transition: opacity 0.2s linear;
