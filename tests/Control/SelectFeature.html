@@ -41,8 +41,21 @@
 
     }
 
+    function test_destroy(t) {
+        t.plan(1);
+        var map = new OpenLayers.Map("map");
+        var layer1 = new OpenLayers.Layer.Vector();
+        map.addLayer(layer1);
+        var control = new OpenLayers.Control.SelectFeature([layer1]);
+        map.addControl(control);
+        control.activate();
+        control.destroy();
+        t.eq(layer1.renderer.getRenderLayerId(), layer1.id, 
+            "Root container moved correctly when control is destroyed and layers was an array parameter");
+    }  
+
     function test_Control_SelectFeature_select(t) {
-        t.plan(4);
+        t.plan(8);
         var map = new OpenLayers.Map("map");
         var layer1 = new OpenLayers.Layer.Vector();
         var layer2 = new OpenLayers.Layer.Vector();
@@ -59,12 +72,16 @@
         layer2.drawFeature = drawFeature;
         control.select(feature1);
         t.eq(feature1.renderIntent, "select", "render intent is set to select");
+		t.eq(control.handlers.feature.lastFeature.id,feature1.id, "handler has lastFeature set to the first selected");
         control.select(feature2);
         t.eq(feature2.renderIntent, "select", "render intent is set to select");
+		t.eq(control.handlers.feature.lastFeature.id,feature1.id, "handler has lastFeature set to the first selected");
         control.unselect(feature1);
         t.eq(feature1.renderIntent, "default", "render intent is set back to default");
+		t.eq(control.handlers.feature.lastFeature,null, "set lastFeature of feature handler is null");
         control.unselect(feature2);
         t.eq(feature2.renderIntent, "default", "render intent is set back to default");
+		t.eq(control.handlers.feature.lastFeature,null, "set lastFeature of feature handler is null");
     }
 
     function test_Control_SelectFeature_clickFeature(t) {
@@ -544,20 +561,7 @@
         control.setLayer(layer3);
         t.eq((control.layers === null), true, "When using setLayer with a single layer, the layers property is removed if present before");
         map.destroy();
-    }
-
-    function test_destroy(t) {
-        t.plan(1);
-        var map = new OpenLayers.Map("map");
-        var layer1 = new OpenLayers.Layer.Vector();
-        map.addLayer(layer1);
-        var control = new OpenLayers.Control.SelectFeature([layer1]);
-        map.addControl(control);
-        control.activate();
-        control.destroy();
-        t.eq(layer1.renderer.getRenderLayerId(), layer1.id, 
-            "Root container moved correctly when control is destroyed and layers was an array parameter");
-    }   
+    } 
 
     function test_unselectAll(t) {
         t.plan(2);
