@@ -30,11 +30,11 @@
 # SOFTWARE.
 # */
 
-from StringIO import StringIO
+import io
 
 def jsmin(js):
-    ins = StringIO(js)
-    outs = StringIO()
+    ins = io.StringIO(js)
+    outs = io.StringIO()
     JavascriptMinify().minify(ins, outs)
     str = outs.getvalue()
     if len(str) > 0 and str[0] == '\n':

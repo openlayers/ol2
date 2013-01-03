@@ -86,7 +86,7 @@ def usage(filename):
     """
     Displays a usage message.
     """
-    print "%s [-c <config file>] <output.js> <directory> [...]" % filename
+    print("%s [-c <config file>] <output.js> <directory> [...]" % filename)
 
 
 class Config:
@@ -181,7 +181,7 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
     ## Import file source code
     ## TODO: Do import when we walk the directories above?
     for filepath in allFiles:
-        print "Importing: %s" % filepath
+        print("Importing: %s" % filepath)
         fullpath = os.path.join(sourceDirectory, filepath).strip()
         content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF?
         files[filepath] = SourceFile(filepath, content, cfg.exclude) # TODO: Chop path?
@@ -197,16 +197,16 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
         complete = True
 
         ## Resolve the dependencies
-        print "Resolution pass %s... " % resolution_pass
+        print("Resolution pass %s... " % resolution_pass)
         resolution_pass += 1 
 
         for filepath, info in files.items():
             for path in info.requires:
-                if not files.has_key(path):
+                if not path in files:
                     complete = False
                     fullpath = os.path.join(sourceDirectory, path).strip()
                     if os.path.exists(fullpath):
-                        print "Importing: %s" % path
+                        print("Importing: %s" % path)
                         content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF?
                         files[path] = SourceFile(path, content, cfg.exclude) # TODO: Chop path?
                     else:
@@ -217,12 +217,12 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
     for filepath, info in files.items():
         dependencies[filepath] = info.requires
 
-    print "Sorting..."
+    print("Sorting...")
     order = toposort(dependencies) #[x for x in toposort(dependencies)]
 
     ## Move forced first and last files to the required position
     if cfg:
-        print "Re-ordering files..."
+        print("Re-ordering files...")
         order = cfg.forceFirst + [item
                      for item in order
                      if ((item not in cfg.forceFirst) and
@@ -236,30 +236,30 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
     if returnAsListOfNames:
         for fp in order:
             fName = os.path.normpath(os.path.join(sourceDirectory, fp)).replace("\\","/")
-            print "Append: ", fName
+            print("Append: ", fName)
             f = files[fp]
             for fExclude in f.excludedFiles: 
-                print "  Required file \"%s\" is excluded." % fExclude 
+                print("  Required file \"%s\" is excluded." % fExclude )
             result.append(fName)
-        print "\nTotal files: %d " % len(result)
+        print("\nTotal files: %d " % len(result))
         return result
         
     # Return as merged source code
     for fp in order:
         f = files[fp]
-        print "Exporting: ", f.filepath
+        print("Exporting: ", f.filepath)
         for fExclude in f.excludedFiles: 
-            print "  Required file \"%s\" is excluded." % fExclude 
+            print("  Required file \"%s\" is excluded." % fExclude )
         result.append(HEADER % f.filepath)
         source = f.source
         result.append(source)
         if not source.endswith("\n"):
             result.append("\n")
 
-    print "\nTotal files merged: %d " % len(files)
+    print("\nTotal files merged: %d " % len(files))
 
     if outputFilename:
-        print "\nGenerating: %s" % (outputFilename)
+        print("\nGenerating: %s" % (outputFilename))
         open(outputFilename, "w").write("".join(result))
     return "".join(result)
 
@@ -282,6 +282,6 @@ if __name__ == "__main__":
     configFile = None
     if options and options[0][0] == "-c":
         configFile = options[0][1]
-        print "Parsing configuration file: %s" % filename
+        print("Parsing configuration file: %s" % filename)
 
     run( sourceDirectory, outputFilename, configFile )

@@ -1,6 +1,7 @@
 /build/OpenLayers.js
 /tools/closure-compiler.jar
 /tools/*.pyc
+/tools/__pycache__/*
 /apidoc_config/Data/
 /doc/apidocs/
 /examples/example-list.js

@@ -44,4 +44,4 @@ def minimize(data, exclude=None):
 
 if __name__ == "__main__":
     import sys
-    print minimize(open(sys.argv[1]).read())
+    print(minimize(open(sys.argv[1]).read()))
