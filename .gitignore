@@ -6,3 +6,5 @@
 /doc/apidocs/
 /examples/example-list.js
 /examples/example-list.xml
+.project
+.pydevproject
