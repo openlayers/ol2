@@ -30,11 +30,14 @@
 # SOFTWARE.
 # */
 
-import io
+try:
+    from StringIO import StringIO as StringIO
+except ImportError:
+    from io import StringIO as StringIO
 
 def jsmin(js):
-    ins = io.StringIO(js)
-    outs = io.StringIO()
+    ins = StringIO(js)
+    outs = StringIO()
     JavascriptMinify().minify(ins, outs)
     str = outs.getvalue()
     if len(str) > 0 and str[0] == '\n':
