@@ -9,6 +9,10 @@
         var parser = new OpenLayers.Format.WCSCapabilities();
 
         // version 1.0.0
+
+        // Save original reader
+        var _v1_0_0 = OpenLayers.Format.WCSCapabilities.v1_0_0.prototype.read;
+
         var text =
             '<?xml version="1.0" encoding="UTF-8"?>' +
             '<WCS_Capabilities version="1.0.0" xmlns:wcs="http://www.opengis.net/wcs"></WCS_Capabilities>';
@@ -18,8 +22,15 @@
         }
         var res = parser.read(text);
         t.eq(res.version, "1.0.0", "version 1.0.0 written to result object");
+        // Restore original reader
+        OpenLayers.Format.WCSCapabilities.v1_0_0.prototype.read = _v1_0_0;
+
 
         // version 1.1.0
+
+        // Save original reader
+        var _v1_1_0 = OpenLayers.Format.WCSCapabilities.v1_1_0.prototype.read;
+
         var text =
             '<?xml version="1.0" encoding="UTF-8"?>' +
             '<Capabilities version="1.1.0" xmlns:wcs="http://www.opengis.net/wcs/1.1"></Capabilities>';
@@ -29,6 +40,9 @@
         }
         var res = parser.read(text);
         t.eq(res.version, "1.1.0", "version 1.1.0 written to result object");
+
+        // Restore original reader
+        OpenLayers.Format.WCSCapabilities.v1_1_0.prototype.read = _v1_1_0;
     }
 
     </script> 
