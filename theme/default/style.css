@@ -9,6 +9,11 @@ div.olMapViewport {
     text-align: left;
 }
 
+/* Prevent tile scaling on Android 4 when d-pad keys are pressed */
+.olMapViewport > div > * {
+    outline-width: 0;
+}
+
 div.olLayerDiv {
    -moz-user-select: none;
    -khtml-user-select: none;

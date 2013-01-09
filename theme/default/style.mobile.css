@@ -61,3 +61,7 @@ img.olTileImage {
     -webkit-transform: translate3d(0, 0, 0);
 }
 }
+/* Prevent tile scaling on Android 4 when d-pad keys are pressed */
+.olMapViewport > div > * {
+    outline-width: 0;
+}
