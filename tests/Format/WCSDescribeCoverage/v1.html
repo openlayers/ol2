@@ -17,7 +17,7 @@
     }
     
     function test_read(t) {
-        t.plan(34);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
+        t.plan(36);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
        
         var parser = new OpenLayers.Format.WCSDescribeCoverage();
 
@@ -73,8 +73,6 @@
             }
         }
 
-        //////////////////<SupportedFormat>image/tiff</SupportedFormat>
-
         t.eq(count, 4, "number of coverages correct");
         t.eq(res.coverageDescriptionKeys.length, 4, "number of coverage keys correct");
         t.eq(res.version, "1.1.0", "version correct");
@@ -85,7 +83,9 @@
         t.eq(metadata.title, "RO DSM", "correct title");
         t.eq(metadata.abstract, "Digital Surface Model (DSM) raster data set of inner city Rotterdam", "correct abstract");
         t.eq(metadata.supportedCRSs.length, 4, "correct number of supported CRSs");
-        t.eq(metadata.supportedCRSs[3], "urn:ogc:def:crs:EPSG::4326", "correct value for selected supported CRS");
+        t.eq(metadata.supportedCRSs[3], "urn:ogc:def:crs:EPSG::4326", "correct value for first supported CRS");
+        t.eq(metadata.supportedFormats.length, 1, "correct number of supported formats");
+        t.eq(metadata.supportedFormats[0], "image/tiff", "correct value for first supported format");
 
 
         var spatialDomain = metadata.domain.spatialDomain;
