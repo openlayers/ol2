@@ -17,7 +17,7 @@
     }
     
     function test_read(t) {
-        t.plan(36);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
+        t.plan(42);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
        
         var parser = new OpenLayers.Format.WCSDescribeCoverage();
 
@@ -105,6 +105,14 @@
         t.eq(gridCRS.gridOrigin.x, 91979.25, "correct gridOrigin.x");
         t.eq(gridCRS.gridOrigin.y, 437659.25, "correct gridOrigin.y");
         t.eq(gridCRS.gridType, "urn:ogc:def:method:WCS:1.1:2dSimpleGrid", "correct gridType");
+
+        var bb = spatialDomain.BoundingBox;
+        t.eq(BB.length, 3, "Correct number of bounding box entries");
+        t.eq(BB[1].crs, "urn:ogc:def:crs:EPSG::28992", "Correct bounding box crs");
+        t.eq(BB[1].bounds.top, 437659.5, "Correct bounding box top coordinate");
+        t.eq(BB[1].bounds.bottom, 436326, "Correct bounding box bottom coordinate");
+        t.eq(BB[1].bounds.left, 91979, "Correct bounding box left coordinate");
+        t.eq(BB[1].bounds.right, 92617, "Correct bounding box right coordinate");
     }
 
     </script> 
