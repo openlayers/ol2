@@ -59,7 +59,7 @@
         t.eq(lonLatEnvelope.max.y, 4.4808508475645, "correct lonLatEnvelope.max.y");
         t.eq(lonLatEnvelope.srsName, "urn:ogc:def:crs:OGC:1.3:CRS84", "correct lonLatEnvelope.srsName");
 
-        var nativeCRSs = metadata.nativeCRSs;
+        var nativeCRSs = metadata.supportedCRSs.nativeCRSs;
         t.eq(nativeCRSs.length, 1, "correct number of native CRSs");
         t.eq(nativeCRSs[0], "EPSG:28992", "correct native CRS");
 
