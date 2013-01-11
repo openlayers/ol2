@@ -17,7 +17,7 @@
     }
     
     function test_read(t) {
-        t.plan(42);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
+        t.plan(44);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
        
         var parser = new OpenLayers.Format.WCSDescribeCoverage();
 
@@ -58,6 +58,10 @@
         t.eq(lonLatEnvelope.max.x, 51.9248713705576, "correct lonLatEnvelope.max.x");
         t.eq(lonLatEnvelope.max.y, 4.4808508475645, "correct lonLatEnvelope.max.y");
         t.eq(lonLatEnvelope.srsName, "urn:ogc:def:crs:OGC:1.3:CRS84", "correct lonLatEnvelope.srsName");
+
+        var nativeCRSs = metadata.nativeCRSs;
+        t.eq(nativeCRSs.length, 1, "correct number of native CRSs");
+        t.eq(nativeCRSs[0], "EPSG:28992", "correct native CRS");
 
 
         // MapServer, v1.1.0
