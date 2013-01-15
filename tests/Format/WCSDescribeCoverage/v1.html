@@ -17,7 +17,7 @@
     }
     
     function test_read(t) {
-        t.plan(44);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
+        t.plan(40);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
        
         var parser = new OpenLayers.Format.WCSDescribeCoverage();
 
@@ -26,7 +26,7 @@
 
         
         var res = parser.read(text);
-         debugger
+        debugger
 
         t.ok(!res.error, "Parsing XML generated no errors");
 
@@ -92,16 +92,7 @@
         t.eq(metadata.supportedFormats.length, 1, "correct number of supported formats");
         t.eq(metadata.supportedFormats[0], "image/tiff", "correct value for first supported format");
 
-
-        var spatialDomain = metadata.domain.spatialDomain;
-
-        var bounds = spatialDomain.bounds;
-        t.eq(bounds.bottom, 51.912813427383, "correct bounds.bottom");
-        t.eq(bounds.left, 4.471333734139, "correct bounds.left");
-        t.eq(bounds.right, 4.4808508475645, "correct bounds.right");
-        t.eq(bounds.top, 51.924871370558, "correct bounds.top");
-
-        var gridCRS = spatialDomain.gridCRS;
+        var gridCRS = metadata.domain.spatialDomain.gridCRS;
         t.eq(gridCRS.gridBaseCRS, "urn:ogc:def:crs:EPSG::28992", "correct gridBaseCRS");
         t.eq(gridCRS.gridCS, "urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS", "correct gridCS");
         t.eq(gridCRS.gridOffsets, "0.5 -0.5", "correct gridOffsets");
@@ -109,13 +100,13 @@
         t.eq(gridCRS.gridOrigin.y, 437659.25, "correct gridOrigin.y");
         t.eq(gridCRS.gridType, "urn:ogc:def:method:WCS:1.1:2dSimpleGrid", "correct gridType");
 
-        var bb = spatialDomain.BoundingBox;
-        t.eq(BB.length, 3, "Correct number of bounding box entries");
-        t.eq(BB[1].crs, "urn:ogc:def:crs:EPSG::28992", "Correct bounding box crs");
-        t.eq(BB[1].bounds.top, 437659.5, "Correct bounding box top coordinate");
-        t.eq(BB[1].bounds.bottom, 436326, "Correct bounding box bottom coordinate");
-        t.eq(BB[1].bounds.left, 91979, "Correct bounding box left coordinate");
-        t.eq(BB[1].bounds.right, 92617, "Correct bounding box right coordinate");
+        var bb = metadata.domain.spatialDomain.BoundingBox;
+        t.eq(bb.length, 3, "Correct number of bounding box entries");
+        t.eq(bb[1].crs, "urn:ogc:def:crs:EPSG::28992", "Correct bounding box crs");
+        t.eq(bb[1].bounds.top, 437659.5, "Correct bounding box top coordinate");
+        t.eq(bb[1].bounds.bottom, 436326, "Correct bounding box bottom coordinate");
+        t.eq(bb[1].bounds.left, 91979, "Correct bounding box left coordinate");
+        t.eq(bb[1].bounds.right, 92617, "Correct bounding box right coordinate");
     }
 
     </script> 
