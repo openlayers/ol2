@@ -133,8 +133,8 @@
              "1.0.0 and 1.1.0 have same supportedFormats.length");
 
         // Use substr here to account for differing CRS formats
-        t.eq(res1_0_0.coverageDescriptions.ro_dsm.nativeCRS.substr(-10),    // EPSG::28992
-             res1_1_0.coverageDescriptions.ro_dsm.nativeCRS.substr(-10),    // urn:ogc:def:crs:EPSG::28992
+        t.eq(res1_0_0.coverageDescriptions.ro_dsm.nativeCRS.substr(-5),    // EPSG:28992
+             res1_1_0.coverageDescriptions.ro_dsm.nativeCRS.substr(-5),    // urn:ogc:def:crs:EPSG::28992
              "1.0.0 and 1.1.0 have same native crs");
         t.eq(res1_0_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_0_0.coverageDescriptions.ro_dsm.nativeCRS].top, 
              res1_1_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_1_0.coverageDescriptions.ro_dsm.nativeCRS].top, 
