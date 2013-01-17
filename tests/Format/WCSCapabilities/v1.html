@@ -36,7 +36,7 @@
         t.eq(res.service.keywords.length, 2, "Correct number of Service>Keywords found");
         t.eq(res.service.keywords[0], "Geospatial WebServices", "Service>Keywords correctly parsed");
         t.eq(res.service.title, "WCS Sample Data Server 1.0.0", "Service>Title correctly parsed");
-        t.eq(res.service.identifier, "MapServer WCS", "Service>Name correctly parsed");
+        t.eq(res.service.name, "MapServer WCS", "Service>Name correctly parsed");
 
         var responsibleParty = res.service.responsibleParty;
         t.eq(responsibleParty.individualName, "Franko Lemmer", "Service>ResponsibleParty>IndividualName correctly parsed");
