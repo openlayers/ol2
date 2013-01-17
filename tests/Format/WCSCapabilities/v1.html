@@ -35,7 +35,7 @@
         t.eq(res.service.accessConstraints, "Open to the public", "Service>AccessConstraints correctly parsed");
         t.eq(res.service.keywords.length, 2, "Correct number of Service>Keywords found");
         t.eq(res.service.keywords[0], "Geospatial WebServices", "Service>Keywords correctly parsed");
-        t.eq(res.service.title, "WCS Sample Data Server 1.0.0", "Service>Label correctly parsed");
+        t.eq(res.service.title, "WCS Sample Data Server 1.0.0", "Service>Title correctly parsed");
         t.eq(res.service.identifier, "MapServer WCS", "Service>Name correctly parsed");
 
         var responsibleParty = res.service.responsibleParty;
@@ -53,7 +53,7 @@
         var metadata = res.contentMetadata[0];
 
         t.eq(metadata.identifier, "ro_dsm", "ContentMetadata>Name correctly parsed");
-        t.eq(metadata.title, "Rotterdam DSM", "ContentMetadata>Label correctly parsed");
+        t.eq(metadata.title, "Rotterdam DSM", "ContentMetadata>Title correctly parsed");
         t.eq(metadata.lonLatEnvelope.min.x, 4.44444, "ContentMetadata>lonLatEnvelope>Min>Lat correctly parsed");
         t.eq(metadata.lonLatEnvelope.min.y, 51.515151, "ContentMetadata>lonLatEnvelope>Min>Lon correctly parsed");
         t.eq(metadata.lonLatEnvelope.max.x, 5.55555, "ContentMetadata>lonLatEnvelope>Max>Lat correctly parsed");
