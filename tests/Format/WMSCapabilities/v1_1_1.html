@@ -246,9 +246,9 @@
         var obj = new OpenLayers.Format.WMSCapabilities().read(doc);
         var service = obj.service;
 
-        t.eq(personPrimary.name, "OGC:WMS", "name parsed correctly");
-        t.eq(personPrimary.title, "Acme Corp. Map Server", "title parsed correctly");
-        t.eq(personPrimary.abstract, "WMT Map Server maintained by Acme Corporation.  Contact: webmaster@wmt.acme.com.  High-quality maps showing roadrunner nests and possible ambush locations.", "abstract parsed correctly");
+        t.eq(service.name, "OGC:WMS", "name parsed correctly");
+        t.eq(service.title, "Acme Corp. Map Server", "title parsed correctly");
+        t.eq(service.abstract, "WMT Map Server maintained by Acme Corporation.  Contact: webmaster@wmt.acme.com.  High-quality maps showing roadrunner nests and possible ambush locations.", "abstract parsed correctly");
 
         var contactinfo = service.contactInformation;
         t.ok(contactinfo, "object contains contactInformation property");
