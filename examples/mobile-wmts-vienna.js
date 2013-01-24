@@ -99,6 +99,7 @@ var map;
         maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
         maxResolution: 156543.0339,
         numZoomLevels: 20,
+        tileManager: new OpenLayers.TileManager(),
         controls: [
             new OpenLayers.Control.Navigation({
                 mouseWheelOptions: {
@@ -136,10 +137,6 @@ var map;
         matrixSet: "google3857",
         attribution: 'Datenquelle: Stadt Wien - <a href="http://data.wien.gv.at">data.wien.gv.at</a>'
     };
-    // No fade transitions on Android 4, because they are buggy
-    if (/Android 4\.0.*Safari\/.*/.test(navigator.userAgent)) {
-        defaults.className = "nofade";
-    }
 
     // The WMTS layers we're going to add
     var fmzk, aerial, labels;
@@ -169,7 +166,7 @@ var map;
                 {layer:"lb", transitionEffect:"resize"}, defaults
             ));
             labels = format.createLayer(caps, OpenLayers.Util.applyDefaults(
-                {layer:"beschriftung", className:"nofade", isBaseLayer: false},
+                {layer:"beschriftung", isBaseLayer: false},
                 defaults
             ));
             map.addLayers([fmzk, aerial, labels]);
@@ -203,8 +200,7 @@ var map;
         layer: "beschriftung",
         style: "normal",
         transitionEffect: null,
-        isBaseLayer: false,
-        className: "nofade"
+        isBaseLayer: false
     },
     defaults));
     map.addLayers([fmzk, aerial, labels]);
