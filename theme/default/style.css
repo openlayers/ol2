@@ -513,3 +513,58 @@ a.olControlZoomOut {
 img.olTileImage {
     max-width: none;
 }
+
+.olControlSwipe {
+    background:url("img/line.png") repeat;
+    display: none;
+}
+
+.olControlSwipeHover {
+    cursor: w-resize;
+}
+
+.olControlSwipeLayerView {
+    background-color: white;
+    height: 16px;
+    width: 220px;
+    margin-top: 23px;
+    margin-left: -230px;
+    display: block;
+    font-size: 11px;
+    font-family: Tahoma, Arial;
+    font-weight: 700;
+    padding-top: 2px;
+    background-image: url("img/arrow_left.png");
+    background-repeat: no-repeat;
+    position: absolute;
+}
+
+.olControlSwipeLayerSpan {
+    visibility: hidden;
+    font-size: 11px;
+    font-family: Tahoma, Arial;
+    font-weight: 700;
+    white-space: pre;
+    position: absolute;
+}
+
+.olControlSwipeLayerHide {
+    display: none;
+}
+
+.olControlArrowLeft {
+    width: 16px;
+    height: 32px;
+    margin-left: -1px;
+    background-image: url("img/bigarrow_left.png");
+    background-repeat: no-repeat;
+    position: absolute;
+}
+.olControlArrowRight {
+    width: 16px;
+    height: 32px;
+    margin-left: 19px;
+    background-image: url("img/bigarrow_right.png");
+    background-repeat: no-repeat;
+    position: absolute;
+}
