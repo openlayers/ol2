@@ -1,0 +1,68 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <script src="../OLLoader.js"></script>
+  <script type="text/javascript">
+
+    function test_ctor(t) {
+      t.plan(3);
+
+      var map, swipe;
+
+      map = new OpenLayers.Map("map");
+      var nrControl = map.controls.length;
+      swipe = new OpenLayers.Control.Swipe({map: map});
+      map.addControl(swipe);
+      swipe.activate();
+
+      t.ok((nrControl + 1 === map.controls.length),
+        "swipe control has been added to the map");
+      t.ok(swipe instanceof OpenLayers.Control.Swipe,
+        "ctor returns a OpenLayers.Control.Swipe");
+      t.ok((swipe.map.swipeRatio === 0.5),
+        "swipeRatio is per default 0.5");
+    }
+
+    function test_addLayer(t) {
+      t.plan(2);
+
+      var map, swipe;
+
+      map = new OpenLayers.Map("map");
+      var nrControl = map.controls.length;
+      swipe = new OpenLayers.Control.Swipe({map: map});
+      map.addControl(swipe);
+      swipe.activate();
+
+      t.ok((swipe.swipeLayer == null),
+        "per default, swipeLayer is null");
+      var layer = new OpenLayers.Layer.WMS("WMS",
+        "http://octo.metacarta.com/cgi-bin/mapserv?",
+        {map: "/mapdata/vmap_wms.map", layers: "basic"});
+      map.addLayer(layer);
+      t.ok((swipe.swipeLayer != null),
+        "if a layer is added, swipeLayer is not nul");
+    }
+
+    function test_ratio(t) {
+      t.plan(1);
+
+      var map, swipe;
+
+      map = new OpenLayers.Map("map");
+
+      swipe = new OpenLayers.Control.Swipe({map: map});
+
+      map.addControl(swipe);
+      swipe.activate();
+
+      swipe.updateRatio(0.67);
+      t.ok((swipe.map.swipeRatio == 0.67),
+        "ratio has been correctly updated to 0.67");
+    }
+
+  </script>
+</head>
+<body>
+<div style="width: 100px; height: 600px" id="map"></div>
+</body>
+</html>
