@@ -13,12 +13,13 @@
         function init() {
             map = new OpenLayers.Map('map', 
                  {controls: [new OpenLayers.Control.Navigation(), 
-                             new OpenLayers.Control.PanZoomBar()], 
+                             new OpenLayers.Control.ZoomBar()], 
                   numZoomLevels: 10 });
             var wms = new OpenLayers.Layer.WMS(
                 "OpenLayers WMS",
                 "http://vmap0.tiles.osgeo.org/wms/vmap0",
-                {layers: 'basic'}
+                { layers: 'basic' },
+                { transitionEffect: "resize" }
             );
             map.addLayers([wms]);
 

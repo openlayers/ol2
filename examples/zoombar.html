@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <title>OpenLayers ZoomBar Example</title>
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <style>
+            .olControlAttribution {
+                bottom: 5px;
+                font-size: 9px;
+            }
+            #customZoom {
+                z-index: 1001;
+                position: relative;
+                top: 10px;
+                left: 10px;
+            }
+            #customZoom a {
+                text-decoration: none;
+                position: absolute;
+                display: block;
+                width: 50px;
+                text-align: center;
+                font-weight: bold;
+                color: #fff;
+                background: #369;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+            }
+            #customZoom a:hover {
+                background: #036;
+            }
+            #customZoomOut {
+                top: 25px;
+            }
+
+            /* Custom styling */
+            #map2 div.olControlZoomInCnt, #map2 div.olControlZoomOutCnt {
+                border-radius: 14px;
+            }
+            #map2 div.olControlZoomInCnt a, #map2 div.olControlZoomOutCnt a {
+                border-radius: 11px;
+                padding-top: 1px;
+                line-height: 20px;
+                font-size: 20px;
+            }
+            #map2 div.olControlZoomBar a, #map2 div.olControlZoomBar div.olControlZoomBarStroke {
+                background: #000; /* fallback for IE - IE6 requires background shorthand*/
+                background: rgba(0, 0, 0, 0.5);
+            }
+            #map2 div.olControlZoomInCnt a:hover, #map2 div.olControlZoomOutCnt a:hover {
+                background: #000; /* fallback for IE */
+                background: rgba(0, 0, 0, 0.7);
+            }
+            #map2 div.olControlZoomBar a.olControlZoomSlider {
+                background: #777;
+                width: 10px;
+                border-radius: 5px;
+                margin: -2px 6px;
+            }
+            #map2 div.olControlZoomBar a.olControlZoomSlider:hover {
+                background: #222;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="title">ZoomBar Control Example</h1>
+        <div id="tags">zoom bar control</div>
+
+        <div id="shortdesc">Shows how to use a ZoomBar control.</div>
+
+        <div id="map" class="smallmap"></div>
+        <p>The map above uses the default control configuration and style.</p>
+        <p>The map below uses the zoom bar with styling.</p>
+        <div id="map2" class="smallmap"></div>
+
+        <div id="docs">
+            <p>This example demonstrates the use of a ZoomBar control.</p>
+            <p>
+                See the <a href="zoombar.js" target="_blank">zoombar.js</a>
+                for details.
+            </p>
+        </div>
+        <script src="../lib/OpenLayers.js"></script>
+        <script src="zoombar.js"></script>
+    </body>
+</html>
