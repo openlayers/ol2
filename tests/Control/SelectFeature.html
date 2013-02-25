@@ -3,7 +3,7 @@
     <script src="../OLLoader.js"></script>
     <script type="text/javascript">
     function test_Control_SelectFeature_constructor(t) {
-        t.plan(5);
+        t.plan(7);
         var options = {
 //            geometryTypes: "foo"
         };
@@ -20,6 +20,14 @@
         control = new OpenLayers.Control.SelectFeature(layer, options);
         t.eq(control.layers, null, "this.layers is null if constructor called with a single layer");
         t.eq(control.layer, layer, "this.layer holds the layer that was passed with the constructor if called with a single layer")
+        
+        var myStopDown = false, myBoxDivClassName = "myBoxDiv";
+        control = new OpenLayers.Control.SelectFeature(layer, {
+          featureOptions: {stopDown: myStopDown},
+          box: true,
+          boxOptions: {boxDivClassName: myBoxDivClassName}});
+        t.eq(control.handlers.feature.stopDown, myStopDown, "featureOptions are passed on to the Feature Handler");
+        t.eq(control.handlers.box.boxDivClassName, myBoxDivClassName, "boxOptions are passed on to the Box Handler");
     }
 
     function test_Control_SelectFeature_destroy(t) {
