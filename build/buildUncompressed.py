@@ -14,12 +14,12 @@ if len(sys.argv) > 1:
 if len(sys.argv) > 2:
     outputFilename = sys.argv[2]
 
-print "Merging libraries."
+print("Merging libraries.")
 merged = mergejs.run(sourceDirectory, None, configFilename)
-print "Adding license file."
-merged = file("license.txt").read() + merged
+print("Adding license file.")
+merged = open("license.txt").read() + merged
 
-print "Writing to %s." % outputFilename
-file(outputFilename, "w").write(merged)
+print("Writing to %s." % outputFilename)
+open(outputFilename, "w").write(merged)
 
-print "Done."
+print("Done.")

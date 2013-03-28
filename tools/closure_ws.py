@@ -24,5 +24,5 @@ def minimize(code):
     conn.close()
     if data.startswith("Error"):
         raise Exception(data)
-    print "%.3f seconds to compile" % (time.time() - t) 
+    print("%.3f seconds to compile" % (time.time() - t))
     return data
