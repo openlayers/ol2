@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+        <title>OpenLayers Orthogonal Lines Example</title>
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <script src="../lib/OpenLayers.js"></script>
+        <script src="orthogonal-lines.js"></script>
+    </head>
+    <body onload="init()">
+        <h1 id="title">Orthogonal Lines</h1>
+        <p id="shortdesc">
+            Demonstrate use of the OrthogonalLines control.
+        </p>
+        <div id="tags">
+            orthogonallines, digitizing, draw
+        </div>
+        <div id="map" class="smallmap"></div>
+        <div id="controls">
+            <input id="orthogonallines" type="checkbox" checked
+                name="orthogonallines" onchange="toggleControl(this)" />
+            <label for="orthogonallines">OrthogonalLines Control enabled</label>
+            <p/>
+            abscissa: <input id="abscissa" type="text" size="2" maxlength="4"
+                name="abscissa" value="15" onchange="update()" /> distance along line<br/>
+            ordinate: <input id="ordinate" type="text" size="2" maxlength="4"
+                name="ordinate" value="10" onchange="update()" /> distance perpendicular to line
+            <p/>
+            <input id="snapping" type="checkbox"
+                name="snapping" onchange="toggleSnapping(this)" />
+            <label for="snapping">Snapping for base points</label>
+        </div>
+        <div id="docs">
+            <p>
+                See the <a href="orthogonal-lines.js" target="_blank">
+                orthogonal-lines.js source</a> to see how this is done.
+            </p>
+        </div>
+    </body>
+</html>

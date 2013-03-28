@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+        <title>OpenLayers Arc Intersection Example</title>
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <script src="../lib/OpenLayers.js"></script>
+        <script src="arc-intersection.js"></script>
+    </head>
+    <body onload="init()">
+        <h1 id="title">Arc Intersection</h1>
+        <p id="shortdesc">
+            Demonstrate use of the ArcIntersection control.
+        </p>
+        <div id="tags">
+            arcintersection, digitizing, draw
+        </div>
+        <div id="map" class="smallmap"></div>
+        <div id="controls">
+            <input id="arcintersection" type="checkbox" checked
+                name="arcintersection" onchange="toggleControl(this)" />
+            <label for="arcintersection">ArcIntersection Control enabled</label>
+            <p/>
+            radius 1: <input id="radius1" type="text" size="2" maxlength="4"
+                name="radius1" value="5" onchange="update()" />
+            radius 2: <input id="radius2" type="text" size="2" maxlength="4"
+                name="radius2" value="10" onchange="update()" />
+            <p/>
+            <input id="snaptogrid" type="checkbox"
+                name="snaptogrid" onchange="toggleSnapping(this)" />
+            <label for="snaptogrid">Snap circle centers to grid</label>
+        </div>
+        <div id="docs">
+            <p>
+                See the <a href="arc-intersection.js" target="_blank">
+                arc-intersection.js source</a> to see how this is done.
+            </p>
+        </div>
+    </body>
+</html>
+ 
