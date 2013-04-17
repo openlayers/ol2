@@ -53,7 +53,7 @@
         
     }
     function test_events(t) {
-        t.plan(35);
+        t.plan(40);
         
         var map = new OpenLayers.Map('map');
         var control = new OpenLayers.Control();
@@ -64,8 +64,8 @@
  
         // list below events that should be handled (events) and those
         // that should not be handled (nonevents) by the handler
-        var events = ["mousedown", "mouseup", "mousemove", "click", "dblclick", "touchstart", "touchmove"];
-        var nonevents = ["mouseout", "resize", "focus", "blur", "touchend"];
+        var events = ["mousedown", "mouseup", "mousemove", "click", "dblclick", "touchstart", "touchmove", "touchend"];
+        var nonevents = ["mouseout", "resize", "focus", "blur"];
         map.events.registerPriority = function(type, obj, func) {
             var output = func();
             // Don't listen for setEvent handlers (#902)
@@ -224,41 +224,41 @@
         evtPx.type = "dblclick";
         map.events.triggerEvent('dblclick', evtPx);
 
-        // test touchstart on a feature
-        // 'click' callback should be called
+        // test touchend on a feature
+        // 'click' callback should not be called
         handler.feature = null;
         lastFeature = null;
         newFeature = new OpenLayers.Feature.Vector();
         newFeature.layer = layer;
         callbacks['click'] = getCallback('click (touch)', newFeature);
         callbacks['clickout'] = getCallback('clickout (touch)', lastFeature);
-        evtPx.type = "touchstart";
-        map.events.triggerEvent('touchstart', evtPx);
+        evtPx.type = "touchend";
+        map.events.triggerEvent('touchend', evtPx);
 
-        // test touchstart on the same feature
+        // test touchend on the same feature
         // 'click' callback should be called
         callbacks['click'] = getCallback('click (touch)', newFeature);
-        evtPx.type = "touchstart";
-        map.events.triggerEvent('touchstart', evtPx);
+        evtPx.type = "touchend";
+        map.events.triggerEvent('touchend', evtPx);
 
-        // test touchstart in new feature and out of last feature
+        // test touchend in new feature and out of last feature
         // both 'click' and 'clickout' callbacks should be called
         lastFeature = newFeature;
         newFeature = new OpenLayers.Feature.Vector();
         newFeature.layer = layer;
         callbacks['click'] = getCallback('click (touch)', newFeature);
         callbacks['clickout'] = getCallback('clickout (touch)', lastFeature);
-        evtPx.type = "touchstart";
-        map.events.triggerEvent('touchstart', evtPx);
+        evtPx.type = "touchend";
+        map.events.triggerEvent('touchend', evtPx);
 
-        // test touchstart out of last feature
+        // test touchend out of last feature
         // only 'clickout' callback should be called
         lastFeature = newFeature;
         newFeature = null;
         callbacks['click'] = getCallback('click (touch)', newFeature);
         callbacks['clickout'] = getCallback('clickout (touch)', lastFeature);
-        evtPx.type = "touchstart";
-        map.events.triggerEvent('touchstart', evtPx);
+        evtPx.type = "touchend";
+        map.events.triggerEvent('touchend', evtPx);
     }
 
     function test_touchstart(t) {
@@ -361,7 +361,7 @@
     }
 
     function test_stopHandled(t) {
-        t.plan(3);
+        t.plan(4);
         var map = new OpenLayers.Map('map');
         var control = new OpenLayers.Control();
         map.addControl(control);
@@ -380,6 +380,9 @@
         map.events.register("mouseup", map, function(e) {
             t.ok(!handler.stopUp, "mouseup propagate with stopUp set to false" );
         });
+        map.events.register("touchend", map, function(e) {
+            t.ok(!handler.stopUp, "touchend propagate with stopEnd set to false" );
+        });
 
         // 0 test
         map.events.triggerEvent('click', evtPx);
@@ -387,6 +390,8 @@
         map.events.triggerEvent('mousedown', evtPx);
         // 0 test
         map.events.triggerEvent('mousedown', evtPx);
+        // 0 test
+        map.events.triggerEvent('touchend', evtPx);
 
         // 1 test
         handler.stopClick = false;
@@ -396,9 +401,9 @@
         map.events.triggerEvent('mousedown', evtPx);
         // 1 test
         handler.stopUp = false;
-        map.events.triggerEvent('mouseup', evtPx);
+        map.events.triggerEvent('touchend', evtPx);
         
-        // 3 tests total
+        // 4 tests total
     }
 
     function test_destroyed_feature(t) {
