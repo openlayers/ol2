@@ -381,7 +381,7 @@
             t.ok(!handler.stopUp, "mouseup propagate with stopUp set to false" );
         });
         map.events.register("touchend", map, function(e) {
-            t.ok(!handler.stopUp, "touchend propagate with stopEnd set to false" );
+            t.ok(!handler.stopEnd, "touchend propagate with stopEnd set to false" );
         });
 
         // 0 test
@@ -390,7 +390,7 @@
         map.events.triggerEvent('mousedown', evtPx);
         // 0 test
         map.events.triggerEvent('mousedown', evtPx);
-        // 0 test
+        // 1 test
         map.events.triggerEvent('touchend', evtPx);
 
         // 1 test
@@ -401,6 +401,9 @@
         map.events.triggerEvent('mousedown', evtPx);
         // 1 test
         handler.stopUp = false;
+        map.events.triggerEvent('touchend', evtPx);
+        // 0 test
+        handler.stopEnd = true;
         map.events.triggerEvent('touchend', evtPx);
         
         // 4 tests total
