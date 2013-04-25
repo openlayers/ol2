@@ -10,43 +10,10 @@
         t.eq( control.displayClass,  "olControlTextButtonPanel", "displayClass is correct" );
     }
     
-    function test_Control_TextButtonPanel_onButtonClick (t) {
-        t.plan( 1 );
-        var b1 = new OpenLayers.Control.Button({
-            trigger: function() { this.text = "After click" },
-            text: "Before click"
-        });
-        var panel = new OpenLayers.Control.TextButtonPanel();
-        panel.addControls( [ b1 ] );
-        var map = new OpenLayers.Map( 'map', {} );
-        map.addControl(panel);
-        var evt = { buttonElement: b1.panel_div };
-        panel.onButtonClick( evt );
-        // verify that the button's inner HTML is updated to its current
-        // text after activation
-        t.eq( b1.panel_div.innerHTML, "After click" );
-        map.destroy();
-    }
-    
-    function test_Control_TextButtonPanel_createControlMarkup (t) {
-        t.plan( 1 );
-        var b1 = new OpenLayers.Control.Button({
-            trigger: function() {  },
-            text: "Click Me!"
-        });
-        var panel = new OpenLayers.Control.TextButtonPanel();
-        panel.addControls( [ b1 ] );
-        var map = new OpenLayers.Map( 'map', {} );
-        map.addControl(panel);
-        t.eq( b1.panel_div.innerHTML, "Click Me!" );
-        map.destroy();
-    }
-    
     function test_Control_TextButtonPanel_setOrientationClass (t) {
         t.plan( 2 );
         var b1 = new OpenLayers.Control.Button({
             trigger: function() {  },
-            text: "Click Me!"
         });
         var panel = new OpenLayers.Control.TextButtonPanel({
             vertical: true,
@@ -67,7 +34,6 @@
         t.plan( 1 );
         var b1 = new OpenLayers.Control.Button({
             trigger: function() {  },
-            text: "Click Me!"
         });
         var panel = new OpenLayers.Control.TextButtonPanel({
             additionalClass: "panel2",
