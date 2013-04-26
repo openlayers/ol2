@@ -19,7 +19,7 @@
     }
 
     function test_clusters(t) {
-        t.plan(22);
+        t.plan(32);
 
         function featuresEq(got, exp) {
             var eq = false;
@@ -121,6 +121,39 @@
         t.ok(!strategy.features,
                     "[remove features] cluster has no cache after zoom");
 
+        // remove one feature and zoom
+        layer.addFeatures(features);
+        map.setCenter(new OpenLayers.LonLat(0, 0), 2);
+        t.eq(strategy.features.length, 81, 
+                    "[remove one feature] cluster has cache");
+        t.eq(layer.features.length, 4, "[remove one feature] layer has four clusters");
+        var lenCluster0 = layer.features[0].cluster.length;
+        lenCluster0++; // NOTE: feature without geometry disappears.
+        layer.removeFeatures([layer.features[0]]);
+        t.eq(strategy.features ? strategy.features.length : 0, 81 - lenCluster0, 
+                    "[remove one feature] cluster has reduced cache");
+        t.eq(layer.features.length, 3, 
+                    "[remove one feature] layer has three clusters");
+        map.zoomOut();
+        map.zoomIn();
+        t.eq(strategy.features ? strategy.features.length : 0, 81 - lenCluster0, 
+                    "[remove one feature] cluster has same cache after zoomOut & zoomIn");
+        t.eq(layer.features.length, 3, 
+                    "[remove one feature] layer has three clusters after zoomOut & zoomIn");
+ 
+        // add one feature and zoom 
+        layer.addFeatures([layer.features[0].cluster[0].clone()]);
+        t.eq(strategy.features ? strategy.features.length : 0, 81 + 1 - lenCluster0, 
+                    "[add one feature] cluster cache has one feature plus after add one feature.");
+        t.eq(layer.features.length, 3, 
+                    "[add one feature] layer has three clusters after after add one feature");
+        map.zoomOut();
+        map.zoomIn();
+        t.eq(strategy.features ? strategy.features.length : 0, 81 + 1 - lenCluster0, 
+                    "[add one feature] cluster has same cache after zoomOut & zoomIn");
+        t.eq(layer.features.length, 3, 
+                    "[add one feature] layer has three clusters after zoomOut & zoomIn");
+            
         map.destroy();
     }
 
