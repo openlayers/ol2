@@ -130,7 +130,7 @@
     }     
 
     function test_callbacks(t) {
-        t.plan(39);
+        t.plan(48);
         var map = new OpenLayers.Map("map", {
             resolutions: [1]
         });
@@ -183,6 +183,8 @@
                   "[mousemove] correct point");
         t.ok(log.args[1] === handler.line,
              "[mousemove] correct feature");
+        t.eq(log.args[2], false,
+             "[mousemove] correct drawing argument");
         // mouse down
         handler.mousedown(
             {type: "mousedown", xy: new OpenLayers.Pixel(0, 0)});
@@ -193,6 +195,8 @@
                   "[mousedown] correct point");
         t.ok(log.args[1] === handler.line,
              "[mousedown] correct feature");
+        t.eq(log.args[2], false,
+             "[mousemove] correct drawing argument");
         // mouse up
         handler.mouseup({type: "mouseup", xy: new OpenLayers.Pixel(0, 0)});
         t.eq(logs.length, 2, "[mouseup] called back twice");
@@ -205,12 +209,16 @@
                       new OpenLayers.Geometry.Point(-150, 75),
                       new OpenLayers.Geometry.Point(-150, 75)
                   ]), "[mouseup] correct line");
+        t.eq(log.args[2], false,
+             "[mouseup] correct drawing argument on \"point\" callback");
         log = logs.shift();
         t.eq(log.type, "modify", "[mouseup] modify called");
         t.geom_eq(log.args[0], new OpenLayers.Geometry.Point(-150, 75),
                   "[mouseup] correct point");
         t.ok(log.args[1] == handler.line,
              "[mouseup] correct feature");
+        t.eq(log.args[2], undefined,
+             "[mouseup] correct drawing argument");
         // mouse move
         handler.mousemove({type: "mousemove",
                            xy: new OpenLayers.Pixel(1, 1)});
@@ -221,6 +229,8 @@
                   "[mousemove] correct point");
         t.ok(log.args[1] === handler.line,
              "[mousemove] correct feature");
+        t.eq(log.args[2], true,
+             "[mousemove] correct drawing argument");
         // mouse move
         handler.mousemove({type: "mousemove",
                            xy: new OpenLayers.Pixel(10, 10)});
@@ -231,6 +241,8 @@
                   "[mousemove] correct point");
         t.ok(log.args[1] === handler.line,
              "[mousemove] correct feature");
+        t.eq(log.args[2], true,
+             "[mousemove] correct drawing argument");
         // mouse down
         handler.mousedown({type: "mousedown",
                            xy: new OpenLayers.Pixel(10, 10)});
@@ -241,11 +253,16 @@
                   "[mousedown] correct point");
         t.ok(log.args[1] === handler.line,
              "[mousedown] correct feature");
+        t.eq(log.args[2], true,
+             "[mousedown] correct drawing argument");
         // mouse up ("point", "modify")
         handler.mouseup({type: "mouseup",
                          xy: new OpenLayers.Pixel(10, 10)});
         t.eq(logs.length, 2, "[mouseup] called back twice");
         log = logs.shift();
+        t.eq(log.type, "point", "[mouseup] point called");
+        t.eq(log.args[2], true,
+             "[mouseup] correct drawing argument on \"point\" callback");
         log = logs.shift();
         // mouse down
         handler.mousedown({type: "mousedown",
@@ -280,7 +297,7 @@
     }
 
     function test_toggle_freehand(t) {
-        t.plan(2);
+        t.plan(17);
         var map = new OpenLayers.Map("map", {
             resolutions: [1]
         });
@@ -290,9 +307,13 @@
         });
         map.addLayer(layer);
         var control = new OpenLayers.Control({});
+        var log, drawing;
         var handler = new OpenLayers.Handler.Path(control, {
             done: function(g) {
                 log++;
+            },
+            modify: function(g, f, d) {
+                drawing = d;
             }
         }, {persist: true});
         control.handler = handler;
@@ -302,12 +323,17 @@
         handler.activate();
 
         log = 0;
+        drawing = null;
         handler.mousemove(
             {type: "mousemove", xy: new OpenLayers.Pixel(0, 0)});
+        t.eq(drawing, false, 
+            "not being drawn on mousemove (sequence 1: freehand)");
         handler.mousedown(
             {type: "mousedown", xy: new OpenLayers.Pixel(0, 0), shiftKey: true});
+        t.eq(drawing, false, "not being drawn on mousedown");
         handler.mousemove(
             {type: "mousemove", xy: new OpenLayers.Pixel(1, 1), shiftKey: true});
+        t.eq(drawing, undefined, "being drawn on mousedown");
         handler.mousemove(
             {type: "mousemove", xy: new OpenLayers.Pixel(2, 2), shiftKey: true});
         handler.mouseup(
@@ -315,17 +341,59 @@
         t.eq(log, 1, "feature drawn when shift pressed on mousedown");
 
         log = 0;
+        drawing = null;
         handler.mousemove(
             {type: "mousemove", xy: new OpenLayers.Pixel(0, 0)});
+        t.eq(drawing, false, 
+            "not being drawn on mousemove (sequence 2: no freehand)");
         handler.mousedown(
             {type: "mousedown", xy: new OpenLayers.Pixel(0, 0), shiftKey: false});
+        t.eq(drawing, false, "not being drawn on mousedown");
         handler.mousemove(
             {type: "mousemove", xy: new OpenLayers.Pixel(1, 1), shiftKey: true});
+        t.eq(drawing, false, "not being drawn on mousemove");
         handler.mousemove(
             {type: "mousemove", xy: new OpenLayers.Pixel(2, 2), shiftKey: true});
         handler.mouseup(
             {type: "mouseup", xy: new OpenLayers.Pixel(0, 0), shiftKey: true});
         t.eq(log, 0, "feature not drawn when shift not pressed on mousedown");
+        
+        handler.deactivate(); // to start with clean handler
+        handler.activate();
+        
+        log = 0;
+        drawing = null;
+        // Use steps 10 to 10 to avoid pixel tolerance
+        handler.mousemove(
+            {type: "mousemove", xy: new OpenLayers.Pixel(0, 0)});
+        t.eq(drawing, false, 
+            "not being drawn on mousemove (sequence 3: freehand, no freehand, freehand)");
+        handler.mousedown(
+            {type: "mousedown", xy: new OpenLayers.Pixel(0, 0), shiftKey: true});
+        t.eq(drawing, false, "not being drawn on mousedown when shift pressed on mousedown");
+        handler.mousemove(
+            {type: "mousemove", xy: new OpenLayers.Pixel(10, 0), shiftKey: true});
+        t.eq(drawing, undefined, "being drawn and add point when shift pressed on mousemove");
+        handler.mousemove(
+            {type: "mousemove", xy: new OpenLayers.Pixel(20, 0), shiftKey: false});
+        t.eq(drawing, true, "being drawn when shift not pressed on mousemove");
+        handler.mouseup(
+            {type: "mouseup", xy: new OpenLayers.Pixel(20, 0), shiftKey: false});
+        t.eq(log, 0, "feature not drawn when shift not pressed on mouseup");
+        handler.mousemove(
+            {type: "mousemove", xy: new OpenLayers.Pixel(30, 0), shiftKey: false});
+        t.eq(drawing, true, "being drawn when shift not pressed on mousemove");
+        handler.mousedown(
+            {type: "mousedown", xy: new OpenLayers.Pixel(30, 0), shiftKey: true});            
+        t.eq(drawing, true, "being drawn when shift pressed on mousedown");
+        handler.mousemove(
+            {type: "mousemove", xy: new OpenLayers.Pixel(40, 0), shiftKey: true});
+        t.eq(drawing, undefined, "being drawn and add point when shift pressed on mousemove");
+        handler.mouseup(
+            {type: "mouseup", xy: new OpenLayers.Pixel(40, 0), shiftKey: true});
+        t.eq(log, 1, "feature drawn when shift pressed on mouseup");
+
+        map.destroy();
     }
 
     function test_persist(t) {
@@ -1139,7 +1207,7 @@
     // a) tap
     // c) doubletap
     function test_touch_sequence1(t) {
-        t.plan(19);
+        t.plan(21);
 
         // set up
 
@@ -1157,8 +1225,8 @@
             done: function(g, f) {
                 log = {type: 'done', geometry: g, feature: f};
             },
-            modify: function(g, f) {
-                log = {type: 'modify', geometry: g, feature: f};
+            modify: function(g, f, d) {
+                log = {type: 'modify', geometry: g, feature: f, drawing: d};
             }
         }, {
             doubleTouchTolerance: 2
@@ -1183,6 +1251,7 @@
         ret = handler.touchend({});
         t.ok(ret, '[touchend] event propagates');
         t.eq(log.type, 'modify', '[touchend] feature modified');
+        t.eq(log.drawing, undefined, '[touchend] correct drawing argument');
         t.geom_eq(log.geometry, new OpenLayers.Geometry.Point(-149, 75),
                   "[touchend] correct point");
 
@@ -1197,6 +1266,7 @@
         ret = handler.touchend({});
         t.ok(ret, '[touchend] event propagates');
         t.eq(log.type, 'modify', '[touchend] feature modified');
+        t.eq(log.drawing, undefined, '[touchend] correct drawing argument');
         t.geom_eq(log.geometry, new OpenLayers.Geometry.Point(-140, 65),
                   "[touchend] correct point");
         log = null;
@@ -1222,7 +1292,7 @@
     // b) tap-move
     // c) doubletap
     function test_touch_sequence2(t) {
-        t.plan(25);
+        t.plan(27);
 
         // set up
 
@@ -1240,8 +1310,8 @@
             done: function(g, f) {
                 log = {type: 'done', geometry: g, feature: f};
             },
-            modify: function(g, f) {
-                log = {type: 'modify', geometry: g, feature: f};
+            modify: function(g, f, d) {
+                log = {type: 'modify', geometry: g, feature: f, drawing: d};
             }
         }, {
             doubleTouchTolerance: 2
@@ -1266,6 +1336,7 @@
         ret = handler.touchend({});
         t.ok(ret, '[touchend] event propagates');
         t.eq(log.type, 'modify', '[touchend] feature modified');
+        t.eq(log.drawing, undefined, '[touchend] correct drawing argument');
         t.geom_eq(log.geometry, new OpenLayers.Geometry.Point(-149, 75),
                   "[touchend] correct point");
 
@@ -1292,6 +1363,7 @@
         ret = handler.touchend({});
         t.ok(ret, '[touchend] event propagates');
         t.eq(log.type, 'modify', '[touchend] feature modified');
+        t.eq(log.drawing, undefined, '[touchend] correct drawing argument');
         t.geom_eq(log.geometry, new OpenLayers.Geometry.Point(-140, 65),
                   "[touchend] correct point");
         log = null;
