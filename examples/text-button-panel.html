@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>OpenLayers: TextButtonPanel</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <style type="text/css">
+        
+        .olControlTextButtonPanel.vpanel { 
+          top: 8px;
+          right: 8px;
+          left: auto;
+        }
+        
+        .olControlTextButtonPanel.hpanel { 
+          top: auto;
+          bottom: 8px;
+          left: 8px;
+          right: auto;
+        }
+        
+        .button1ItemInactive:after,
+        .button1ItemActive:after {
+            content: "Button 1";
+        }
+        
+        .button2ItemInactive:after,
+        .button2ItemActive:after {
+            content: "Button 2";
+        }
+        
+        .button3ItemInactive:after,
+        .button3ItemActive:after {
+            content: "Button 3";
+        }
+        
+        .button4ItemInactive:after,
+        .button4ItemActive:after {
+            content: "Button 4";
+        }
+        
+        .button5ItemInactive:after,
+        .button5ItemActive:after {
+            content: "Button 5";
+        }
+        
+    </style>
+    <script src="../lib/Firebug/firebug.js"></script>
+    <script src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var lon = 5;
+        var lat = 40;
+        var zoom = 5;
+        var map, layer;
+
+        function init(){
+            map = new OpenLayers.Map( 'map', {} );
+            layer = new OpenLayers.Layer.WMS( "OpenLayers WMS", 
+                    "http://vmap0.tiles.osgeo.org/wms/vmap0", {layers: 'basic'} );
+            map.addLayer(layer);
+            
+            var b1 = new OpenLayers.Control.Button({
+                trigger: function() { alert("Button 1 clicked!") },
+                displayClass: "button1"
+            });
+            
+            var b2 = new OpenLayers.Control.Button({
+                trigger: function() { alert("Button 2 clicked!") },
+                displayClass: "button2"
+            });
+            
+            var b3 = new OpenLayers.Control.Button({
+                trigger: function() { alert("Button 3 clicked!") },
+                displayClass: "button3"
+            });
+            
+            var b4 = new OpenLayers.Control.Button({
+                trigger: function() { alert("Button 4 clicked!") },
+                displayClass: "button4"
+            });
+            
+            var b5 = new OpenLayers.Control.Button({
+                trigger: function() { alert("Button 5 clicked!") },
+                displayClass: "button5"
+            });
+
+            var vpanel = new OpenLayers.Control.TextButtonPanel({
+                vertical: true,
+                additionalClass: "vpanel"
+            });
+            vpanel.addControls([
+                b1, b2
+            ]);
+            
+            var hpanel = new OpenLayers.Control.TextButtonPanel({
+                additionalClass: "hpanel"
+            });
+            hpanel.addControls([
+                b3, b4, b5
+            ]);
+            
+            map.addControl(vpanel);
+            map.addControl(hpanel);
+
+            map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
+        }
+    </script>
+  </head>
+  <body onload="init()">
+    <h1 id="title">TextButtonPanel</h1>
+    <div id="tags">
+        panels, CSS, style, basic
+    </div>
+    <p id="shortdesc">
+      Create multiple TextButtonPanels full of text-based buttons and styled
+      with CSS
+    </p>  
+    <div id="panel"></div>
+    <div id="map" class="smallmap"></div>
+  </body>
+</html>
