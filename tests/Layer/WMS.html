@@ -89,8 +89,8 @@
         t.eq( tile.url,
              layer.getFullRequestString(tParams),
              "image src is created correctly via addtile" );
-        t.eq( tile.getTile().style.top, "6%", "image top is set correctly via addtile" );
-        t.eq( tile.getTile().style.left, "5%", "image top is set correctly via addtile" );
+        t.eq( tile.getTile().style.top, "6px", "image top is set correctly via addtile" );
+        t.eq( tile.getTile().style.left, "5px", "image top is set correctly via addtile" );
 
         var firstChild = layer.div.firstChild;
         t.eq( firstChild.nodeName.toLowerCase(), "img", "div first child is an image object" );
@@ -120,8 +120,8 @@
         t.eq( tile.url,
              layer.getFullRequestString(tParams),
              "image src is created correctly via addtile" );
-        t.eq( tile.getTile().style.top, "6%", "image top is set correctly via addtile" );
-        t.eq( tile.getTile().style.left, "5%", "image top is set correctly via addtile" );
+        t.eq( tile.getTile().style.top, "6px", "image top is set correctly via addtile" );
+        t.eq( tile.getTile().style.left, "5px", "image top is set correctly via addtile" );
 
         var firstChild = layer.div.firstChild;
         t.eq( firstChild.nodeName.toLowerCase(), "img", "div first child is an image object" );
@@ -136,8 +136,8 @@
         layer = new OpenLayers.Layer.WMS(name, url, params, {buffer:2});
         map.addLayer(layer);
         map.setCenter(new OpenLayers.LonLat(0,0),5);
-        t.eq( layer.grid.length, 7, "Grid rows is correct." );
-        t.eq( layer.grid[0].length, 6, "Grid cols is correct." );
+        t.eq( layer.grid.length, 8, "Grid rows is correct." );
+        t.eq( layer.grid[0].length, 7, "Grid cols is correct." );
         map.destroy();
     }
 
@@ -532,6 +532,30 @@
         t.ok(layer.getFullRequestString({}).indexOf("TRANSPARENT=true") != -1, "transparent param value passed as provided if String");
         
         map.destroy();
+    }
+    
+    function test_tileBounds(t) {
+        // do not defer moveGriddedTiles
+        var isNative = OpenLayers.Animation.isNative;
+        OpenLayers.Animation.isNative = true;
+        t.plan(3);
+        
+        var map = new OpenLayers.Map("map", {projection: "EPSG:3857"});
+        var layer = new OpenLayers.Layer.WMS("wms", "../../img/blank.gif");
+        map.addLayer(layer);
+        map.setCenter([0, 0], 1);
+        map.pan(2, -100);
+        map.zoomIn();
+        t.eq(layer.grid[1][0].bounds, new OpenLayers.Bounds(-10018754.17, 0, 0, 10018754.17), "no floating point errors after zooming");
+        map.setCenter([0, 0], 14);
+        var bounds = layer.grid[0][0].bounds.clone();
+        map.pan(260, 520);
+        map.pan(-260, -520);
+        t.eq(layer.grid[0][0].bounds, bounds, "no floating point errors after dragging back and forth");
+        t.eq(bounds.right, 0, "0 is 0, and not some super small number");
+        
+        map.destroy();
+        OpenLayers.Animation.isNative = isNative;
     }
 
 
