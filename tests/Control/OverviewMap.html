@@ -14,6 +14,23 @@
             "olControlOverviewMap", "displayClass is correct" );
     }
 
+    function test_divs_title(t) {
+        t.plan(2);
+    
+        control = new OpenLayers.Control.OverviewMap({
+            maximizeTitle: "maximize title",
+            minimizeTitle: "minimize title"
+        });
+        map = new OpenLayers.Map('map', {
+            layers: [new OpenLayers.Layer("layer", {isBaseLayer: true})],
+            controls: [control]
+        });
+        map.zoomToMaxExtent();
+        t.eq(control.maximizeDiv.title, "maximize title", "maximizeDiv.title is correct");
+        t.eq(control.minimizeDiv.title, "minimize title", "minimizeDiv.title is correct");
+        map.destroy();
+    }
+
     function test_setMap(t) {
         t.plan(4);
 
@@ -207,6 +224,37 @@
         t.eq(control.element.style.display, '', 
             "OverviewMap.element is visible");
 
+        map.destroy();
+    }
+    
+    function test_custom_div(t) {
+        t.plan(3);
+        var div = document.createElement('div');
+        
+        control = new OpenLayers.Control.OverviewMap({
+          div: div
+        });
+        
+        map = new OpenLayers.Map('map', {
+            layers  : [new OpenLayers.Layer("layer", {isBaseLayer: true})],
+            controls: [control]
+        });
+        
+        t.eq(control.maximizeDiv, null, 
+            "OverviewMap does not create maximize div");
+        t.eq(control.minimizeDiv, null, 
+            "OverviewMap does not create minimize div");
+        
+        var exc;
+        try {
+            control.maximizeControl();
+            control.minimizeControl();
+        } catch(e) {
+            exc = e;
+        }
+
+        t.eq(exc, undefined, 'maximize and minimize do not trigger an exception');
+        
         map.destroy();
     }
 

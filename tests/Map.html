@@ -748,7 +748,7 @@
     function test_Map_double_addLayer(t) {
         t.plan(2);
 
-        map = new OpenLayers.Map($('map'));
+        map = new OpenLayers.Map('map');
         layer = new OpenLayers.Layer.WMS('Test Layer', 
                     "http://octo.metacarta.com/cgi-bin/mapserv", 
                     {map: '/mapdata/vmap_wms.map', layers: 'basic', format: 'image/jpeg'} 
@@ -977,13 +977,21 @@
     }
 
     function test_Map_moveTo(t) {
-        t.plan(2);
+        t.plan(8);
 
         map = new OpenLayers.Map('map');
         var baseLayer = new OpenLayers.Layer.WMS("Test Layer", 
             "http://octo.metacarta.com/cgi-bin/mapserv?",
             {map: "/mapdata/vmap_wms.map", layers: "basic"},
             {maxResolution: 'auto', maxExtent: new OpenLayers.Bounds(-10,-10,10,10)});
+        var testLayer = new OpenLayers.Layer("",{maxResolution: 0.1, minResolution: 0.03, isBaseLayer: false, visibility: true});
+        var log = [];
+        map.events.register('changelayer', t, function(event) {
+            log.push({
+                layer: event.layer,
+                property: event.property
+            });
+        });
         baseLayer.events.on({
             move: function() {
                 t.ok(true, "move listener called");
@@ -993,10 +1001,20 @@
             }
         });
         map.addLayer(baseLayer);
+        map.addLayer(testLayer);
+        log = [];
         var ll = new OpenLayers.LonLat(-100,-150);
         map.moveTo(ll, 2);
+        
         t.ok(map.getCenter().equals(new OpenLayers.LonLat(0,0)), "safely sets out-of-bounds lonlat");
+        t.eq(testLayer.div.style.display, "none", "moveTo out of resolution range set layer's display style to correct value");
+        t.eq(log.length, 1, "Map.moveTo out of resolution range triggers changelayer once");
+        t.ok(log[0].layer == testLayer, "changelayer listener called with expected layer");
+        t.eq(log[0].property, "visibility", "changelayer listener called with expected property");
 
+        map.moveTo(new OpenLayers.LonLat(0,0), 0);
+        t.eq(testLayer.div.style.display, "block", "moveTo in to resolution range set layer's display style to correct value");
+        
         map.destroy();
     }
 
@@ -2047,7 +2065,7 @@
     }
 
     function test_adjustZoom(t) {
-        t.plan(4);
+        t.plan(5);
         var map = new OpenLayers.Map({
             div: 'map',
             layers: [
@@ -2062,6 +2080,9 @@
         
         t.eq(map.adjustZoom(9), 9, "valid zoom maintained");
         t.eq(map.adjustZoom(1), 2, "zoom adjusted to not exceed world width");
+        
+        map.fractionalZoom = true;
+        t.eq(map.adjustZoom(1).toPrecision(3), "1.29", "zoom adjusted to match world width");
 
         map.moveTo([16, 48], 0);
         t.eq(map.getCenter().toShortString(), "0, 0", "no panning when moveTo is called with invalid zoom");
@@ -2085,6 +2106,34 @@
         map.moveTo(null, 0);
         var center  = map.getCenter();
         t.ok(center.equals(new OpenLayers.LonLat(-13.25, 56)), "Center is correct and not equal to maxExtent's center");
+    }
+
+    function test_autoUpdateSize(t) {
+        t.plan(1);
+        OpenLayers.Event.unloadCache();
+        var resizeListener = false;
+        var map = new OpenLayers.Map({
+            autoUpdateSize: false,
+            div: 'map',
+            layers: [
+                new OpenLayers.Layer('name', {
+                    isBaseLayer: true,
+                    wrapDateLine: true
+                })
+            ]
+        });
+        map.setCenter(new OpenLayers.LonLat(-1.3, 50.8), 4);
+        for (var key in OpenLayers.Event.observers) {
+            var obj = OpenLayers.Event.observers[key];
+            for (var i=0, ii=obj.length; i<ii; ++i) {
+                var listener = obj[i];
+                if (listener.name === 'resize' && listener.element === window) {
+                    resizeListener = true;
+                }
+            }
+        }
+        t.eq(resizeListener, map.autoUpdateSize, "resize listener not registered when autoUpdateSize is false");
+        map.destroy();
     }
 
   </script>

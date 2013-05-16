@@ -78,8 +78,8 @@
         t.eq( tile.url,
              url + "?" + OpenLayers.Util.getParameterString(tParams),
              "image src is created correctly via addtile" );
-        t.eq( tile.getTile().style.top, "6%", "image top is set correctly via addtile" );
-        t.eq( tile.getTile().style.left, "5%", "image top is set correctly via addtile" );
+        t.eq( tile.getTile().style.top, "6px", "image top is set correctly via addtile" );
+        t.eq( tile.getTile().style.left, "5px", "image top is set correctly via addtile" );
 
         var firstChild = layer.div.firstChild;
         t.eq( firstChild.nodeName.toLowerCase(), "img", "div first child is an image object" );
@@ -95,8 +95,8 @@
         layer = new OpenLayers.Layer.ArcGIS93Rest(name, url, params, {buffer: 2});
         map.addLayer(layer);
         map.setCenter(new OpenLayers.LonLat(0,0),5);
-        t.eq( layer.grid.length, 7, "Grid rows is correct." );
-        t.eq( layer.grid[0].length, 6, "Grid cols is correct." );
+        t.eq( layer.grid.length, 8, "Grid rows is correct." );
+        t.eq( layer.grid[0].length, 7, "Grid cols is correct." );
         map.destroy();
     }
 
