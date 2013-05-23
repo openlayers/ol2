@@ -1,0 +1,93 @@
+<html>
+<head>
+<script src="../OLLoader.js"></script>
+<script type="text/javascript">
+
+var events, layer1, style, logevt, map;
+
+function init() {
+
+	style = new OpenLayers.StyleMap({
+		 'default': OpenLayers.Util.applyDefaults(
+		     {label: "${l}", pointRadius: 30},
+		     OpenLayers.Feature.Vector.style["default"]
+		 ),
+		 'select': OpenLayers.Util.applyDefaults(
+		     {pointRadius: 30},
+		     OpenLayers.Feature.Vector.style.select
+		 )
+	});
+	
+	var layer1 = new OpenLayers.Layer.Vector("Layer 1", {
+		 styleMap: style
+	});
+
+	layer1.addFeatures([
+		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1}),
+		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1})
+	]);
+
+	map = new OpenLayers.Map({
+		div: "map",
+		allOverlays: true,
+		zoom: 6,
+		center: [0, 0],
+		layers: [layer1],
+		eventListeners: {
+			featureclick: logEvent,
+		 }
+	});
+	
+	/**Uncomment to view behavior w/in featureclick.html
+	logevt = [];
+	events = map.events;
+	
+	var lonlat = new OpenLayers.LonLat(0,0);
+	var pixel = map.getPixelFromLonLat(lonlat);
+	
+	trigger('mousedown', pixel);
+	trigger('mouseup', pixel);
+	*/
+	
+}
+
+function logEvent(e) {
+
+	logevt.push(e);
+	alert("logevt.length = " + logevt.length);
+}
+
+function trigger(type, pxl) {
+
+	events.triggerEvent(type, {
+		xy: pxl, 
+		clientX: pxl.x, 
+		clientY: pxl.y, 
+		which: 1  // which == 1 means left-click
+	}); 	
+}
+
+//TESTS
+
+function test_onClick12(t) {
+
+	t.plan(1);
+	logevt = [];
+	events = map.events;
+	
+	var lonlat = new OpenLayers.LonLat(0,0);
+	var pixel = map.getPixelFromLonLat(lonlat);
+	
+	trigger('mousedown', pixel);
+	trigger('mouseup', pixel);
+	
+	t.ok(logevt.length === 0, "testing # of features clicked on");	
+}
+
+</script>
+</head>
+<body onload="init()">
+<div id="map" style="width: 600px; height: 300px;"></div>
+<div id="result"></div>
+</body>
+</html>
