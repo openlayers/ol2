@@ -3,11 +3,13 @@
 <script src="../OLLoader.js"></script>
 <script type="text/javascript">
 
-var log, events, layer1, style, logevt, map, lonlat, pixel;
+var events, layer1, style, logevt, map, lonlat, pixel, element;
 
 window.onload = init;
 
 function init() {
+
+	element = document.getElementById("map");
 
 	style = new OpenLayers.StyleMap({
 		 'default': OpenLayers.Util.applyDefaults(
@@ -45,8 +47,8 @@ function init() {
 	logevt = [];
 	events = map.events;
 	
-	var lonlat = new OpenLayers.LonLat(0,0);
-	var pixel = map.getPixelFromLonLat(lonlat);
+	lonlat = new OpenLayers.LonLat(0,0);
+	pixel = map.getPixelFromLonLat(lonlat);
 	
 	trigger('mousedown', pixel);
 	trigger('mouseup', pixel);
@@ -64,6 +66,11 @@ function logEvent(e) {
 
 function trigger(type, pxl) {
 
+	var map_position = OpenLayers.Util.pagePosition(element);
+
+	pxl.x = pxl.x + map_position[0];
+	pxl.y = pxl.y + map_position[1];
+
 	events.triggerEvent(type, {
 		xy: pxl, 
 		clientX: pxl.x, 
@@ -74,17 +81,17 @@ function trigger(type, pxl) {
 
 // TESTS
 
-function test_onClick23(t) {
+function test_onClick25(t) {
+	window.onload = init();
 	t.plan(1);
 	logevt = [];
-	map.events.on({featureclick: logEvent()});
+	map.events.on({'featureclick': logEvent});
 	events = map.events;
 	lonlat = new OpenLayers.LonLat(0,0);
 	pixel = map.getPixelFromLonLat(lonlat);
 	trigger('mousedown', pixel);
 	trigger('mouseup', pixel);
 	t.eq(logevt.length, 2, "testing log length");
-	t.wait_result( 3 );
 }
 
 // END TESTS
