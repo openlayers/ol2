@@ -3,7 +3,7 @@
 <script src="../OLLoader.js"></script>
 <script type="text/javascript">
 
-var events, layer1, style, logevt, map, lonlat, pixel, element;
+var events, layer1, style, logevt, lognoevt, map, lonlat, pixel, element;
 
 function init() {
 
@@ -21,26 +21,34 @@ function init() {
 	});
 	
 	layer1 = new OpenLayers.Layer.Vector("Layer 1", {
-		 styleMap: style
+		styleMap: style
 	});
 
 	layer1.addFeatures([
 		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1}),
 		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1}),
+		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1}),
+		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1})
 	]);
 
 	map = new OpenLayers.Map({
 		div: "map",
 		allOverlays: true,
+		layers: [layer1],
 		zoom: 6,
-		center: [0, 0]
+		center: [0, 0],
+		eventListeners: {
+        featureclick: logEvent,
+        nofeatureclick: logNoEvent
+		}
 	});
 	
-	map.addLayers([layer1]);
+	//map.addLayers([layer1]);
 	
 	/**Uncomment to view behavior w/in featureclick.html
-	map.events.on({featureclick: logEvent});
+	//map.events.on({featureclick: logEvent});
 	logevt = [];
+	lognoevt = [];
 	events = map.events;
 	
 	lonlat = new OpenLayers.LonLat(0,0);
@@ -49,15 +57,21 @@ function init() {
 	trigger('mousedown', pixel);
 	trigger('mouseup', pixel);
 
-	alert("logevt length = " + logevt.length);
+	alert("logevt length = " + logevt.length + " and lognoevt length = " + lognoevt.length);
+	
 	//*/
 }
 
+function logNoEvent(e) {
+
+	//alert("logNoEvent()");
+	lognoevt.push(e);
+}
 
 function logEvent(e) {
 
-	//alert("Does this happen?");
-	logevt.push(e);
+	//alert("logEvent()");
+	logevt.push(e);	
 }
 
 function trigger(type, pxl) {
@@ -77,17 +91,23 @@ function trigger(type, pxl) {
 
 // TESTS
 
-function test_onClick26(t) {
+function test_onClick29(t) {
+	t.plan(4);
 	window.onload = init();
-	t.plan(1);
 	logevt = [];
-	map.events.on({featureclick: logEvent});
+	lognoevt = [];
 	events = map.events;
 	lonlat = new OpenLayers.LonLat(0,0);
 	pixel = map.getPixelFromLonLat(lonlat);
+
+	t.eq(pixel.x, 300, "testing pixel x");
+	t.eq(pixel.y, 150, "testing pixel y");
+
 	trigger('mousedown', pixel);
 	trigger('mouseup', pixel);
-	t.eq(logevt.length, 2, "testing logevt length");
+	
+	t.eq(logevt.length, 4, "testing lognoevt length");
+	t.eq(lognoevt.length, 0, "testing lognoevt length");
 }
 
 // END TESTS
@@ -95,6 +115,6 @@ function test_onClick26(t) {
 </script>
 </head>
 <body>
-<div id="map" style="width: 600px; height: 300px;"></div>
+<div id="map" style="width: 600px; height: 300px; border: 1px solid black"></div>
 </body>
 </html>
