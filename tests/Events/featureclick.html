@@ -5,8 +5,6 @@
 
 var events, layer1, style, logevt, map, lonlat, pixel, element;
 
-window.onload = init;
-
 function init() {
 
 	element = document.getElementById("map");
@@ -29,8 +27,6 @@ function init() {
 	layer1.addFeatures([
 		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1}),
 		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1}),
-		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1}),
-		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1})
 	]);
 
 	map = new OpenLayers.Map({
@@ -81,24 +77,24 @@ function trigger(type, pxl) {
 
 // TESTS
 
-function test_onClick25(t) {
+function test_onClick26(t) {
 	window.onload = init();
 	t.plan(1);
 	logevt = [];
-	map.events.on({'featureclick': logEvent});
+	map.events.on({featureclick: logEvent});
 	events = map.events;
 	lonlat = new OpenLayers.LonLat(0,0);
 	pixel = map.getPixelFromLonLat(lonlat);
 	trigger('mousedown', pixel);
 	trigger('mouseup', pixel);
-	t.eq(logevt.length, 2, "testing log length");
+	t.eq(logevt.length, 2, "testing logevt length");
 }
 
 // END TESTS
 
 </script>
 </head>
-<body onload="init()">
+<body>
 <div id="map" style="width: 600px; height: 300px;"></div>
 </body>
 </html>
