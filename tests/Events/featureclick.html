@@ -3,7 +3,7 @@
 <script src="../OLLoader.js"></script>
 <script type="text/javascript">
 
-var events, layer1, style, logevt, lognoevt, map, lonlat, pixel, element;
+var layer1, style, logevt, lognoevt, map, lonlat, pixel, element;
 
 function init() {
 
@@ -38,83 +38,54 @@ function init() {
 		zoom: 6,
 		center: [0, 0],
 		eventListeners: {
-        featureclick: logEvent,
-        nofeatureclick: logNoEvent
+            featureclick: logEvent,
+            nofeatureclick: logNoEvent
 		}
-	});
-	
-	//map.addLayers([layer1]);
-	
-	/**Uncomment to view behavior w/in featureclick.html
-	//map.events.on({featureclick: logEvent});
-	logevt = [];
-	lognoevt = [];
-	events = map.events;
-	
-	lonlat = new OpenLayers.LonLat(0,0);
-	pixel = map.getPixelFromLonLat(lonlat);
-	
-	trigger('mousedown', pixel);
-	trigger('mouseup', pixel);
-
-	alert("logevt length = " + logevt.length + " and lognoevt length = " + lognoevt.length);
-	
-	//*/
+	});	
 }
 
 function logNoEvent(e) {
-
-	//alert("logNoEvent()");
 	lognoevt.push(e);
 }
 
 function logEvent(e) {
-
-	//alert("logEvent()");
 	logevt.push(e);	
 }
 
 function trigger(type, pxl) {
-
 	var map_position = OpenLayers.Util.pagePosition(element);
-
-	pxl.x = pxl.x + map_position[0];
-	pxl.y = pxl.y + map_position[1];
-
-	events.triggerEvent(type, {
+	map.events.triggerEvent(type, {
 		xy: pxl, 
-		clientX: pxl.x, 
-		clientY: pxl.y, 
+		clientX: pxl.x + map_position[0], 
+		clientY: pxl.y + map_position[1], 
 		which: 1  // which == 1 means left-click
 	}); 	
 }
 
 // TESTS
 
-function test_onClick29(t) {
-	t.plan(4);
-	window.onload = init();
+function test_onClick(t) {
+	t.plan(2);
 	logevt = [];
 	lognoevt = [];
-	events = map.events;
 	lonlat = new OpenLayers.LonLat(0,0);
 	pixel = map.getPixelFromLonLat(lonlat);
-
-	t.eq(pixel.x, 300, "testing pixel x");
-	t.eq(pixel.y, 150, "testing pixel y");
 
 	trigger('mousedown', pixel);
 	trigger('mouseup', pixel);
 	
-	t.eq(logevt.length, 4, "testing lognoevt length");
-	t.eq(lognoevt.length, 0, "testing lognoevt length");
+	t.eq(logevt.length, 4, "4 features hit");
+    
+    trigger('mousedown', {x: 40, y: 40});
+    trigger('mouseup', {x: 40, y: 40});
+	t.eq(lognoevt.length, 1, "nofeatureclick fired for click outside features.");
 }
 
 // END TESTS
 
 </script>
 </head>
-<body>
-<div id="map" style="width: 600px; height: 300px; border: 1px solid black"></div>
+<body onload="init()">
+<div id="map" style="width: 300px; height: 150px; border: 1px solid black"></div>
 </body>
 </html>
