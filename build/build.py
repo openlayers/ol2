@@ -32,6 +32,13 @@ def build(config_file = None, output_file = None, options = None):
     except ImportError:
         print "No minimize"
 
+    try:
+        import uglify_js
+        uglify_js.check_available()
+        have_compressor.append("uglify-js")
+    except Exception, E:
+        print "No uglify-js (%s)" % E
+
     use_compressor = None
     if options.compressor and options.compressor in have_compressor:
         use_compressor = options.compressor
@@ -51,11 +58,24 @@ def build(config_file = None, output_file = None, options = None):
         outputFilename = output_file
 
     print "Merging libraries."
-    if use_compressor == "closure":
-        sourceFiles = mergejs.getNames(sourceDirectory, configFilename)
-    else:
-        merged = mergejs.run(sourceDirectory, None, configFilename)
+    try:
+        if use_compressor == "closure" or use_compressor == 'uglify-js':
+            sourceFiles = mergejs.getNames(sourceDirectory, configFilename)
+        else:
+            merged = mergejs.run(sourceDirectory, None, configFilename)
+    except mergejs.MissingImport, E:
+        print "\nAbnormal termination."
+        sys.exit("ERROR: %s" % E)
 
+    if options.amdname:
+        options.amdname = "'" + options.amdname + "',"
+    else:
+        options.amdname = ""
+        
+    if options.amd == 'pre':
+        print "\nAdding AMD function."
+        merged = "define(%sfunction(){%sreturn OpenLayers;});" % (options.amdname, merged)
+    
     print "Compressing using %s" % use_compressor
     if use_compressor == "jsmin":
         minimized = jsmin.jsmin(merged)
@@ -94,9 +114,25 @@ def build(config_file = None, output_file = None, options = None):
             print "\nAbnormal termination due to compilation errors." 
             sys.exit("ERROR: Closure Compilation failed! See compilation errors.") 
         print "Closure Compilation has completed successfully."
+    elif use_compressor == "uglify-js":
+        minimized = uglify_js.compile(sourceFiles)
+        if minimized is None:
+            print "\nAbnormal termination due to compilation errors."
+            sys.exit("ERROR: Uglify JS compilation failed! See compilation errors.")
+
+        print "Uglify JS compilation has completed successfully."
+
     else: # fallback
         minimized = merged 
 
+    if options.amd == 'post':
+        print "\nAdding AMD function."
+        minimized = "define(%sfunction(){%sreturn OpenLayers;});" % (options.amdname, minimized)
+    
+    if options.status:
+        print "\nAdding status file."
+        minimized = "// status: " + file(options.status).read() + minimized
+    
     print "\nAdding license file."
     minimized = file("license.txt").read() + minimized
 
@@ -107,7 +143,10 @@ def build(config_file = None, output_file = None, options = None):
 
 if __name__ == '__main__':
   opt = optparse.OptionParser(usage="%s [options] [config_file] [output_file]\n  Default config_file is 'full.cfg', Default output_file is 'OpenLayers.js'")
-  opt.add_option("-c", "--compressor", dest="compressor", help="compression method: one of 'jsmin', 'minimize', 'closure_ws', 'closure', or 'none'", default="jsmin")
+  opt.add_option("-c", "--compressor", dest="compressor", help="compression method: one of 'jsmin' (default), 'minimize', 'closure_ws', 'closure', or 'none'", default="jsmin")
+  opt.add_option("-s", "--status", dest="status", help="name of a file whose contents will be added as a comment at the front of the output file. For example, when building from a git repo, you can save the output of 'git describe --tags' in this file. Default is no file.", default=False)
+  opt.add_option("--amd", dest="amd", help="output should be AMD module; wrap merged files in define function; can be either 'pre' (before compilation) or 'post' (after compilation). Wrapping the OpenLayers var in a function means the filesize can be reduced by the closure compiler using 'pre', but be aware that a few functions depend on the OpenLayers variable being present. Either option can be used with jsmin or minimize compression. Default false, not AMD.", default=False)
+  opt.add_option("--amdname", dest="amdname", help="only useful with amd option. Name of AMD module. Default no name, anonymous module.", default=False)
   (options, args) = opt.parse_args()
   if not len(args):
     build(options=options)

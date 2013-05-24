@@ -31,7 +31,7 @@
 #
 # Note: This is a very rough initial version of this code.
 #
-# -- Copyright 2005-2012 OpenLayers contributors / OpenLayers project --
+# -- Copyright 2005-2013 OpenLayers contributors / OpenLayers project --
 #
 
 # TODO: Allow files to be excluded. e.g. `Crossbrowser/DebugMode.js`?
@@ -43,7 +43,7 @@ import sys
 
 SUFFIX_JAVASCRIPT = ".js"
 
-RE_REQUIRE = "@requires?:? (.*)\n" # TODO: Ensure in comment?
+RE_REQUIRE = "@requires?:?\s+(\S*)\s*\n" # TODO: Ensure in comment?
 
 class MissingImport(Exception):
     """Exception raised when a listed import is not found in the lib."""

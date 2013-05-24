@@ -136,7 +136,8 @@
                     layer: "world",
                     style: "blue_marble",
                     matrixSet: "arcgis_online",
-                    tileSize: new OpenLayers.Size(512, 512),            
+                    tileSize: new OpenLayers.Size(512, 512),  
+                    maxResolution: 1.40625,          
                     requestEncoding: "REST"            
                 });
                 map.addLayer(layer1);
@@ -156,7 +157,8 @@
                     layer: "world",
                     style: "blue_marble",
                     matrixSet: "arcgis_online",
-                    tileSize: new OpenLayers.Size(512, 512),            
+                    tileSize: new OpenLayers.Size(512, 512),       
+                    maxResolution: 1.40625,     
                     requestEncoding: "REST"            
                 });                                
                 map.addLayer(layer1);
@@ -243,7 +245,8 @@
                     layers: [layer],
                     projection: "EPSG:4326",                                    
                     maxResolution: 0.3515625,
-                    maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90)
+                    maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
+                    zoomMethod: null
                 });
                 map.setCenter(new OpenLayers.LonLat(-97.0, 38.0), 1);
                 t.eq(layer.getURL(new OpenLayers.Bounds(-135.0, 0.0, -90.0, 45.0)), 

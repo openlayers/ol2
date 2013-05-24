@@ -45,12 +45,12 @@
         });
         
         var log = [];
-        control.applyTransform = function(transform) {
-            log.push(transform);
+        map.applyTransform = function(x, y, scale) {
+            log.push([x, y, scale]);
         }
         
-        control.containerCenter = {
-            x: 0, y: 0
+        map.layerContainerOriginPx = {
+            x: -50, y: -50
         };
 
         control.pinchOrigin = {
@@ -58,12 +58,12 @@
         };
 
         var cases = [
-            {x: 100, y: 60, scale: 1, transform: "translate(0px, 10px) scale(1)"},
-            {x: 150, y: 60, scale: 1, transform: "translate(50px, 10px) scale(1)"},
-            {x: 150, y: 60, scale: 2, transform: "translate(-50px, -40px) scale(2)"},
-            {x: 50, y: 20, scale: 2.5, transform: "translate(-200px, -105px) scale(2.5)"},
-            {x: 150, y: 60, scale: 2, transform: "translate(-50px, -40px) scale(2)"},
-            {x: 50, y: 20, scale: 0.25, transform: "translate(25px, 8px) scale(0.25)"}
+            {x: 100, y: 60, scale: 1, transform: [-50, -40, 1]},
+            {x: 150, y: 60, scale: 1, transform: [0, -40, 1]},
+            {x: 150, y: 60, scale: 2, transform: [-150, -140, 2]},
+            {x: 50, y: 20, scale: 2.5, transform: [-325, -230, 2.5]},
+            {x: 150, y: 60, scale: 2, transform: [-150, -140, 2]},
+            {x: 50, y: 20, scale: 0.25, transform: [13, -5, 0.25]}
         ];
         
         var len = cases.length;
@@ -77,6 +77,53 @@
             t.eq(log[i], c.transform, i + " correct transform");
         }
         
+    }
+
+    function test_pinchMove_preservecenter(t) {
+
+        var control = new OpenLayers.Control.PinchZoom({
+            preserveCenter: true
+        });
+
+        var map = new OpenLayers.Map({
+            div: "map",
+            controls: [control],
+            layers: [new OpenLayers.Layer('fake', {isBaseLayer: true})]
+        });
+        map.zoomToMaxExtent();
+
+        var centerPx = map.getPixelFromLonLat(map.getCenter());
+
+        control.pinchStart = function(evt, pinchData) {
+            t.eq(map.layerContainerOriginPx, {x: 0, y: 0}, "center preserved");
+            t.eq(map.getPixelFromLonLat(map.getCenter()), centerPx, "center preserved");
+        }
+
+        control.pinchStart(null);
+
+        var log = [];
+        map.applyTransform = function(x, y, scale) {
+            log.push([x, y, scale]);
+        }
+        control.pinchOrigin = map.getPixelFromLonLat(map.getCenter());
+
+        var cases = [
+            {scale: 1, transform: [0, 0, 1]},
+            {scale: 2, transform: [-128, -128, 2]},
+            {scale: 2.5, transform: [-192, -192, 2.5]},
+            {scale: 0.25, transform: [96, 96, 0.25]}
+        ];
+
+        var len = cases.length;
+        t.plan(2 + len*2);
+
+        var c;
+        for (var i=0; i<len; ++i) {
+            c = cases[i];
+            control.pinchMove(null, {scale: c.scale});
+            t.eq(log.length, i+1, i + " called once");
+            t.eq(log[i], c.transform, i + " correct transform");
+        }
     }
 
   </script>

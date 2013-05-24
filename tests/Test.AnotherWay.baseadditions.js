@@ -30,6 +30,7 @@ Test.AnotherWay._run_one_onclick = function(){
 // test page loading
 Test.AnotherWay.old_load_next_page = Test.AnotherWay._load_next_page;
 Test.AnotherWay._load_next_page = function(){
+    document.getElementById("test_iframe_el").style.display = "none";
     Test.AnotherWay.update_running_time();    
     Test.AnotherWay.old_load_next_page.apply(this, arguments);
 };
@@ -94,6 +95,19 @@ Test.AnotherWay._add_test_page_url = function(test_url, convention){
     record_select.appendChild(option);
 };
 
+Test.AnotherWay.old_set_iframe_location = Test.AnotherWay._set_iframe_location;
+Test.AnotherWay._set_iframe_location = function(iframe, loc, outside_path_correction){
+    var optionPos = loc.indexOf( "?" ),
+        option;
+    if (optionPos != -1) {
+        option = loc.substring(optionPos+1);
+        loc = loc.substring(0, optionPos);
+    }
+    if (option === "visible") {
+        document.getElementById("test_iframe_el").style.display = "";
+    }
+    return Test.AnotherWay.old_set_iframe_location.call(this, iframe, loc, outside_path_correction);
+};
 
 // new methods
 Test.AnotherWay.update_running_time = function() {
@@ -141,7 +155,7 @@ Test.AnotherWay.quicksearch = function(){
 Test.AnotherWay.filterTestList = function(str){
     Test.AnotherWay.unfilterTestList();
     var re = new RegExp(str, 'i');
-    var candidates  = document.querySelectorAll('#testtable tr td:nth-child(2) a');
+    var candidates  = document.querySelectorAll('#testtable tr a');
     for (var idx = 0, len = candidates.length; idx<len; idx++) {
         var tr = candidates[idx].parentNode.parentNode;
         var html = candidates[idx].innerHTML;
@@ -164,10 +178,10 @@ Test.AnotherWay.unfilterTestList = function() {
 };
 
 // bind our quicksearch init method to body onload.
-(function(win){
+(function(win) {
     if (win.addEventListener) {
         win.addEventListener('load', Test.AnotherWay.bindQuicksearchListener);
-    } else if (input.attachEvent) {
+    } else if (win.attachEvent) {
         win.attachEvent('onload', Test.AnotherWay.bindQuicksearchListener);
     } else {
         win.onload = function(){

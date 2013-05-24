@@ -82,6 +82,25 @@
         });
     }
     
+    function test_initLayer_notempty(t) {
+        t.plan(1);
+        
+        map = new OpenLayers.Map("map", {
+            projection: "EPSG:3857",
+            layers: [new OpenLayers.Layer("dummy", {isBaseLayer: true})]
+        });
+        map.zoomToExtent([-14768652, 4492113, -12263964, 5744457]);
+        var layer = new OpenLayers.Layer.Bing(OpenLayers.Util.extend({
+            isBaseLayer: false
+        }, options));
+        map.addLayer(layer);
+        
+        t.delay_call(5, function() {
+            t.ok(layer.grid[0][0].url, "Tile not empty");
+            map.destroy();
+        });
+    }
+    
     function test_attribution(t) {
         t.plan(3);
         
@@ -92,9 +111,28 @@
         map.zoomToMaxExtent();
         
         t.delay_call(2, function() {
-            t.ok(layer.attribution.indexOf('olBingAttribution aerial') !== -1, "Attribution has the correct css class");
-            t.ok(layer.attribution.indexOf('<img src="">') == -1, "Attribution contains a logo");
-            t.ok(layer.attribution.indexOf('</img></div></a><a style=') == -1 , "Attribution contains a copyright");
+            t.ok(OpenLayers.Util.indexOf(layer.attribution, 'olBingAttribution aerial') !== -1, "Attribution has the correct css class");
+            t.ok(OpenLayers.Util.indexOf(layer.attribution, '<img src="">') == -1, "Attribution contains a logo");
+            t.ok(OpenLayers.Util.indexOf(layer.attribution, '</img></div></a><a style=') == -1 , "Attribution contains a copyright");
+            map.destroy();
+        });
+    }
+
+    function test_attribution_notempty(t) {
+        t.plan(1);
+        
+        var log = [];
+        var map = new OpenLayers.Map("map");
+        layer = new OpenLayers.Layer.Bing(OpenLayers.Util.applyDefaults({type: 'Road'}, options));
+        map.addLayer(layer);
+        var format = OpenLayers.String.format;
+        OpenLayers.String.format = function(tpl, options) {
+            log.push(options.copyrights);
+        }
+        map.zoomToExtent(new OpenLayers.Bounds(-14768652, 4492113, -12263964, 5744457));
+        t.delay_call(2, function() {
+            t.ok(log.join("") !== "", "Copyright not empty");
+            OpenLayers.String.format = format;
             map.destroy();
         });
     }
@@ -123,6 +161,35 @@
         layer = new OpenLayers.Layer.Bing(options);
         clone = layer.clone();
         t.ok(clone instanceof OpenLayers.Layer.Bing, "clone is a Layer.Bing instance");
+    }
+
+    function test_protocol(t)
+    {
+        t.plan(5);
+
+        var map = new OpenLayers.Map("map");
+        layer = new OpenLayers.Layer.Bing(options);
+        map.addLayer(layer);
+        map.zoomToMaxExtent();
+        
+        t.delay_call(5, function() {
+            t.ok(OpenLayers.Util.indexOf(layer.attribution, '<img src="//') != -1, "Attribution contains a logo with protocol //");
+            t.ok(OpenLayers.Util.indexOf(layer.attribution, '<img src="http://') == -1, "Attribution logo does not have http:// protocol");
+            t.ok(layer.grid[1][1].url.indexOf('http:') == -1, "Tile url does not contain http:");
+
+            map.destroy();
+        });
+
+        var map2 = new OpenLayers.Map("map");
+        layer_https = new OpenLayers.Layer.Bing(OpenLayers.Util.applyDefaults({protocol: 'https:'}, options));
+        map2.addLayer(layer_https);
+        map2.zoomToMaxExtent();
+
+        t.delay_call(5, function() {
+            t.ok(OpenLayers.Util.indexOf(layer_https.attribution, '<img src="https://') != -1, "Attribution logo has https:// protocol");
+            t.ok(layer_https.grid[1][1].url.indexOf('https:') == 0, "Tile url contains https:");
+            map2.destroy();
+        });
     }
 
   </script>

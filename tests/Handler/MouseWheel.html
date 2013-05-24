@@ -56,7 +56,6 @@
         handler.setMap(map);
         handler.activate();
         var delta = 120;
-        if (window.opera && window.opera.version() < 9.2)  delta = -delta;
         handler.onWheelEvent({'target':map.layers[0].div, wheelDelta: delta});
         t.ok(pass, "evt.xy was set even without a mouse move");
     }    
@@ -108,7 +107,6 @@
         var activated = handler.activate();
         
         var delta = 120;
-        if (window.opera && window.opera.version() < 9.2)  delta = -delta;
         handler.onWheelEvent({'target':map.layers[0].div, wheelDelta: delta});
         handler.onWheelEvent({'target':map.layers[0].div, wheelDelta: delta});
         t.delay_call(1, function() {
@@ -117,12 +115,13 @@
     }
 
     function test_Handler_MouseWheel_cumulative(t) {
-        t.plan(1);
+        t.plan(2);
 
-        var deltaUp = 0;
+        var deltaUp = 0, ticks = 0;
         var callbacks = {
             up: function(evt, delta) {
                 deltaUp += delta;
+                ticks++;
             }
         };
 
@@ -133,18 +132,19 @@
         map.addControl(control);
         var handler = new OpenLayers.Handler.MouseWheel(control, callbacks, {
             interval: 150,
-            cumulative: false    
+            cumulative: false,
+            maxDelta: 6
         });
 
         var delta = 120;
         // generate 20 scroll up in non cumulative mode
-        if (window.opera && window.opera.version() < 9.2)  delta = -delta;
         for (var i=0; i < 20; i++) {
             handler.onWheelEvent({'target':map.layers[0].div, wheelDelta: delta});
         }
         
-        t.delay_call(1, function() {
-            t.eq(deltaUp, 1, "Non cumulative mode works");
+        t.delay_call(2, function() {
+            t.eq(deltaUp / ticks, 1, "Cumulative mode works");
+            t.eq(ticks, 4, "up called 4x with maxDelta of 6");
         });
     }
 

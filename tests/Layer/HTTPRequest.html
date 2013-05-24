@@ -12,7 +12,7 @@
     var options = { chicken: 151, foo: "bar" };
 
     function test_Layer_HTTPRequest_constructor (t) {
-        t.plan( 5 );
+        t.plan( 6 );
 
         layer = new OpenLayers.Layer.HTTPRequest(name, url, params, options);
         
@@ -27,8 +27,11 @@
         t.ok( ((layer.params["map"] == '/mapdata/vmap_wms.map') && 
                (layer.params["layers"] == "basic") &&
                (layer.params["format"] == "image/png")), "layer.params correctly set" );
-
-
+        
+        layer = new OpenLayers.Layer.HTTPRequest(name, url, null, {params: params});
+        t.ok( ((layer.params["map"] == '/mapdata/vmap_wms.map') && 
+               (layer.params["layers"] == "basic") &&
+               (layer.params["format"] == "image/png")), "layer.params correctly set from options" );
     }
 
     function test_Layer_HTTPRequest_clone (t) {
@@ -65,7 +68,7 @@
     }
 
     function test_Layer_HTTPRequest_mergeNewParams (t) {
-        t.plan( 9 );
+        t.plan( 8 );
 
         var map = new OpenLayers.Map('map');
         layer = new OpenLayers.Layer.HTTPRequest(name, url, params, options);
@@ -97,9 +100,7 @@
         
         layer.redraw = function() {
             t.ok(true, "layer.mergeNewParams calls layer.redraw");
-            t.ok(layer.resolution === null, "layer.mergeNewParams sets resolution to null");
-        };
-        layer.resolution = 'fake';
+        }
         layer.mergeNewParams();
     }
 

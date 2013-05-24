@@ -5,7 +5,15 @@ function init() {
         styleMap: new OpenLayers.StyleMap({
             temporary: OpenLayers.Util.applyDefaults({
                 pointRadius: 16
-            }, OpenLayers.Feature.Vector.style.temporary)
+            }, OpenLayers.Feature.Vector.style.temporary),
+            'default': OpenLayers.Util.applyDefaults({
+                pointRadius: 16,
+                strokeWidth: 3,
+            }, OpenLayers.Feature.Vector.style['default']),
+            select: OpenLayers.Util.applyDefaults({
+                pointRadius: 16,
+                strokeWidth: 3
+            }, OpenLayers.Feature.Vector.style.select)
         })
     });
 
@@ -41,19 +49,14 @@ function init() {
     map = new OpenLayers.Map({
         div: 'map',
         projection: 'EPSG:900913',
-        units: 'm',
         numZoomLevels: 18,
-        maxResolution: 156543.0339,
-        maxExtent: new OpenLayers.Bounds(
-            -20037508.34, -20037508.34, 20037508.34, 20037508.34
-        ),
         controls: [
             new OpenLayers.Control.TouchNavigation({
                 dragPanOptions: {
                     enableKinetic: true
                 }
             }),
-            new OpenLayers.Control.ZoomPanel(),
+            new OpenLayers.Control.Zoom(),
             toolbar
         ],
         layers: [osm, vector],

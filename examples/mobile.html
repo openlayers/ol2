@@ -5,7 +5,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="stylesheet" href="style.mobile.css" type="text/css">
+        <link rel="stylesheet" href="../theme/default/style.mobile.css" type="text/css">
         <script src="../lib/OpenLayers.js?mobile"></script>
         <script src="mobile.js"></script>
         <style>
@@ -34,36 +34,6 @@
                 font-family   : Arial;
                 padding       : 2px 4px;
                 border-radius : 5px 0 0 0;
-            }
-            div.olControlZoomPanel .olControlZoomInItemInactive,
-            div.olControlZoomPanel .olControlZoomOutItemInactive {
-                background: rgba(0,0,0,0.2);
-                position: absolute;
-            }
-            div.olControlZoomPanel .olControlZoomInItemInactive {
-                border-radius: 5px 5px 0 0;
-            }
-            div.olControlZoomPanel .olControlZoomOutItemInactive {
-                border-radius: 0 0 5px 5px ;
-                top: 37px;
-            }
-            div.olControlZoomPanel .olControlZoomOutItemInactive:after ,
-            div.olControlZoomPanel .olControlZoomInItemInactive:after{
-                font-weight: bold;
-                content   : '+';
-                font-size : 36px;
-                padding:  7px;
-                z-index: 2000;
-                color     : #fff;
-                line-height: 1em;
-            }
-            div.olControlZoomPanel .olControlZoomOutItemInactive:after{
-                content: '–';
-                line-height: 0.9em;
-                padding: 0 8px;
-            }
-            div.olControlZoomPanel .olControlZoomToMaxExtentItemInactive {
-                display: none;
             }
             #title, #tags, #shortdesc {
                 display: none;

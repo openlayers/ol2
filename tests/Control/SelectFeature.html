@@ -173,6 +173,47 @@
 
     }
 
+
+    function test_selectBox_events(t){
+        t.plan(8);
+        var map = new OpenLayers.Map("map");
+        var layer1 = new OpenLayers.Layer.Vector();
+        map.addLayer(layer1);
+        map.setBaseLayer(layer1);
+        var layer2 = new OpenLayers.Layer.Vector();
+        map.addLayer(layer2);
+        map.setCenter(new OpenLayers.LonLat(1,1));
+        var feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(1,1));
+        layer1.addFeatures([feature]);
+        var control = new OpenLayers.Control.SelectFeature(layer1);
+        control.setMap(map);
+        map.getLonLatFromPixel = function(arg) {
+            return new OpenLayers.LonLat(arg.x, arg.y);
+        }
+        control.activate();
+        var firesBoxselectionstart = false;
+        var beforeSelectingNumberOfFeatures = -1;
+        var firesBoxselectionend = false;
+        var afterSelectingNumberOfFeatures = -1;
+        control.events.register("boxselectionstart",null, function(e){
+            firesBoxselectionstart=true;
+            t.eq(e.layers.length,1,"right number of layers in event boxselectionstart");
+            t.eq(layer1.id, e.layers[0].id,"correct layer in event boxselectionstart");
+            beforeSelectingNumberOfFeatures = e.layers[0].selectedFeatures.length;
+        });
+        control.events.register("boxselectionend",null, function(e){
+            firesBoxselectionend=true;
+            t.eq(e.layers.length,1,"right number of layers in event boxselectionend");
+            t.eq(layer1.id, e.layers[0].id,"correct layer in event boxselectionend");
+            afterSelectingNumberOfFeatures = e.layers[0].selectedFeatures.length;
+        });
+        var bounds = new OpenLayers.Bounds(-1, -1, 2, 2);
+        control.selectBox(bounds);
+        t.ok(firesBoxselectionstart,"selectBox fires boxselectionstart event");
+        t.eq(beforeSelectingNumberOfFeatures,0,"boxselectionstart fires before selection of feature");
+        t.ok(firesBoxselectionend,"selectBox fires boxselectionend event");
+        t.eq(afterSelectingNumberOfFeatures,1,"boxselectionend fires after feature selected");
+    }
     function test_Control_SelectFeature_activate(t) {
         t.plan(4);
         var map = new OpenLayers.Map("map");
@@ -480,7 +521,7 @@
         t.eq(feature.renderIntent, "default",
              "feature drawn with expected render intent after \"mouseout\"");
     }
-
+    
     function test_setLayer(t) {
         t.plan(5);
         var map = new OpenLayers.Map("map");
@@ -504,6 +545,31 @@
         t.eq((control.layers === null), true, "When using setLayer with a single layer, the layers property is removed if present before");
         map.destroy();
     }
+	
+    function test_setLayerWithRemoving(t) {
+        t.plan(2);
+        var map = new OpenLayers.Map("map");
+        var layer1 = new OpenLayers.Layer.Vector();
+        var layer2 = new OpenLayers.Layer.Vector();
+        map.addLayer(layer1, layer2);
+        // initialize it with a single layer
+        var control = new OpenLayers.Control.SelectFeature(layer1);
+        map.addControl(control);
+        control.activate();
+		var noError = null;
+		map.events.register("preremovelayer", this, function(e) {
+			try {
+				control.setLayer(layer2);
+			} catch (e) {
+				noError = e;
+			}
+		});
+		layer1.destroy();
+		t.eq(layer2.id, control.layer.id, "Layer is set correctly without error");
+		t.eq(noError, null,"No error occured during setLayer. Error is: '"+noError+"'");
+        control.destroy();
+        map.destroy();
+    }
 
     function test_destroy(t) {
         t.plan(1);
@@ -517,6 +583,46 @@
         t.eq(layer1.renderer.getRenderLayerId(), layer1.id, 
             "Root container moved correctly when control is destroyed and layers was an array parameter");
     }   
+
+    function test_unselectAll(t) {
+        t.plan(2);
+
+        var layer = new OpenLayers.Layer.Vector();
+
+        var control = new OpenLayers.Control.SelectFeature(layer);
+
+        var feature1 = new OpenLayers.Feature.Vector();
+        feature1.id = 1;
+        var feature2 = new OpenLayers.Feature.Vector();
+        feature2.id = 2;
+        var feature3 = new OpenLayers.Feature.Vector();
+        feature3.id = 3;
+        var feature4 = new OpenLayers.Feature.Vector();
+        feature4.id = 4;
+
+        layer.addFeatures([feature1, feature2, feature3, feature4]);
+
+        control.select(feature1);
+        control.select(feature2);
+        control.select(feature3);
+        control.select(feature4);
+
+        layer.events.on({
+            featureunselected: function(e) {
+                // we change the selectedFeatures array while
+                // unselectAll is iterating over that array.
+                if(feature2.layer) {
+                    layer.removeFeatures([feature2]);
+                }
+            }
+        });
+
+        control.unselectAll({except: feature3});
+        t.eq(layer.selectedFeatures.length, 1,
+             'unselectAll unselected all but one');
+        t.eq(layer.selectedFeatures[0].id, 3,
+             'the remaining selected features is the one expected');
+    }
    
     </script>
 </head>

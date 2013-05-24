@@ -198,21 +198,35 @@
         t.ok(style.t, "getStyle returns copy of style rather than reference");
     }
     function test_Format_KML_extendedData(t) {
-        t.plan(2);
+        t.plan(6);
         var f = new OpenLayers.Format.KML();
         var features = f.read(OpenLayers.Util.getElement("kml_extendeddata").value);
-        t.eq(features[0].attributes.all_bridges.value, "3030", "read value from extendeddata correctly.");
-        t.eq(features[0].attributes.all_bridges.displayName, "all bridges", "read displayName from extendeddata correctly.");
+        t.eq(features[0].attributes.holeYardage.value, "234", "read value from extendeddata correctly.");
+        t.eq(features[0].attributes.holeYardage.displayName, "<b><i>The yardage is </i></b>", "read displayName from extendeddata correctly.");
+        t.eq(f.read(f.write(features[0]))[0].attributes.holeYardage.value, features[0].attributes.holeYardage.value, "attribute value written correctly");
+        t.eq(f.read(f.write(features[0]))[0].attributes.holeYardage.displayName, features[0].attributes.holeYardage.displayName, "attribute displayName written correctly");
+        f.kvpAttributes = true;
+        features = f.read(OpenLayers.Util.getElement("kml_extendeddata").value);
+        t.eq(features[0].attributes.holeYardage, "234", "read kvp value from extendeddata correctly.");
+        t.eq(f.read(f.write(features[0]))[0].attributes.holeYardage, features[0].attributes.holeYardage, "kvp attribute value written correctly");
     }
 
     function test_Format_KML_extendedData_SchemaData(t) {
-        t.plan(4);
+        t.plan(10);
         var f = new OpenLayers.Format.KML();
         var features = f.read(OpenLayers.Util.getElement("kml_extendeddata2").value);
         t.eq(features[0].attributes.TrailHeadName.value, "Pi in the sky", "read value from extendeddata (schema data) correctly.");
         t.eq(features[0].attributes.TrailHeadName.displayName, "TrailHeadName", "read displayName from extendeddata correctly");
         t.eq(features[0].attributes.ElevationGain.value, "10", "read value from extendeddata (schema data) correctly.");
         t.eq(features[0].attributes.ElevationGain.displayName, "ElevationGain", "read displayName from extendeddata correctly");
+        t.eq(f.read(f.write(features[0]))[0].attributes.TrailHeadName.value, features[0].attributes.TrailHeadName.value, "attribute value from extendeddata (schema data) written correctly");
+        t.eq(f.read(f.write(features[0]))[0].attributes.ElevationGain.value, features[0].attributes.ElevationGain.value, "attribute value from extendeddata (schema data) written correctly");
+        f.kvpAttributes = true;
+        features = f.read(OpenLayers.Util.getElement("kml_extendeddata2").value);
+        t.eq(features[0].attributes.TrailHeadName, "Pi in the sky", "read kvp value from extendeddata (schema data) correctly.");
+        t.eq(features[0].attributes.ElevationGain, "10", "read kvp value from extendeddata (schema data) correctly.");
+        t.eq(f.read(f.write(features[0]))[0].attributes.TrailHeadName, features[0].attributes.TrailHeadName, "kvp attribute value from extendeddata (schema data) written correctly");
+        t.eq(f.read(f.write(features[0]))[0].attributes.ElevationGain, features[0].attributes.ElevationGain, "kvp attribute value from extendeddata (schema data) written correctly");
     }
 
     function test_Format_KML_placemarkName(t) {
@@ -222,13 +236,13 @@
         var f = new OpenLayers.Format.KML();
 
         t.eq(f.read(f.write(feature))[0].attributes.name, feature.id, "placemark name from feature.id");
-
-        feature.attributes.name = "placemark name from attributes.name";
-        t.eq(f.read(f.write(feature))[0].attributes.name, feature.attributes.name, "placemark name from attributes.name");
         feature.style = {
             label: "placemark name from style.label"
         };
         t.eq(f.read(f.write(feature))[0].attributes.name, feature.style.label, "placemark name from style.label");
+
+        feature.attributes.name = "placemark name from attributes.name";
+        t.eq(f.read(f.write(feature))[0].attributes.name, feature.attributes.name, "placemark name from attributes.name");
     }
     function test_Format_KML_linestring_projected(t) {
         t.plan(1);
@@ -245,14 +259,14 @@
     
     function test_extractTracks(t) {
         
-        t.plan(12);
+        t.plan(13);
         
         var xml = new OpenLayers.Format.XML(); 
         var doc = xml.read(document.getElementById("macnoise.kml").firstChild.nodeValue);
         
         var format = new OpenLayers.Format.KML({
             extractTracks: true,
-            trackAttributes: ["speed"] // additional custom attributes
+            trackAttributes: ["speed", "num"] // additional custom attributes
         });
         
         var features = format.read(doc.documentElement);
@@ -275,6 +289,7 @@
         
         // additional per point attributes (determined by trackAttributes property)
         t.eq(attr.speed, "166", "correct speed");
+        t.eq(attr.num, "50", "correct num");
         
         var exp = new OpenLayers.Geometry.Point(-93.0753620391713, 44.9879724110872);
         exp.z = 1006;
@@ -287,49 +302,61 @@
 </head> 
 <body> 
     <textarea id="kml_extendeddata" style="display:none">
-<kml xmlns="http://earth.google.com/kml/2.2">
-<Document>
-        <Placemark>
-            <styleUrl>#default</styleUrl>
-
-
-
-
-            <ExtendedData>
-                                    <Data name='all_bridges'>
-                        <displayName><![CDATA[all bridges]]></displayName>
-                        <value><![CDATA[3030]]></value>
-                    </Data>
-                                    <Data name='latitude'>
-                        <displayName><![CDATA[latitude]]></displayName>
-                        <value><![CDATA[43]]></value>
-                    </Data>
-                                    <Data name='longitude'>
-                        <displayName><![CDATA[longitude]]></displayName>
-                        <value><![CDATA[-107.55]]></value>
-                    </Data>
-                                    <Data name='functionally_obsolete__percent'>
-                        <displayName><![CDATA[functionally obsolete, percent]]></displayName>
-                        <value><![CDATA[8]]></value>
-                    </Data>
-                                    <Data name='structurally_deficient__percent'>
-                        <displayName><![CDATA[structurally deficient, percent]]></displayName>
-                        <value><![CDATA[13]]></value>
-                    </Data>
-                                    <Data name='state'>
-                        <displayName><![CDATA[state]]></displayName>
-                        <value><![CDATA[Wyoming]]></value>
-                    </Data>
-                            </ExtendedData>
-
-
-              <Point>
-<coordinates>-107.55,43.0</coordinates>
-</Point>
-
-
-        </Placemark>
-</Document>
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Entity-Replacement</name>
+    <Placemark>
+      <name>Club house</name>
+      <ExtendedData>
+        <Data name="holeNumber">
+          <displayName><![CDATA[
+            <b>This is hole </b>
+          ]]></displayName>
+          <value>1</value>
+        </Data>
+        <Data name="holePar">
+          <displayName><![CDATA[
+            <i>The par for this hole is </i>
+          ]]></displayName>
+          <value>4</value>
+        </Data>
+        <Data name="holeYardage">
+          <displayName><![CDATA[<b><i>The yardage is </i></b>]]></displayName>
+          <value>234</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>-111.956,33.5043</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>By the lake</name>
+      <ExtendedData>
+        <Data name="holeNumber">
+          <displayName><![CDATA[
+            <b>This is hole </b>
+          ]]></displayName>
+          <value>5</value>
+        </Data>
+        <Data name="holePar">
+          <displayName><![CDATA[
+            <i>The par for this hole is </i>
+          ]]></displayName>
+          <value>5</value>
+        </Data>
+        <Data name="holeYardage">
+          <displayName><![CDATA[
+            <b><i>The yardage is </i></b>
+          ]]></displayName>
+          <value>523</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>-111.95,33.5024</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
 </kml>
 </textarea>
     <textarea id="kml_extendeddata2" style="display:none">
@@ -499,6 +526,21 @@
     <speed>180</speed>
     <speed>184</speed>
     <speed>177</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
+    <num>130</num>
+    <num>140</num>
+    <num>150</num>
 </gx:Track></Placemark>
 <Placemark>
   <name>E170</name>
@@ -564,6 +606,20 @@
     <speed>347</speed>
     <speed>334</speed>
     <speed>337</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
+    <num>130</num>
+    <num>140</num>
 </gx:Track></Placemark>
 <Placemark>
   <name>BE33</name>
@@ -633,6 +689,21 @@
     <speed>155</speed>
     <speed>155</speed>
     <speed>156</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
+    <num>130</num>
+    <num>140</num>
+    <num>150</num>
 </gx:Track></Placemark>
 <Placemark>
   <name>A319</name>
@@ -702,6 +773,21 @@
     <speed>365</speed>
     <speed>350</speed>
     <speed>354</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
+    <num>130</num>
+    <num>140</num>
+    <num>150</num>
 </gx:Track></Placemark>
 <Placemark>
   <name>E145</name>
@@ -771,6 +857,21 @@
     <speed>228</speed>
     <speed>232</speed>
     <speed>236</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
+    <num>130</num>
+    <num>140</num>
+    <num>150</num>
 </gx:Track></Placemark>
 <Placemark>
   <name>E170</name>
@@ -828,6 +929,18 @@
     <speed>278</speed>
     <speed>283</speed>
     <speed>288</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
 </gx:Track></Placemark>
 <Placemark>
   <name>DC95</name>
@@ -897,6 +1010,21 @@
     <speed>368</speed>
     <speed>355</speed>
     <speed>362</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
+    <num>130</num>
+    <num>140</num>
+    <num>150</num>
 </gx:Track></Placemark>
 <Placemark>
   <name>B737</name>
@@ -966,6 +1094,21 @@
     <speed>270</speed>
     <speed>277</speed>
     <speed>287</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
+    <num>130</num>
+    <num>140</num>
+    <num>150</num>
 </gx:Track></Placemark>
 <Placemark>
   <name>A318</name>
@@ -1031,6 +1174,20 @@
     <speed>215</speed>
     <speed>222</speed>
     <speed>231</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
+    <num>130</num>
+    <num>140</num>
 </gx:Track></Placemark>
 <Placemark>
   <name></name>
@@ -1088,6 +1245,18 @@
     <speed>147</speed>
     <speed>147</speed>
     <speed>150</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
 </gx:Track></Placemark>
 <Placemark>
   <name>CRJ2</name>
@@ -1155,6 +1324,19 @@
     <speed>136</speed>
     <speed>136</speed>
     <speed>123</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
+    <num>130</num>
 </gx:Track></Placemark>
 <Placemark>
   <name>E170</name>
@@ -1224,6 +1406,21 @@
     <speed>193</speed>
     <speed>194</speed>
     <speed>185</speed>
+    <num>10</num>
+    <num>20</num>
+    <num>30</num>
+    <num>40</num>
+    <num>50</num>
+    <num>60</num>
+    <num>70</num>
+    <num>80</num>
+    <num>90</num>
+    <num>100</num>
+    <num>110</num>
+    <num>120</num>
+    <num>130</num>
+    <num>140</num>
+    <num>150</num>
 </gx:Track></Placemark>
 </Folder>
 <Folder>

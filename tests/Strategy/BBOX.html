@@ -33,7 +33,7 @@
     }
 
     function test_update(t) {
-        t.plan(5);
+        t.plan(7);
 
         // Create a dummy layer that can act as the map base layer.
         // This will be unnecessary if #1921 is addressed (allowing
@@ -43,14 +43,15 @@
         var strategy = new OpenLayers.Strategy.BBOX({
             ratio: 1 // makes for easier comparison to map bounds
         });
+        var log = [];
         var layer = new OpenLayers.Layer.Vector(null, {
             isBaseLayer: true,
-            protocol: new OpenLayers.Protocol(),
+            protocol: new OpenLayers.Protocol({abort: function(response) { log.push(response); }}),
             strategies: [strategy]
         });
 
         // create a map with the layers and a center
-        var map = new OpenLayers.Map("map");
+        var map = new OpenLayers.Map("map", {zoomMethod: null});
         map.addLayers([dummy, layer]);
         map.zoomToMaxExtent();
         
@@ -61,7 +62,14 @@
          * should be removed when the issue(s) described in #1835 are addressed.
          */
         strategy.update({force: true});
-        
+        strategy.response = {};
+        strategy.update({force: true});
+        t.eq(log.length, 1, "Response aborted");
+        log = [];
+        strategy.update({force: true});
+        strategy.update({force: true, noAbort: true}); 
+        t.eq(log.length, 0, "Response not aborted when noAbort is true");
+
         // test that the strategy bounds were set
         t.ok(map.getExtent().equals(strategy.bounds), "[set center] bounds set to map extent");
         
@@ -80,50 +88,71 @@
         strategy.update({force: true});
         var from = map.getProjectionObject();
         var to = layer.projection;
-        t.ok(strategy.bounds.equals(map.getExtent().transform(from, to)), "[force update different proj] bounds transformed");
         
-
+        var strategyBounds = strategy.bounds,
+            mapExtent = map.getExtent().transform(from, to),
+            // we don't use bounds::toString because we might run into 
+            // precision issues
+            precision = 7,
+            strategyBoundsGot = [
+                strategyBounds.left.toFixed( precision ),
+                strategyBounds.bottom.toFixed( precision ),
+                strategyBounds.right.toFixed( precision ),
+                strategyBounds.top.toFixed( precision )
+            ].join(','),
+            mapExtentExpected = [
+                mapExtent.left.toFixed( precision ),
+                mapExtent.bottom.toFixed( precision ),
+                mapExtent.right.toFixed( precision ),
+                mapExtent.top.toFixed( precision )
+            ].join(',');
+        t.eq(strategyBoundsGot, mapExtentExpected, 
+            "[force update different proj] bounds transformed");
     }
     
     function test_events(t) {
         
-        t.plan(3);
-        var log = {
-            loadstart: 0,
-            loadend: 0
-        };
+        t.plan(7);
+
+        var log = [];
+
+        var response = new OpenLayers.Protocol.Response();
 
         var map = new OpenLayers.Map("map");
         var layer = new OpenLayers.Layer.Vector(null, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol({
                 read: function(config) {
-                    config.callback.call(config.scope, {});
+                    config.callback.call(config.scope, response);
                 }
             }),
             isBaseLayer: true,
             eventListeners: {
-                loadstart: function() {
-                    ++log.loadstart;
+                loadstart: function(event) {
+                    log.push(event);
                 },
-                loadend: function() {
-                    ++log.loadend;
+                loadend: function(event) {
+                    log.push(event);
                 }
             }            
         });
         map.addLayer(layer);
         map.zoomToMaxExtent();
+
+        t.eq(log.length, 2, "2 events logged");
+        t.eq(log[0].type, "loadstart", "loadstart first");
+        t.ok(log[0].filter.type === OpenLayers.Filter.Spatial.BBOX, "loadstart includes filter used");
+        t.eq(log[1].type, "loadend", "loadend second");
+        t.ok(log[1].response == response, "loadend includes response");
         
-        t.eq(log.loadstart, 1, "loadstart triggered");
-        t.eq(log.loadend, 1, "loadend triggered");
-        
-        log = {};
+        var calls = [];
         layer.protocol.read = function(obj) {
-            log.obj = obj;
+            calls.push(obj);
         }
         layer.refresh({force: true, whee: 'chicken'});
 
-        t.eq(log.obj && log.obj.whee, "chicken", "properties passed to read on refresh correctly.");
+        t.eq(calls.length, 1, "1 call to read");
+        t.eq(calls[0].whee, "chicken", "properties passed to read");
 
         map.destroy();
         
@@ -177,7 +206,7 @@
     function test_resFactor(t) {
         t.plan(2);
         
-        var map = new OpenLayers.Map("map");
+        var map = new OpenLayers.Map("map", {zoomMethod: null});
         var bbox = new OpenLayers.Strategy.BBOX();
         var fakeProtocol = new OpenLayers.Protocol({
             'read': function() { 
@@ -252,7 +281,7 @@
         ];
 
         // call merge with a mocked up response
-        strategy.merge({features: features});
+        strategy.merge({features: features, success: OpenLayers.Function.True});
         
         // test that feature geometries have been transformed to map projection
         var from = layer.projection;
@@ -270,7 +299,7 @@
         ];
         
         // call merge again with mocked up response
-        strategy.merge({features: features});
+        strategy.merge({features: features, success: OpenLayers.Function.True});
 
         // test that feature geometries have not been transformed
         t.geom_eq(layer.features[0].geometry, features[0].geometry, "[same proj] feature 0 geometry not transformed");
@@ -280,7 +309,7 @@
 
     // Test fix for Ticket #3142
     function test_layerLoadedAfterBeingAdded(t) {
-        t.plan(2);
+        t.plan(3);
 
         var dummy = new OpenLayers.Layer(null, {isBaseLayer: true});
 
@@ -316,6 +345,11 @@
         // test that the strategy bounds were set
         t.ok(map.getExtent().equals(strategy.bounds), "[set center] bounds set to map extent");
         t.eq(layerOutOfRange.strategies[0].bounds, null, "Data not requested if layer is out of range");
+
+        layerOutOfRange.setVisibility(false);
+        layerOutOfRange.setVisibility(true);
+        t.eq(layerOutOfRange.strategies[0].bounds, null, "Data not requested if layer is out of range when switching visibility");
+
         map.destroy();
     }
 

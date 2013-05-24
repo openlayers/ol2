@@ -41,12 +41,8 @@ var init = function (onSelectFeatureFunction) {
         div: "map",
         theme: null,
         projection: sm,
-        units: "m",
         numZoomLevels: 18,
-        maxResolution: 156543.0339,
-        maxExtent: new OpenLayers.Bounds(
-            -20037508.34, -20037508.34, 20037508.34, 20037508.34
-        ),
+        tileManager: new OpenLayers.TileManager(),
         controls: [
             new OpenLayers.Control.Attribution(),
             new OpenLayers.Control.TouchNavigation({

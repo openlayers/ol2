@@ -1,18 +1,9 @@
-var urls = [
-    "http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-    "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-    "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
-];
-
 var map = new OpenLayers.Map({
     div: "map",
+    tileManager: new OpenLayers.TileManager(),
     layers: [
-        new OpenLayers.Layer.XYZ("OSM (with buffer)", urls, {
-            transitionEffect: "resize", buffer: 2, sphericalMercator: true
-        }),
-        new OpenLayers.Layer.XYZ("OSM (without buffer)", urls, {
-            transitionEffect: "resize", buffer: 0, sphericalMercator: true
-        })
+        new OpenLayers.Layer.OSM("OSM (without buffer)"),
+        new OpenLayers.Layer.OSM("OSM (with buffer)", null, {buffer: 2})
     ],
     controls: [
         new OpenLayers.Control.Navigation({
