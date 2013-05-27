@@ -45,10 +45,12 @@ var map = new OpenLayers.Map({
         featureover: function(e) {
             e.feature.renderIntent = "select";
             e.feature.layer.drawFeature(e.feature);
+            log("Map says: Pointer entered " + e.feature.id + " on " + e.feature.layer.name);
         },
         featureout: function(e) {
             e.feature.renderIntent = "default";
             e.feature.layer.drawFeature(e.feature);
+            log("Map says: Pointer left " + e.feature.id + " on " + e.feature.layer.name);
         },
         featureclick: function(e) {
             log("Map says: " + e.feature.id + " clicked on " + e.feature.layer.name);
