@@ -92,10 +92,13 @@ function trigger(type, pxl) {
 // TESTS
 
 function test_onClick29(t) {
+	
 	t.plan(4);
 	window.onload = init();
+	
 	logevt = [];
 	lognoevt = [];
+	
 	events = map.events;
 	lonlat = new OpenLayers.LonLat(0,0);
 	pixel = map.getPixelFromLonLat(lonlat);
