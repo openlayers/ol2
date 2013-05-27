@@ -1,0 +1,123 @@
+<html>
+<head>
+<script src="../OLLoader.js"></script>
+<script type="text/javascript">
+
+var events, layer1, style, logevt, lognoevt, map, lonlat, pixel, element;
+
+function init() {
+
+	element = document.getElementById("map");
+
+	style = new OpenLayers.StyleMap({
+		 'default': OpenLayers.Util.applyDefaults(
+		     {label: "${l}", pointRadius: 30},
+		     OpenLayers.Feature.Vector.style["default"]
+		 ),
+		 'select': OpenLayers.Util.applyDefaults(
+		     {pointRadius: 30},
+		     OpenLayers.Feature.Vector.style.select
+		 )
+	});
+	
+	layer1 = new OpenLayers.Layer.Vector("Layer 1", {
+		styleMap: style
+	});
+
+	layer1.addFeatures([
+		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1}),
+		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1}),
+		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1}),
+		 new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT("POINT(0 0)"), {l:1})
+	]);
+
+	map = new OpenLayers.Map({
+		div: "map",
+		allOverlays: true,
+		layers: [layer1],
+		zoom: 6,
+		center: [0, 0],
+		eventListeners: {
+        featureclick: logEvent,
+        nofeatureclick: logNoEvent
+		}
+	});
+	
+	//map.addLayers([layer1]);
+	
+	/**Uncomment to view behavior w/in featureclick.html
+	//map.events.on({featureclick: logEvent});
+	logevt = [];
+	lognoevt = [];
+	events = map.events;
+	
+	lonlat = new OpenLayers.LonLat(0,0);
+	pixel = map.getPixelFromLonLat(lonlat);
+	
+	trigger('mousedown', pixel);
+	trigger('mouseup', pixel);
+
+	alert("logevt length = " + logevt.length + " and lognoevt length = " + lognoevt.length);
+	
+	//*/
+}
+
+function logNoEvent(e) {
+
+	//alert("logNoEvent()");
+	lognoevt.push(e);
+}
+
+function logEvent(e) {
+
+	//alert("logEvent()");
+	logevt.push(e);	
+}
+
+function trigger(type, pxl) {
+
+	var map_position = OpenLayers.Util.pagePosition(element);
+
+	pxl.x = pxl.x + map_position[0];
+	pxl.y = pxl.y + map_position[1];
+
+	events.triggerEvent(type, {
+		xy: pxl, 
+		clientX: pxl.x, 
+		clientY: pxl.y, 
+		which: 1  // which == 1 means left-click
+	}); 	
+}
+
+// TESTS
+
+function test_onClick29(t) {
+	
+	t.plan(4);
+	window.onload = init();
+	
+	logevt = [];
+	lognoevt = [];
+	
+	events = map.events;
+	lonlat = new OpenLayers.LonLat(0,0);
+	pixel = map.getPixelFromLonLat(lonlat);
+
+	t.eq(pixel.x, 300, "testing pixel x");
+	t.eq(pixel.y, 150, "testing pixel y");
+
+	trigger('mousedown', pixel);
+	trigger('mouseup', pixel);
+	
+	t.eq(logevt.length, 4, "testing lognoevt length");
+	t.eq(lognoevt.length, 0, "testing lognoevt length");
+}
+
+// END TESTS
+
+</script>
+</head>
+<body>
+<div id="map" style="width: 600px; height: 300px; border: 1px solid black"></div>
+</body>
+</html>
