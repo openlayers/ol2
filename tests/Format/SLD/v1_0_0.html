@@ -141,10 +141,39 @@
                     '</FeatureTypeStyle>' + 
                 '</UserStyle>' + 
             '</NamedLayer>' +
+            '<NamedLayer>' + 
+                '<Name>GraphicFill Layer</Name>' + 
+                '<UserStyle>' + 
+                    '<FeatureTypeStyle>' + 
+                        '<Rule>' + 
+                            '<Name>GraphicFill Layer rule</Name>' + 
+                            '<PolygonSymbolizer>' + 
+                                '<Fill>' + 
+                                    '<GraphicFill>' + 
+                                        '<Graphic>' + 
+                                            '<ExternalGraphic>' + 
+                                                '<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="graphicfill.png" ></OnlineResource>' + 
+                                                '<Format>image/png</Format>' + 
+                                                '</ExternalGraphic>' + 
+                                            '<Size>16</Size>' + 
+                                        '</Graphic>' + 
+                                    '</GraphicFill>' + 
+                                '</Fill>' + 
+                                '<Stroke>' + 
+                                    '<CssParameter name="stroke">#006666</CssParameter>' + 
+                                    '<CssParameter name="stroke-opacity">1</CssParameter>' + 
+                                    '<CssParameter name="stroke-width">2</CssParameter>' + 
+                                    '<CssParameter name="stroke-dasharray">4 4</CssParameter>' + 
+                                '</Stroke>' + 
+                            '</PolygonSymbolizer>' + 
+                        '</Rule>' + 
+                    '</FeatureTypeStyle>' + 
+                '</UserStyle>' + 
+            '</NamedLayer>' + 
         '</StyledLayerDescriptor>';
 
     function test_read(t) {
-        t.plan(23);
+        t.plan(25);
         
         var xml = new OpenLayers.Format.XML();
         var sldxml = xml.read(sld);
@@ -223,6 +252,15 @@
         rule = style.rules[0];
         t.eq(rule.symbolizer["Point"].graphicWidth, "${SIZE}", "dynamic size correctly set on graphicWidth");
         
+        // check graphic fill named layer 
+        layer = obj.namedLayers["GraphicFill Layer"]; 
+        style = layer.userStyles[0]; 
+        rule = style.rules[0]; 
+        symbolizer = rule.symbolizer; 
+        poly = symbolizer["Polygon"]; 
+        t.eq(poly.externalGraphic, "graphicfill.png", "(GraphicFill Layer,0) first rule has correct external graphic"); 
+        t.eq(poly.pointRadius * 2, 16, "(GraphicFill Layer,0) first rule has correct size"); 
+
         // etc.  I'm convinced read works, really wanted to test write (since examples don't test that)
         // I'll add more tests here later.        
 

@@ -98,6 +98,36 @@
         t.eq(r.root.style.height, "2px", "root height is correct");
     }
     
+    function test_VML_setstyle(t) { 
+        if (!OpenLayers.Renderer.VML.prototype.supported()) { 
+            t.plan(0); 
+            return; 
+        } 
+         
+        t.plan(5); 
+         
+        var r = new OpenLayers.Renderer.VML(document.body); 
+         
+        // test graphic fill 
+        var node = document.createElement('div'); 
+        var style = { 
+            externalGraphic: "graphicfill-20x20.png", 
+            pointRadius: 10, 
+            fillOpacity: 1 
+        }; 
+        var options = { isFilled: true }; 
+        r.setStyle(node, style, options); 
+        var fill = node.childNodes[0]; 
+        var size = (style.pointRadius * 2) * 72 / 96; 
+         
+        t.eq(fill.opacity, 1, "GraphicFill: fill.opacity is correct"); 
+        t.eq(fill.src, style.externalGraphic, "GraphicFill: fill.src is correct"); 
+        t.eq(fill.type, 'tile', "GraphicFill: fill.type is correct"); 
+        t.eq(fill.size, size + 'pt,' + size + 'pt', "GraphicFill: fill.size is correct"); 
+        t.eq(fill.aspect, 'atmost', "GraphicFill: fill.aspect is correct"); 
+    } 
+    
+    
     function test_VML_drawText(t) {
         if (!OpenLayers.Renderer.VML.prototype.supported() || OpenLayers.Renderer.SVG.prototype.supported()) {
             t.plan(0);
