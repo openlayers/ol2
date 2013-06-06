@@ -193,6 +193,7 @@
         // test that events.on is called at map construction
         var options = {
             eventListeners: {foo: "bar"},
+            tileManager: null,
             controls: []
         };
         OpenLayers.Events.prototype.on = function(obj) {
@@ -207,7 +208,7 @@
         OpenLayers.Events.prototype.on = function(obj) {
             t.fail("events.on called without eventListeners");
         }
-        var map2 = new OpenLayers.Map("map", {controls: []});
+        var map2 = new OpenLayers.Map("map", {tileManager: null, controls: []});
         OpenLayers.Events.prototype.on = method;
         map2.destroy();
     }
