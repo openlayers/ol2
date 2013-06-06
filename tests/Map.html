@@ -2250,6 +2250,20 @@
         map.destroy();
     }
 
+    function test_tileManager(t) {
+        t.plan(3);
+        var map = new OpenLayers.Map('map');
+        t.ok(map.tileManager instanceof OpenLayers.TileManager, "Default tileManager created");
+        map.destroy();
+        map = new OpenLayers.Map('map', {tileManager: null});
+        t.ok(map.tileManager === null, "No tileManager created");
+        map.destroy();
+        var options = {cacheSize: 512};
+        map = new OpenLayers.Map('map', {tileManager: options});
+        t.eq(map.tileManager.cacheSize, 512, "cacheSize taken from options");
+        map.destroy();
+    }
+
   </script>
 </head>
 <body>
