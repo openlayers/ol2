@@ -1148,6 +1148,24 @@
         t.eq(OpenLayers.Util.getFormattedLonLat(181, "lon"), "179°00'00\"W", "crossing dateline from the east results in correct west coordinate");
     }
 
+    function test_getConstructor(t) {
+        t.plan(3);
+
+        var Constructor,
+            get = OpenLayers.Util.getConstructor;
+
+        t.eq(get("OpenLayers.Size"), OpenLayers.Size, "got OpenLayers.Size");
+        t.eq(get("OpenLayers.LonLat"), OpenLayers.LonLat, "got OpenLayers.LonLat");
+
+        var err;
+        try {
+            Constructor = get("Foo.Bar");
+        } catch (e) {
+            err = e;
+        }
+        t.ok(err instanceof Error, "throws");
+    }
+
     /**
      * To test that we can safely call OpenLayers.Util.extend with an Event
      * instance, we need to capture a real event.
