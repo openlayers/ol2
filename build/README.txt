@@ -48,5 +48,11 @@ The options available for compression are:
    None will leave the Javascript uncompressed.
 
 
+Run the command
+
+  python build.py --help
+
+for details about the other options.
+
 For more information on the build script and custom build profiles,
 see http://docs.openlayers.org/library/deploying.html
