@@ -7,6 +7,7 @@ div.olMap {
 
 div.olMapViewport {
     text-align: left;
+    -ms-touch-action: none;
 }
 
 div.olLayerDiv {
@@ -27,6 +28,10 @@ div.olLayerDiv {
 }
 .olLayerGoogleV3.olLayerGooglePoweredBy {
     bottom: 15px !important;
+}
+/* GMaps should not set styles on its container */
+.olForeignContainer {
+    opacity: 1 !important;
 }
 .olControlAttribution {
     font-size: smaller;
@@ -429,7 +434,7 @@ span.olGoogleAttribution.hybrid a, span.olGoogleAttribution.satellite a {
     background-position: -26px -24px;
 }
 
-div.olControlZoom {
+div.olControlZoom, div.olControlTextButtonPanel {
     position: absolute;
     top: 8px;
     left: 8px;
@@ -438,29 +443,31 @@ div.olControlZoom {
     padding: 2px;
 }
 div.olControlZoom a {
+    font-size: 18px;
+    line-height: 19px;
+    height: 22px;
+    width:22px;
+    padding: 0;
+}
+div.olControlZoom a, div.olControlTextButtonPanel .olButton {
     display: block;
     margin: 1px;
-    padding: 0;
     color: white;
-    font-size: 18px;
     font-family: 'Lucida Grande', Verdana, Geneva, Lucida, Arial, Helvetica, sans-serif;
     font-weight: bold;
     text-decoration: none;
     text-align: center;
-    height: 22px;
-    width:22px;
-    line-height: 19px;
     background: #130085; /* fallback for IE - IE6 requires background shorthand*/
     background: rgba(0, 60, 136, 0.5);
     filter: alpha(opacity=80);
 }
-div.olControlZoom a:hover {
+div.olControlZoom a:hover, div.olControlTextButtonPanel .olButton:hover {
     background: #130085; /* fallback for IE */
     background: rgba(0, 60, 136, 0.7);
     filter: alpha(opacity=100);
 }
 @media only screen and (max-width: 600px) {
-    div.olControlZoom a:hover {
+    div.olControlZoom a:hover, div.olControlTextButtonPanel .olButton:hover {
         background: rgba(0, 60, 136, 0.5);
     }
 }
@@ -468,6 +475,31 @@ a.olControlZoomIn {
     border-radius: 4px 4px 0 0;
 }
 a.olControlZoomOut {
+    border-radius: 0 0 4px 4px;
+}
+
+/**
+ * TextButtonPanel
+ */
+
+div.olControlTextButtonPanel .olButton {
+    float: left;
+    padding: 4px;
+}
+
+div.olControlTextButtonPanel.vertical .olButton {
+    float: none;
+}
+div.olControlTextButtonPanel .olButton:first-child {
+    border-radius: 4px 0 0 4px;
+}
+div.olControlTextButtonPanel .olButton:last-child {
+    border-radius: 0 4px 4px 0;
+}
+div.olControlTextButtonPanel.vertical .olButton:first-child {
+    border-radius: 4px 4px 0 0
+}
+div.olControlTextButtonPanel.vertical .olButton:last-child {
     border-radius: 0 0 4px 4px;
 }
 
@@ -481,4 +513,31 @@ a.olControlZoomOut {
     -moz-transition: opacity 0.2s linear;
     -o-transition: opacity 0.2s linear;
     transition: opacity 0.2s linear;
+}
+
+/* Turn on GPU support where available */
+.olTileImage {
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    -moz-perspective: 1000;
+    -ms-perspective: 1000;
+    perspective: 1000;
+}
+
+/* when replacing tiles, do not show tile and backbuffer at the same time */
+.olTileReplacing {
+    display: none;
+}
+
+/* override any max-width image settings (e.g. bootstrap.css) */
+img.olTileImage {
+    max-width: none;
 }

@@ -45,7 +45,7 @@
         }
 
         function test_layers(t) {
-            t.plan(37);
+            t.plan(43);
             var xml = document.getElementById("ogcsample").firstChild.nodeValue;
             var doc = new OpenLayers.Format.XML().read(xml);
 
@@ -96,6 +96,16 @@
             t.eq(layer.resourceUrl.FeatureInfo.template, "http://www.example.com/wmts/coastlines/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}/{J}/{I}.xml",
                  "resourceUrl.FeatureInfo.template is correct");
 
+            t.eq(layer.resourceUrls[0].format, "image/png", "resourceUrls[0].format is correct");
+            t.eq(layer.resourceUrls[0].resourceType, "tile", "resourceUrls[0].resourceType is correct");
+            t.eq(layer.resourceUrls[0].template, "http://www.example.com/wmts/coastlines/{TileMatrix}/{TileRow}/{TileCol}.png",
+                 "resourceUrls[0].template is correct");
+
+            t.eq(layer.resourceUrls[1].format, "application/gml+xml; version=3.1", "resourceUrls[0].format is correct");
+            t.eq(layer.resourceUrls[1].resourceType, "FeatureInfo", "resourceUrls[0].resourceType is correct");
+            t.eq(layer.resourceUrls[1].template, "http://www.example.com/wmts/coastlines/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}/{J}/{I}.xml",
+                 "resourceUrls[0].template is correct");
+
             var dimensions = layer.dimensions;
             t.eq(dimensions.length, 1, "correct count of dimensions");
             t.eq(dimensions[0].title, "Time", "first dimension title is correct");
@@ -140,7 +150,7 @@
         }
 
         function test_createLayer(t) {
-            t.plan(34);
+            t.plan(43);
 
             var format = new OpenLayers.Format.WMTSCapabilities();
 
@@ -207,13 +217,15 @@
                 matrixSet: "21781"
             });
             t.ok(layer instanceof OpenLayers.Layer.WMTS, "correct instance");
-            t.eq(layer.url, "http://wmts.geo.admin.ch/1.0.0/ch.are.agglomerationen_isolierte_staedte-2000/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png", "correct url");
+            t.eq(layer.url[0], "http://wmts.geo.admin.ch/1.0.0/ch.are.agglomerationen_isolierte_staedte-2000/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png", "correct url");
+            t.eq(layer.url[1], "http://wmts1.geo.admin.ch/1.0.0/ch.are.agglomerationen_isolierte_staedte-2000/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png", "correct url");
             t.eq(layer.matrixIds.length, 3, "correct matrixIds length");
             t.eq(layer.requestEncoding, "REST", "correct requestEncoding");
             t.eq(layer.name, "Agglomérations et villes isolées", "correct layer title");
             t.eq(layer.style, "ch.are.agglomerationen_isolierte_staedte-2000", "correct style identifier");
             t.eq(layer.projection.getCode(), "EPSG:21781", "correct projection");
             t.eq(layer.units, "m", "correct untis");
+            t.ok(layer.serverResolutions === layer.resolutions, "serverResolutions set");
             t.eq(layer.resolutions.length, 3, "correct resolutions length");
             t.ok((layer.resolutions[0] - 4000) < 1, "correct first resolution");
             t.eq(layer.dimensions.length, 1, "correct dimensions length");
@@ -261,6 +273,50 @@
             });
             t.eq(layer.projection.getCode(), "EPSG:900913", "correct projection");
             t.eq(layer.units, "degrees", "correct units");
+
+
+            // test get the right url #608/3
+            xml = document.getElementById("multi-getile-1").firstChild.nodeValue;
+            doc = new OpenLayers.Format.XML().read(xml);
+            caps = format.read(doc);
+            layer = format.createLayer(caps, {
+                layer: "ch.are.agglomerationen_isolierte_staedte-2000",
+                matrixSet: "21781",
+                requestEncoding: 'REST'
+            });
+            t.eq(layer.url[0], "http://wmts.geo.admin.ch/rest", "correct rest url 1");
+            t.eq(layer.url[1], "http://wmts1.geo.admin.ch/rest", "correct rest url 1");
+            layer = format.createLayer(caps, {
+                layer: "ch.are.agglomerationen_isolierte_staedte-2000",
+                matrixSet: "21781",
+                requestEncoding: 'KVP'
+            });
+            t.eq(layer.url[0], "http://wmts.geo.admin.ch/kvp", "correct kvp url 2");
+            t.eq(layer.url[1], "http://wmts1.geo.admin.ch/kvp", "correct kvp url 2");
+            xml = document.getElementById("multi-getile-2").firstChild.nodeValue;
+            doc = new OpenLayers.Format.XML().read(xml);
+            caps = format.read(doc);
+            layer = format.createLayer(caps, {
+                layer: "ch.are.agglomerationen_isolierte_staedte-2000",
+                matrixSet: "21781",
+                requestEncoding: 'REST'
+            });
+            t.eq(layer.url[0], "http://wmts.geo.admin.ch/rest", "correct rest url 2");
+            layer = format.createLayer(caps, {
+                layer: "ch.are.agglomerationen_isolierte_staedte-2000",
+                matrixSet: "21781",
+                requestEncoding: 'KVP'
+            });
+            t.eq(layer.url[0], "http://wmts.geo.admin.ch/kvp", "correct kvp url 2");
+
+            // test RESTfull
+            xml = document.getElementById("arcgis").firstChild.nodeValue;
+            doc = new OpenLayers.Format.XML().read(xml);
+            caps = format.read(doc);
+            layer = format.createLayer(caps, {
+                layer: "WorldTimeZones"
+            });
+            t.eq(layer.requestEncoding, "REST", "correct requestEncoding (in RESTfull)");
         }
 
         function test_parse_projection(t) {
@@ -546,6 +602,7 @@ http://schemas.opengis.net/wmts/1.0/examples/wmtsGetCapabilities_response.xml
                 <TileMatrixSet>21781</TileMatrixSet>
             </TileMatrixSetLink>
             <ResourceURL format="image/png" resourceType="tile" template="http://wmts.geo.admin.ch/1.0.0/ch.are.agglomerationen_isolierte_staedte-2000/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png"/>
+            <ResourceURL format="image/png" resourceType="tile" template="http://wmts1.geo.admin.ch/1.0.0/ch.are.agglomerationen_isolierte_staedte-2000/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png"/>
         </Layer>
         <TileMatrixSet>
             <ows:Identifier>21781</ows:Identifier>
@@ -714,6 +771,254 @@ http://schemas.opengis.net/wmts/1.0/examples/wmtsGetCapabilities_response.xml
                 <TileMatrixSet>21781</TileMatrixSet>
             </TileMatrixSetLink>
             <ResourceURL format="image/png" resourceType="tile" template="http://wmts.geo.admin.ch/1.0.0/ch.are.agglomerationen_isolierte_staedte-2000/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png"/>
+        </Layer>
+        <TileMatrixSet>
+            <ows:Identifier>21781</ows:Identifier>
+            <ows:SupportedCRS>urn:ogc:def:crs:EPSG:1.0:21781</ows:SupportedCRS>
+            <TileMatrix>
+                <ows:Identifier>0</ows:Identifier>
+                <ScaleDenominator>14285750.5715</ScaleDenominator>
+                <TopLeftCorner>420000.0 350000.0</TopLeftCorner>
+                <TileWidth>256</TileWidth>
+                <TileHeight>256</TileHeight>
+                <MatrixWidth>1</MatrixWidth>
+                <MatrixHeight>1</MatrixHeight>
+            </TileMatrix>
+        </TileMatrixSet>
+    </Contents>
+    <ServiceMetadataURL xlink:href="http://www.opengis.uab.es/SITiled/world/1.0.0/WMTSCapabilities.xml"/>
+</Capabilities>
+--></div>
+
+<div id="multi-getile-1"><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<Capabilities xmlns="http://www.opengis.net/wmts/1.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/wmts/1.0 http://schemas.opengis.net/wmts/1.0/wmtsGetCapabilities_response.xsd" version="1.0.0">
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetCapabilities">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://wmts.geo.admin.ch/1.0.0/WMTSCapabilities.xml">
+                        <ows:Constraint name="GetEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>REST</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Get>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="GetTile">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://wmts.geo.admin.ch/rest">
+                        <ows:Constraint name="GetEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>REST</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Get>
+                    <ows:Get xlink:href="http://wmts1.geo.admin.ch/rest">
+                        <ows:Constraint name="GetEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>REST</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Get>
+                    <ows:Get xlink:href="http://wmts.geo.admin.ch/kvp">
+                        <ows:Constraint name="GetEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>KVP</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Get>
+                    <ows:Get xlink:href="http://wmts1.geo.admin.ch/kvp">
+                        <ows:Constraint name="GetEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>KVP</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Get>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+    </ows:OperationsMetadata>
+    <Contents>
+        <Layer>
+            <ows:Title>Agglomérations et villes isolées</ows:Title>
+            <ows:Abstract>Les agglomérations et villes isolées (communes non rattachées à une agglomération et comptant au moins 10`000 habitants) font partie des régions d’analyse de la statistique suisse. Ce niveau géographique est défini depuis plus de 100 ans, afin de mesurer l’urbanisation, phénomène fondamental structurant l’organisation du territoire. Sa fonction principale est de permettre une comparaison spatiale entre des espaces urbains inégalement délimités sur le plan institutionnel. Une version ancienne est appliquée pour la première fois en 1930, puis révisée en 1984 et 1990, toujours sur la base des recensements de la population. La version actuelle classe les 2896 communes de Suisse (état 2000) selon leur appartenance ou pas à une agglomération ou ville isolée en fonction de critères statistiques (Etat et évolution de la population, lien de continuité de la zone bâtie, rapport entre population active occupée et population résidante, structure économique et flux de pendulaires). Les agglomérations et les villes isolées forment l`espace urbain, les territoires restant l`espace rural. La définition des agglomérations de l’OFS n’a pas valeur d’obligation légale.</ows:Abstract>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>5.140242 45.398181</ows:LowerCorner>
+                <ows:UpperCorner>11.47757 48.230651</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+            <ows:Identifier>ch.are.agglomerationen_isolierte_staedte-2000</ows:Identifier>
+            <ows:Metadata xlink:href="http://www.swisstopo.admin.ch/SITiled/world/AdminBoundaries/metadata.htm"/>
+            <Style>
+                <ows:Title>Agglomérations et villes isolées</ows:Title>
+                <ows:Identifier>ch.are.agglomerationen_isolierte_staedte-2000</ows:Identifier>
+                <LegendURL format="image/png" xlink:href="http://api.geo.admin.ch/legend/ch.are.agglomerationen_isolierte_staedte-2000_fr.png" />
+            </Style>
+            <Format>image/png</Format>
+            <Dimension>
+                <ows:Identifier>Time</ows:Identifier>
+                <Default>20090101</Default>
+                <Value>20090101</Value>
+            </Dimension>
+            <TileMatrixSetLink>
+                <TileMatrixSet>21781</TileMatrixSet>
+            </TileMatrixSetLink>
+        </Layer>
+        <TileMatrixSet>
+            <ows:Identifier>21781</ows:Identifier>
+            <ows:SupportedCRS>urn:ogc:def:crs:EPSG:1.0:21781</ows:SupportedCRS>
+            <TileMatrix>
+                <ows:Identifier>0</ows:Identifier>
+                <ScaleDenominator>14285750.5715</ScaleDenominator>
+                <TopLeftCorner>420000.0 350000.0</TopLeftCorner>
+                <TileWidth>256</TileWidth>
+                <TileHeight>256</TileHeight>
+                <MatrixWidth>1</MatrixWidth>
+                <MatrixHeight>1</MatrixHeight>
+            </TileMatrix>
+        </TileMatrixSet>
+    </Contents>
+    <ServiceMetadataURL xlink:href="http://www.opengis.uab.es/SITiled/world/1.0.0/WMTSCapabilities.xml"/>
+</Capabilities>
+--></div>
+<div id="arcgis"><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<Capabilities xmlns="http://www.opengis.net/wmts/1.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/wmts/1.0 http://schemas.opengis.net/wmts/1.0/wmtsGetCapabilities_response.xsd" version="1.0.0">
+    <ows:ServiceIdentification>
+        <ows:Title>WorldTimeZones</ows:Title>
+        <ows:ServiceType>OGC WMTS</ows:ServiceType>
+        <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+    </ows:ServiceIdentification>
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetTile">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer/WMTS/tile/1.0.0/">
+                        <ows:Constraint name="GetEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>RESTful</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Get>
+                    <ows:Get xlink:href="http://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer/WMTS?">
+                        <ows:Constraint name="GetEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>KVP</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Get>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+    </ows:OperationsMetadata>
+    <Contents>
+        <Layer>
+            <ows:Title>WorldTimeZones</ows:Title>
+            <ows:Identifier>WorldTimeZones</ows:Identifier>
+            <ows:BoundingBox crs="urn:ogc:def:crs:EPSG::102100">
+                <ows:LowerCorner>-2.0037507067161843E7 -3.024097195838617E7</ows:LowerCorner>
+                <ows:UpperCorner>2.0037507067161843E7 3.0240971458386205E7</ows:UpperCorner>
+            </ows:BoundingBox>
+            <ows:WGS84BoundingBox crs="urn:ogc:def:crs:OGC:2:84">
+                <ows:LowerCorner>-179.99999550841463 -88.99999992161119</ows:LowerCorner>
+                <ows:UpperCorner>179.99999550841463 88.99999992161118</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+            <Style isDefault="true">
+                <ows:Title>Default Style</ows:Title>
+                <ows:Identifier>default</ows:Identifier>
+            </Style>
+            <Format>image/png</Format>
+            <TileMatrixSetLink>
+                <TileMatrixSet>GoogleMapsCompatible</TileMatrixSet>
+            </TileMatrixSetLink>
+            <ResourceURL format="image/png" resourceType="tile" template="http://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer/WMTS/tile/1.0.0/WorldTimeZones/{Style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png" />
+        </Layer>
+        <TileMatrixSet>
+            <ows:Title>GoogleMapsCompatible</ows:Title>
+            <ows:Abstract>the wellknown 'GoogleMapsCompatible' tile matrix set defined by OGC WMTS specification</ows:Abstract>
+            <ows:Identifier>GoogleMapsCompatible</ows:Identifier>
+            <ows:SupportedCRS>urn:ogc:def:crs:EPSG:6.18:3:3857</ows:SupportedCRS>
+            <WellKnownScaleSet>urn:ogc:def:wkss:OGC:1.0:GoogleMapsCompatible</WellKnownScaleSet>
+            <TileMatrix>
+                <ows:Identifier>5</ows:Identifier>
+                <ScaleDenominator>17471320.75089743</ScaleDenominator>
+                <TopLeftCorner>-20037508.34278925 20037508.34278925</TopLeftCorner>
+                <TileWidth>256</TileWidth>
+                <TileHeight>256</TileHeight>
+                <MatrixWidth>32</MatrixWidth>
+                <MatrixHeight>32</MatrixHeight>
+            </TileMatrix>
+        </TileMatrixSet>
+    </Contents>
+    <ServiceMetadataURL xlink:href="http://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer/WMTS/1.0.0/WMTSCapabilities.xml" />
+</Capabilities>
+--></div>
+
+<div id="multi-getile-2"><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<Capabilities xmlns="http://www.opengis.net/wmts/1.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/wmts/1.0 http://schemas.opengis.net/wmts/1.0/wmtsGetCapabilities_response.xsd" version="1.0.0">
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetCapabilities">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://wmts.geo.admin.ch/1.0.0/WMTSCapabilities.xml">
+                        <ows:Constraint name="GetEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>REST</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Get>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="GetTile">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://wmts.geo.admin.ch/kvp">
+                        <ows:Constraint name="GetEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>KVP</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Get>
+                    <ows:Get xlink:href="http://wmts.geo.admin.ch/rest">
+                        <ows:Constraint name="GetEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>REST</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Get>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+    </ows:OperationsMetadata>
+    <Contents>
+        <Layer>
+            <ows:Title>Agglomérations et villes isolées</ows:Title>
+            <ows:Abstract>Les agglomérations et villes isolées (communes non rattachées à une agglomération et comptant au moins 10`000 habitants) font partie des régions d’analyse de la statistique suisse. Ce niveau géographique est défini depuis plus de 100 ans, afin de mesurer l’urbanisation, phénomène fondamental structurant l’organisation du territoire. Sa fonction principale est de permettre une comparaison spatiale entre des espaces urbains inégalement délimités sur le plan institutionnel. Une version ancienne est appliquée pour la première fois en 1930, puis révisée en 1984 et 1990, toujours sur la base des recensements de la population. La version actuelle classe les 2896 communes de Suisse (état 2000) selon leur appartenance ou pas à une agglomération ou ville isolée en fonction de critères statistiques (Etat et évolution de la population, lien de continuité de la zone bâtie, rapport entre population active occupée et population résidante, structure économique et flux de pendulaires). Les agglomérations et les villes isolées forment l`espace urbain, les territoires restant l`espace rural. La définition des agglomérations de l’OFS n’a pas valeur d’obligation légale.</ows:Abstract>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>5.140242 45.398181</ows:LowerCorner>
+                <ows:UpperCorner>11.47757 48.230651</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+            <ows:Identifier>ch.are.agglomerationen_isolierte_staedte-2000</ows:Identifier>
+            <ows:Metadata xlink:href="http://www.swisstopo.admin.ch/SITiled/world/AdminBoundaries/metadata.htm"/>
+            <Style>
+                <ows:Title>Agglomérations et villes isolées</ows:Title>
+                <ows:Identifier>ch.are.agglomerationen_isolierte_staedte-2000</ows:Identifier>
+                <LegendURL format="image/png" xlink:href="http://api.geo.admin.ch/legend/ch.are.agglomerationen_isolierte_staedte-2000_fr.png" />
+            </Style>
+            <Format>image/png</Format>
+            <Dimension>
+                <ows:Identifier>Time</ows:Identifier>
+                <Default>20090101</Default>
+                <Value>20090101</Value>
+            </Dimension>
+            <TileMatrixSetLink>
+                <TileMatrixSet>21781</TileMatrixSet>
+            </TileMatrixSetLink>
         </Layer>
         <TileMatrixSet>
             <ows:Identifier>21781</ows:Identifier>
