@@ -1184,13 +1184,14 @@
         // zoom transition.
         //
 
-        t.plan(4);
+        t.plan(5);
 
         var map = new OpenLayers.Map('map', {zoomMethod: null});
         var layer = new OpenLayers.Layer.WMS('', '', {}, {
             isBaseLayer: true,
             transitionEffect: null,
             singleTile: true,
+            displayOutsideMaxExtent: true,
             ratio: 1.1
         });
         map.addLayer(layer);
@@ -1206,6 +1207,13 @@
         map.zoomTo(1);
         t.eq(layer.backBuffer, null,
              'back buffer removed when zooming');
+
+        // now the single tile image will be clipped to maxExtent
+        layer.displayOutsideMaxExtent = false;
+        map.setCenter(new OpenLayers.LonLat(0, 0), 0);
+        // move again
+        map.setCenter(new OpenLayers.LonLat(50, 50));
+        t.eq(layer.backBuffer.style.left, '122px', 'proper offset for single tile smaller than the map viewport');
 
         map.destroy();
     }
