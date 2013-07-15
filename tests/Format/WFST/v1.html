@@ -45,7 +45,7 @@
         deleteFeature.state = OpenLayers.State.DELETE;
         deleteFeature.fid = "fid.37";
 
-        t.plan(8);
+        t.plan(9);
         var snippets = {
             "GetFeature": {handle: "handle_g", maxFeatures: 1, outputFormat: 'json'},
             "Transaction": {handle: "handle_t"},
@@ -82,6 +82,13 @@
         var expected = readXML("UpdateModified");
         var got = format.writers["wfs"]["Update"].apply(format, [{feature: updateFeature}]);
         t.xml_eq(got, expected, "Update request for feature with modified geometry created correctly even if original geometry was null");
+
+        updateFeature.modified.attributes = {foo: undefined};
+        updateFeature.attributes.foo = "baz";
+        delete updateFeature.modified.geometry;
+        var expected = readXML("UpdateModifiedNoGeometry");
+        var got = format.writers["wfs"]["Update"].apply(format, [{feature: updateFeature}]);
+        t.xml_eq(got, expected, "Update request for feature with no modified geometry but modified attributes with undefined created correctly");
     }
 
     function test_writeNative(t) {
