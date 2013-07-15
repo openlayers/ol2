@@ -409,10 +409,12 @@ span.olGoogleAttribution.hybrid a, span.olGoogleAttribution.satellite a {
 .olControlEditingToolbar .olControlNavigationItemActive  {
     background-position: -103px -24px;
 }
-.olControlNavToolbar .olControlZoomBoxItemInactive {
+.olControlNavToolbar .olControlZoomBoxItemInactive,
+.olControlEditingToolbar .olControlZoomBoxItemInactive  {
     background-position: -128px -1px;
 }
-.olControlNavToolbar .olControlZoomBoxItemActive  {
+.olControlNavToolbar .olControlZoomBoxItemActive,  
+.olControlEditingToolbar .olControlZoomBoxItemActive  {
     background-position: -128px -24px;
 }
 .olControlEditingToolbar .olControlDrawFeaturePointItemInactive {
