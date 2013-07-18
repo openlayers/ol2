@@ -622,6 +622,15 @@
         
     }
 
+    function test_labelWhiteSpace(t) {
+        t.plan(1);
+        var doc = readXML("point_pointwithdefaultlabel.sld");
+        var format = new OpenLayers.Format.SLD();
+        var obj = format.read(doc);
+        t.eq(obj.namedLayers["Point with default label"].userStyles[0].rules[0].symbolizer["Text"].label,
+            "${name}", "Whitespace in front or after column name ignored");
+    }
+
     function test_roundtrip(t) {
         
         t.plan(5);
