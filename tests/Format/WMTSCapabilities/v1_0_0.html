@@ -150,7 +150,7 @@
         }
 
         function test_createLayer(t) {
-            t.plan(43);
+            t.plan(44);
 
             var format = new OpenLayers.Format.WMTSCapabilities();
 
@@ -317,6 +317,15 @@
                 layer: "WorldTimeZones"
             });
             t.eq(layer.requestEncoding, "REST", "correct requestEncoding (in RESTfull)");
+
+            // test implicite REST, see #579
+            xml = document.getElementById("mapproxy").firstChild.nodeValue;
+            doc = new OpenLayers.Format.XML().read(xml);
+            caps = format.read(doc);
+            layer = format.createLayer(caps, {
+                layer: "osm"
+            });
+            t.eq(layer.requestEncoding, "REST", "correct implicite REST");
         }
 
         function test_parse_projection(t) {
@@ -1037,6 +1046,85 @@ http://schemas.opengis.net/wmts/1.0/examples/wmtsGetCapabilities_response.xml
     <ServiceMetadataURL xlink:href="http://www.opengis.uab.es/SITiled/world/1.0.0/WMTSCapabilities.xml"/>
 </Capabilities>
 --></div>
+
+<div id="mapproxy"><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<Capabilities xmlns="http://www.opengis.net/wmts/1.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/wmts/1.0 ../wmtsGetCapabilities_response.xsd" version="1.0.0">
+<ows:ServiceIdentification>
+<ows:Title>MapProxy WMS Proxy</ows:Title>
+<ows:Abstract>This is the fantastic MapProxy.</ows:Abstract>
+<ows:ServiceType>OGC WMTS</ows:ServiceType>
+<ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+<ows:Fees>None</ows:Fees>
+<ows:AccessConstraints>This service is intended for private and evaluation use only. The data is licensed as Creative Commons Attribution-Share Alike 2.0 (http://creativecommons.org/licenses/by-sa/2.0/)</ows:AccessConstraints>
+</ows:ServiceIdentification>
+<ows:ServiceProvider>
+<ows:ProviderName></ows:ProviderName>
+<ows:ProviderSite xlink:href="http://mapproxy.org/"/>
+<ows:ServiceContact>
+<ows:IndividualName>Your Name Here</ows:IndividualName>
+<ows:PositionName>Technical Director</ows:PositionName>
+<ows:ContactInfo>
+<ows:Phone>
+<ows:Voice>+49(0)000-000000-0</ows:Voice>
+<ows:Facsimile>+49(0)000-000000-0</ows:Facsimile>
+</ows:Phone>
+<ows:Address>
+<ows:DeliveryPoint></ows:DeliveryPoint>
+<ows:City>Somewhere</ows:City>
+<ows:PostalCode>12345</ows:PostalCode>
+<ows:Country>Germany</ows:Country>
+<ows:ElectronicMailAddress>info@example.com</ows:ElectronicMailAddress>
+</ows:Address>
+</ows:ContactInfo>
+</ows:ServiceContact>
+</ows:ServiceProvider>
+<Contents>
+<Layer>
+<ows:Title>OSM WMS</ows:Title>
+<ows:Abstract></ows:Abstract>
+<ows:WGS84BoundingBox>
+<ows:LowerCorner>-180.0 -85.0511287798</ows:LowerCorner>
+<ows:UpperCorner>180.0 85.0511287798</ows:UpperCorner>
+</ows:WGS84BoundingBox>
+<ows:Identifier>osm</ows:Identifier>
+<Style>
+<ows:Identifier>default</ows:Identifier>
+</Style>
+<Format>image/png</Format>
+<TileMatrixSetLink>
+<TileMatrixSet>GLOBAL_MERCATOR</TileMatrixSet>
+</TileMatrixSetLink>
+<ResourceURL format="image/png" resourceType="tile"
+template="http://localhost:8080/wmts/osm/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png"/>
+</Layer>
+<TileMatrixSet>
+<ows:Identifier>GLOBAL_MERCATOR</ows:Identifier>
+<ows:SupportedCRS>EPSG:900913</ows:SupportedCRS>
+<TileMatrix>
+<ows:Identifier>00</ows:Identifier>
+<ScaleDenominator>559082264.029</ScaleDenominator>
+<TopLeftCorner>-20037508.3428 20037508.3428</TopLeftCorner>
+<TileWidth>256</TileWidth>
+<TileHeight>256</TileHeight>
+<MatrixWidth>1</MatrixWidth>
+<MatrixHeight>1</MatrixHeight>
+</TileMatrix>
+<TileMatrix>
+<ows:Identifier>01</ows:Identifier>
+<ScaleDenominator>279541132.014</ScaleDenominator>
+<TopLeftCorner>-20037508.3428 20037508.3428</TopLeftCorner>
+<TileWidth>256</TileWidth>
+<TileHeight>256</TileHeight>
+<MatrixWidth>2</MatrixWidth>
+<MatrixHeight>2</MatrixHeight>
+</TileMatrix>
+</TileMatrixSet>
+</Contents>
+<ServiceMetadataURL xlink:href="http://localhost:8080/wmts/1.0.0/WMTSCapabilities.xml"/>
+</Capabilities>
+--></div>
+
 
 </body>
 </html>
