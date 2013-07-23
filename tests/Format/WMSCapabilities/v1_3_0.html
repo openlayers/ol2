@@ -223,7 +223,7 @@
     }
 
     function test_ogc(t) {
-        t.plan(14);
+        t.plan(16);
 
         /*
          * Set up
@@ -269,6 +269,8 @@
         t.eq(capability.layers[0].minScale, minScale.toPrecision(16), "layer.minScale is correct");
         t.eq(capability.layers[0].maxScale, maxScale.toPrecision(16), "layer.maxScale is correct");
 
+        t.eq(capability.layers[3].minScale, undefined, "layer.minScale for max='Infinity' is correct");
+        t.eq(capability.layers[3].maxScale, undefined, "layer.maxScale for min='0' is correct");
         /*
          * Tear down
          */
@@ -559,6 +561,8 @@ Changes:
         <northBoundLatitude>90</northBoundLatitude>
       </EX_GeographicBoundingBox>
       <Dimension name="time" units="ISO8601" default="2000-08-22">1999-01-01/2000-08-22/P1D</Dimension>
+      <MinScaleDenominator>0.0</MinScaleDenominator>
+      <MaxScaleDenominator>Infinity</MaxScaleDenominator>
       <Layer>
 
         <Name>Clouds</Name>
