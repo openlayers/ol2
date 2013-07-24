@@ -5,6 +5,17 @@ import os
 sys.path.append("../tools")
 import mergejs
 import optparse
+import tempfile
+
+
+def _writeTempFile(contents):
+    """Write arguments to a temporary file, and return the file name.  It
+is the caller's responsibility to delete this file when finished."""
+    f = tempfile.NamedTemporaryFile(delete=False, suffix='js')
+    f.write(contents)
+    f.close()
+    return f.name
+
 
 def build(config_file = None, output_file = None, options = None):
     have_compressor = []
@@ -59,10 +70,7 @@ def build(config_file = None, output_file = None, options = None):
 
     print "Merging libraries."
     try:
-        if use_compressor == "closure" or use_compressor == 'uglify-js':
-            sourceFiles = mergejs.getNames(sourceDirectory, configFilename)
-        else:
-            merged = mergejs.run(sourceDirectory, None, configFilename)
+        merged = mergejs.run(sourceDirectory, None, configFilename)
     except mergejs.MissingImport, E:
         print "\nAbnormal termination."
         sys.exit("ERROR: %s" % E)
@@ -101,26 +109,34 @@ def build(config_file = None, output_file = None, options = None):
         if not os.path.isfile(jscompilerJar):
             print "\nNo closure-compiler.jar; read README.txt!"
             sys.exit("ERROR: Closure Compiler \"%s\" does not exist! Read README.txt" % jscompilerJar)
-        minimized = closureCompiler.Compile(
-            jscompilerJar, 
-            sourceFiles, [
-                "--externs", "closure-compiler/Externs.js",
-                "--jscomp_warning", "checkVars",   # To enable "undefinedVars"
-                "--jscomp_error",   "checkRegExp", # Also necessary to enable "undefinedVars"
-                "--jscomp_error",   "undefinedVars"
-            ]
-        )
-        if minimized is None:
-            print "\nAbnormal termination due to compilation errors." 
-            sys.exit("ERROR: Closure Compilation failed! See compilation errors.") 
-        print "Closure Compilation has completed successfully."
+        try:
+            mergedFile = _writeTempFile(merged)
+            minimized = closureCompiler.Compile(
+                jscompilerJar, 
+                [mergedFile], [
+                    "--externs", "closure-compiler/Externs.js",
+                    "--jscomp_warning", "checkVars",   # To enable "undefinedVars"
+                    "--jscomp_error",   "checkRegExp", # Also necessary to enable "undefinedVars"
+                    "--jscomp_error",   "undefinedVars"
+                ]
+            )
+            if minimized is None:
+                print "\nAbnormal termination due to compilation errors." 
+                sys.exit("ERROR: Closure Compilation failed! See compilation errors.") 
+            print "Closure Compilation has completed successfully."
+        finally:
+            os.unlink(mergedFile)
     elif use_compressor == "uglify-js":
-        minimized = uglify_js.compile(sourceFiles)
-        if minimized is None:
-            print "\nAbnormal termination due to compilation errors."
-            sys.exit("ERROR: Uglify JS compilation failed! See compilation errors.")
+        try:
+            mergedFile = _writeTempFile(merged)
+            minimized = uglify_js.compile([mergedFile])
+            if minimized is None:
+                print "\nAbnormal termination due to compilation errors."
+                sys.exit("ERROR: Uglify JS compilation failed! See compilation errors.")
 
-        print "Uglify JS compilation has completed successfully."
+            print "Uglify JS compilation has completed successfully."
+        finally:
+            os.unlink(mergedFile)
 
     else: # fallback
         minimized = merged 
@@ -143,7 +159,7 @@ def build(config_file = None, output_file = None, options = None):
 
 if __name__ == '__main__':
   opt = optparse.OptionParser(usage="%s [options] [config_file] [output_file]\n  Default config_file is 'full.cfg', Default output_file is 'OpenLayers.js'")
-  opt.add_option("-c", "--compressor", dest="compressor", help="compression method: one of 'jsmin' (default), 'minimize', 'closure_ws', 'closure', or 'none'", default="jsmin")
+  opt.add_option("-c", "--compressor", dest="compressor", help="compression method: one of 'jsmin' (default), 'minimize', 'closure_ws', 'closure', 'uglify-js', or 'none'", default="jsmin")
   opt.add_option("-s", "--status", dest="status", help="name of a file whose contents will be added as a comment at the front of the output file. For example, when building from a git repo, you can save the output of 'git describe --tags' in this file. Default is no file.", default=False)
   opt.add_option("--amd", dest="amd", help="output should be AMD module; wrap merged files in define function; can be either 'pre' (before compilation) or 'post' (after compilation). Wrapping the OpenLayers var in a function means the filesize can be reduced by the closure compiler using 'pre', but be aware that a few functions depend on the OpenLayers variable being present. Either option can be used with jsmin or minimize compression. Default false, not AMD.", default=False)
   opt.add_option("--amdname", dest="amdname", help="only useful with amd option. Name of AMD module. Default no name, anonymous module.", default=False)

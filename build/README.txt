@@ -30,6 +30,12 @@ The options available for compression are:
    for files source Javascript files which are under 1MB. (Note that
    the default OpenLayers full build is not under 1MB.)
 
+ * uglify-js
+   This uses the uglify-js compiler.  You will need to have the
+   uglifyjs utility in your path, which you can install using npm from
+
+     https://npmjs.org/package/uglify-js
+
  * jsmin
    jsmin is the default compiler, and uses the Python-based
    jsmin script to compress the Javascript. 
@@ -41,6 +47,12 @@ The options available for compression are:
  * none
    None will leave the Javascript uncompressed.
 
+
+Run the command
+
+  python build.py --help
+
+for details about the other options.
 
 For more information on the build script and custom build profiles,
 see http://docs.openlayers.org/library/deploying.html
