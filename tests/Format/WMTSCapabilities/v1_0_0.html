@@ -197,7 +197,7 @@
         }
 
         function test_createLayer(t) {
-            t.plan(51);
+            t.plan(48);
 
             var format = new OpenLayers.Format.WMTSCapabilities();
 
@@ -289,7 +289,7 @@
             t.eq(layer.style, "ch.are.agglomerationen_isolierte_staedte-2000", "correct style identifier");
             t.eq(layer.projection.getCode(), "EPSG:21781", "correct projection");
             t.eq(layer.units, "m", "correct untis");
-            t.ok(layer.serverResolutions === null, "serverResolutions not set by default");
+            t.ok(layer.serverResolutions === layer.resolutions, "serverResolutions set");
             t.eq(layer.resolutions.length, 3, "correct resolutions length");
             t.ok((layer.resolutions[0] - 4000) < 1, "correct first resolution");
             t.eq(layer.dimensions.length, 1, "correct dimensions length");
@@ -387,17 +387,9 @@
             doc = new OpenLayers.Format.XML().read(xml);
             caps = format.read(doc);
             layer = format.createLayer(caps, {
-                layer: "ADMINISTRATIVEUNITS.BOUNDARIES",
-                clientZoomEnabled: true
+                layer: "ADMINISTRATIVEUNITS.BOUNDARIES"
             });
             t.eq(layer.serverResolutions.length, 13, "correct number of server resolutions");
-            t.eq(layer.maxScale, null, "maxScale not set");
-            t.eq(layer.minScale, null, "minScale not set");
-            layer = format.createLayer(caps, {
-                layer: "ADMINISTRATIVEUNITS.BOUNDARIES",
-                clientZoomEnabled: false
-            });
-            t.eq(layer.serverResolutions, null, "server resolutions not configured");
             t.eq(layer.maxScale, 1/2132, "correct maxScale");
             t.eq(layer.minScale, 1/8735661, "correct minScale");
         }
