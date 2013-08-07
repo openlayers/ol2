@@ -16,20 +16,19 @@
         function init(){
             var map = new OpenLayers.Map( 'map' );
             var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-                    "http://localhost/cgi-bin/mapserv-dev?map=/Users/Frank/nemapfile/nemapfile.map&", {layers: 'basic,points'}, {isBaseLayer:true, singleTile:false} );
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic,points'}, {isBaseLayer:true, singleTile:false} );
             map.addLayer(layer);
             var layer2 = new OpenLayers.Layer.UTFGridWMS( "Utfgrid",
-                    "http://localhost/cgi-bin/mapserv-dev?map=/Users/Frank/nemapfile/nemapfile.map&", {layers: 'basic'}, {utfgridResolution: 4, singleTile:false} );
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic'}, {utfgridResolution: 4, singleTile:false} );
             map.addLayer(layer2);
             var layer3 = new OpenLayers.Layer.UTFGridWMS( "Utfgrid",
-                    "http://localhost/cgi-bin/mapserv-dev?map=/Users/Frank/nemapfile/nemapfile.map&", {layers: 'points'}, {utfgridResolution: 4, singleTile:false} );
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'points'}, {utfgridResolution: 4, singleTile:false} );
             map.addLayer(layer3);
             map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
             map.addControls([new OpenLayers.Control.LayerSwitcher(),new OpenLayers.Control.Scale(), new OpenLayers.Control.MousePosition()]);
 
             callback = function(infoLookup) {
                 var msg = "";
-                // console.log(infoLookup);
                 if (infoLookup) {
                     var layer, info;
                     for (var idx in infoLookup) {
