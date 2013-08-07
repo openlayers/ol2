@@ -25,7 +25,7 @@
                     "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'points'}, {utfgridResolution: 4, singleTile:false} );
             map.addLayer(layer3);
             map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
-            map.addControls([new OpenLayers.Control.LayerSwitcher(),new OpenLayers.Control.Scale(), new OpenLayers.Control.MousePosition()]);
+            map.addControls([new OpenLayers.Control.Scale(), new OpenLayers.Control.MousePosition()]);
 
             callback = function(infoLookup) {
                 var msg = "";
