@@ -267,14 +267,18 @@
         map.destroy();
     }
 
-    function test_Map_zoomend_event (t) {
-        t.plan(2);
+    function test_Map_zoomstart_zoomend_event (t) {
+        t.plan(4);
 
         map = new OpenLayers.Map('map', {zoomMethod: null});
         var baseLayer = new OpenLayers.Layer.WMS("Test Layer", 
             "http://octo.metacarta.com/cgi-bin/mapserv?",
             {map: "/mapdata/vmap_wms.map", layers: "basic"});
         map.addLayer(baseLayer);
+        map.events.register("zoomstart", {count: 0}, function() { 
+            this.count++; 
+            t.ok(true, "zoomstart event was triggered " + this.count + " times");
+            });
         map.events.register("zoomend", {count: 0}, function() { 
             this.count++; 
             t.ok(true, "zoomend event was triggered " + this.count + " times");
