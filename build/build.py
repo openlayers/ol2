@@ -5,6 +5,17 @@ import os
 sys.path.append("../tools")
 import mergejs
 import optparse
+import tempfile
+
+
+def _writeTempFile(contents):
+    """Write string argument to a temporary file, and return the name.  It
+is the caller's responsibility to delete this file when done."""
+    fd, name = tempfile.mkstemp(suffix='.js', text=True)
+    os.write(fd, contents)
+    os.close(fd)
+    return name
+
 
 def build(config_file = None, output_file = None, options = None):
     have_compressor = []
@@ -59,10 +70,7 @@ def build(config_file = None, output_file = None, options = None):
 
     print "Merging libraries."
     try:
-        if use_compressor == "closure" or use_compressor == 'uglify-js':
-            sourceFiles = mergejs.getNames(sourceDirectory, configFilename)
-        else:
-            merged = mergejs.run(sourceDirectory, None, configFilename)
+        merged = mergejs.run(sourceDirectory, None, configFilename)
     except mergejs.MissingImport, E:
         print "\nAbnormal termination."
         sys.exit("ERROR: %s" % E)
@@ -101,27 +109,35 @@ def build(config_file = None, output_file = None, options = None):
         if not os.path.isfile(jscompilerJar):
             print "\nNo closure-compiler.jar; read README.txt!"
             sys.exit("ERROR: Closure Compiler \"%s\" does not exist! Read README.txt" % jscompilerJar)
-        minimized = closureCompiler.Compile(
-            jscompilerJar, 
-            sourceFiles, [
-                "--externs", "closure-compiler/Externs.js",
-                "--jscomp_warning", "checkVars",   # To enable "undefinedVars"
-                "--jscomp_error",   "checkRegExp", # Also necessary to enable "undefinedVars"
-                "--jscomp_error",   "undefinedVars"
-            ]
-        )
-        if minimized is None:
-            print "\nAbnormal termination due to compilation errors." 
-            sys.exit("ERROR: Closure Compilation failed! See compilation errors.") 
-        print "Closure Compilation has completed successfully."
+        try:
+            mergedFile = _writeTempFile(merged)
+            minimized = closureCompiler.Compile(
+                jscompilerJar, 
+                [mergedFile], [
+                    "--externs", "closure-compiler/Externs.js",
+                    "--jscomp_warning", "checkVars",   # To enable "undefinedVars"
+                    "--jscomp_error",   "checkRegExp", # Also necessary to enable "undefinedVars"
+                    "--jscomp_error",   "undefinedVars"
+                ]
+            )
+
+            if minimized is None:
+                print "\nAbnormal termination due to compilation errors." 
+                sys.exit("ERROR: Closure Compilation failed! See compilation errors.") 
+            print "Closure Compilation has completed successfully."
+        finally:
+            os.unlink(mergedFile)
     elif use_compressor == "uglify-js":
-        minimized = uglify_js.compile(sourceFiles)
-        if minimized is None:
-            print "\nAbnormal termination due to compilation errors."
-            sys.exit("ERROR: Uglify JS compilation failed! See compilation errors.")
+        try:
+            mergedFile = _writeTempFile(merged)
+            minimized = uglify_js.compile([mergedFile])
+            if minimized is None:
+                print "\nAbnormal termination due to compilation errors."
+                sys.exit("ERROR: Uglify JS compilation failed! See compilation errors.")
 
-        print "Uglify JS compilation has completed successfully."
-
+            print "Uglify JS compilation has completed successfully."
+        finally:
+            os.unlink(mergedFile)
     else: # fallback
         minimized = merged 
 
