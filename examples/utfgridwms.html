@@ -30,6 +30,7 @@
 
             callback = function(infoLookup) {
                 var msg = "";
+                console.log(infoLookup)
                 if (infoLookup) {
                     var layer, info;
                     for (var idx in infoLookup) {
@@ -59,7 +60,7 @@
                 }),
                 move_both: new OpenLayers.Control.UTFGrid({
                     callback: callback,
-                    layers: null, // same as all map.layers
+                    layers: [layer2,layer3], // same as all map.layers
                     handlerMode: "move"
                 })
             };
