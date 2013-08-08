@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="stylesheet" href="theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script src="../lib/OpenLayers.js"></script>
     <script type="text/javascript">
@@ -12,18 +12,19 @@
         var lat = 40;
         var zoom = 4;
         var control, callback;
+        OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
 
-        function init(){
+        init = function(){
             var map = new OpenLayers.Map( 'map' );
             var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic,points'}, {isBaseLayer:true, singleTile:false} );
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic,points'}, {isBaseLayer:true, singleTile:true} );
             map.addLayer(layer);
             var layer2 = new OpenLayers.Layer.UTFGridWMS( "Utfgrid",
-                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic'}, {utfgridResolution: 4, singleTile:false} );
-            map.addLayer(layer2);
-            var layer3 = new OpenLayers.Layer.UTFGridWMS( "Utfgrid",
-                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'points'}, {utfgridResolution: 4, singleTile:false} );
-            map.addLayer(layer3);
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic'}, {utfgridResolution: 4, singleTile:true} );
+            // map.addLayer(layer2);
+            // var layer3 = new OpenLayers.Layer.UTFGridWMS( "Utfgrid",
+                    // "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'points'}, {utfgridResolution: 4, singleTile:true} );
+            // map.addLayer(layer3);
             map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
             map.addControls([new OpenLayers.Control.Scale(), new OpenLayers.Control.MousePosition()]);
 
@@ -62,11 +63,10 @@
                     handlerMode: "move"
                 })
             };
-
             for (var key in controls) {
                 map.addControl(controls[key]);
             }
-
+            
             toggleControl = function(el) {
                 for (var c in controls) {
                     controls[c].deactivate();
