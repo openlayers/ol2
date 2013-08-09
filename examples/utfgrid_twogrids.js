@@ -52,7 +52,7 @@ var controls = {
     }),
     move_both: new OpenLayers.Control.UTFGrid({
         callback: callback,
-        layers: null, // same as all map.layers
+        layers: [population,bioregions],
         handlerMode: "move"
     })
 };
