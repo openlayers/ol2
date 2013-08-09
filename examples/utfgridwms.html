@@ -12,18 +12,18 @@
         var lat = 40;
         var zoom = 4;
         var control, callback;
-        OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
+        OpenLayers.ProxyHost = "./proxy.cgi?url=";
 
         init = function(){
             var map = new OpenLayers.Map( 'map' );
             var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic,points'}, {isBaseLayer:true, singleTile:true} );
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic,points'}, {isBaseLayer:true, singleTile:false} );
             map.addLayer(layer);
             var layer2 = new OpenLayers.Layer.UTFGridWMS( "Utfgrid",
-                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic'}, {utfgridResolution: 4, singleTile:true} );
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic'}, {utfgridResolution: 4, singleTile:false} );
             map.addLayer(layer2);
             var layer3 = new OpenLayers.Layer.UTFGridWMS( "Utfgrid",
-                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'points'}, {utfgridResolution: 4, singleTile:true} );
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'points'}, {utfgridResolution: 4, singleTile:false} );
             map.addLayer(layer3);
             map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
             map.addControls([new OpenLayers.Control.Scale(), new OpenLayers.Control.MousePosition()]);
