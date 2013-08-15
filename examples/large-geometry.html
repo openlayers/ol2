@@ -36,7 +36,7 @@
             map.addLayers([vectors]);
             map.addControl(new OpenLayers.Control.LayerSwitcher());
             map.addControl(new OpenLayers.Control.MousePosition());
-            map.addControl(new OpenLayers.Control.ModifyFeature(vectors, {autoActivate: true}));
+            map.addControl(new OpenLayers.Control.ModifyFeature(vectors, {bySegment: true, autoActivate: true}));
             map.zoomToExtent(new OpenLayers.Bounds(-89.403480529785, 14.56807565689, -89.051918029785, 14.74385690689));
         }
     </script>
