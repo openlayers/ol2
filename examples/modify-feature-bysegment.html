@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Modify Feature</title>
+    <title>Modify Feature By Segment</title>
     <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
     <link rel="stylesheet" href="style.css" type="text/css">
     <style type="text/css">
@@ -18,7 +18,7 @@
             list-style: none;
         }
     </style>
-    <script src="rbush.js"></script>
+    <script src="http://mourner.github.io/rbush/rbush.js"></script>
     <script src="../lib/OpenLayers.js"></script>
     <script type="text/javascript">
         var map, vectors, controls;
@@ -32,7 +32,6 @@
                     format: new OpenLayers.Format.GeoJSON()
                 })
             });
-
             map.addLayers([vectors]);
             map.addControl(new OpenLayers.Control.LayerSwitcher());
             map.addControl(new OpenLayers.Control.MousePosition());
@@ -42,11 +41,11 @@
     </script>
   </head>
   <body onload="init()">
-    <h1 id="title">OpenLayers Modify Feature Example</h1>
+    <h1 id="title">OpenLayers Modify Feature By Segment Example</h1>
     <div id="tags">
-        vertices, digitizing, draw, drawing
+        vertices, digitizing, draw, drawing, large geometry
     </div>
-    <div id="shortdesc">A demonstration of the ModifyFeature control for editing vector features.</div>
+    <div id="shortdesc">A demonstration of using the ModifyFeature control to edit large geometries. Click the feature to select and then hover with the mouse over a segment you want to edit.</div>
     <div id="map" class="smallmap"></div>
   </body>
 </html>
