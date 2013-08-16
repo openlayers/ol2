@@ -64,17 +64,28 @@
             gridSize = layer.div.childNodes.length;
             map.setCenter([17, 47]);
         });
+
+        function inCache(img) {
+            var search = img.src.split('?')[1];
+            for (var s in tileManager.tileCache) {
+                if (s.split('?')[1] == search) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         t.delay_call(4, function() {
             t.eq(tileManager.tileCacheIndex.length, 12, "tiles cached");
             t.ok(tileManager.tileCache[layer.grid[1][2].url] === layer.grid[1][2].imgDiv, "correct object cached");
-            t.ok(!(firstInCache.getAttribute("src") in tileManager.tileCache), "old tile discarded");
-            t.ok(sharedTile.getAttribute("src") in tileManager.tileCache, "shared tile still in cache");
+            t.ok(!inCache(firstInCache), "old tile discarded");
+            t.ok(inCache(sharedTile), "shared tile still in cache");
             firstInCache = tileManager.tileCache[tileManager.tileCacheIndex[0]];
             map.setCenter([16, 48]);
         });
         t.delay_call(6, function() {
-            t.ok(!(firstInCache.getAttribute("src") in tileManager.tileCache), "old tile discarded");
-            t.ok(sharedTile.getAttribute("src") in tileManager.tileCache, "shared tile still in cache");
+            t.ok(!inCache(firstInCache), "old tile discarded");
+            t.ok(inCache(sharedTile), "shared tile still in cache");
             t.eq(layer.div.childNodes.length, gridSize, 'no unused images left in dom');
             map.destroy();
         });
@@ -116,6 +127,27 @@
         t.ok(tileManager.tileQueue[map.id].length, "deferred again after another moveTo");
         t.delay_call(1, function() {
             t.eq(tileManager.tileQueue[map.id].length, 0, "tiles loaded after moveDelay");
+        });
+    }
+
+    function test_handleLayerRefresh(t) {
+        t.plan(1);
+        var map = new OpenLayers.Map( 'map', {maxResolution: 1.40625/2} );
+        var layer = new OpenLayers.Layer.TMS( "TMS",
+                "../img/blank.gif/", {layername: 'basic', type:'png'} );
+        map.addLayer(layer);
+        map.setCenter(new OpenLayers.LonLat(5, 40), 5);
+        var log = 0;
+        t.delay_call(1, function() {
+            var origSetImgSrc = OpenLayers.Tile.Image.prototype.setImgSrc;
+            OpenLayers.Tile.Image.prototype.setImgSrc = function() {
+                ++log;
+                OpenLayers.Tile.Image.prototype.setImgSrc = origSetImgSrc;
+            };
+            layer.redraw(true);
+        });
+        t.delay_call(1.5, function() {
+            t.ok(log > 0, 'setImgSrc called to refresh tile.');
         });
     }
   </script>

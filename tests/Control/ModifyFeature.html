@@ -204,7 +204,7 @@
     }
 
     function test_selectFeature(t) {
-        t.plan(9);
+        t.plan(12);
         var map = new OpenLayers.Map('map');
         var layer = new OpenLayers.Layer.Vector("Vectors!", {isBaseLayer: true});
         map.addLayer(layer);
@@ -225,6 +225,7 @@
         
         // Points don't call collectVertices
         control.selectFeature(fakeFeature);
+        control.unselectFeature(fakeFeature);
         
         control.collectVertices = function() { 
           t.ok(true, "collectVertices called"); 
@@ -237,7 +238,8 @@
         layer.addFeatures = function(features) { 
             t.ok(features == 'a' || features == 'd', "features passed correctly"); 
         }
-        
+        layer.destroyFeatures = function() {};
+
         fakeFeature.geometry = new OpenLayers.Geometry.Polygon([
             new OpenLayers.Geometry.LinearRing([
                 new OpenLayers.Geometry.Point(0, 0),
@@ -246,7 +248,9 @@
         ]);
         
         // OnSelect calls collectVertices and passes features to layer 
-        control.selectFeature(fakeFeature);
+        control.selectFeature(fakeFeature);        
+        control.unselectFeature(fakeFeature);
+        layer.destroyFeatures = OpenLayers.Layer.Vector.prototype.destroyFeatures;
         
         control.vertices = ['a'];
         control.virtualVertices = [{destroy: function() {}}];
@@ -800,6 +804,20 @@
         t.eq(control.vertices.length, 3, "Correct vertices length with createVertices is false");
         t.eq(control.virtualVertices.length, 0, "Correct virtual vertices length with createVertices is false");
         control.destroy();
+    }
+
+    function test_moveLayerToTop_moveLayerBack(t) {
+        t.plan(2);
+        var map = new OpenLayers.Map("map");
+        var layer1 = new OpenLayers.Layer.Vector();
+        var layer2 = new OpenLayers.Layer.Vector();
+        map.addLayers([layer1, layer2]);
+        var control = new OpenLayers.Control.ModifyFeature(layer1);
+        map.addControl(control);
+        control.activate();
+        t.ok(layer1.div.style.zIndex > layer2.div.style.zIndex, "layer raised so events don't get swallowed");
+        control.deactivate();
+        t.ok(layer1.div.style.zIndex < layer2.div.style.zIndex, 'layer order restored on deactivation');
     }
 
     </script>

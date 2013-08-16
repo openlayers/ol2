@@ -48,7 +48,7 @@
 
     function test_setMap(t) {
         t.plan(1);
-        var map = new OpenLayers.Map('map');
+        var map = new OpenLayers.Map('map', {tileManager: null});
         layer = new OpenLayers.Layer.Grid(name, url, params, null);
         map.addLayer(layer);
         t.ok(OpenLayers.Element.hasClass(layer.div, "olLayerGrid"),
@@ -682,7 +682,7 @@
 
         t.plan( 9 );
 
-        var map = new OpenLayers.Map('map');
+        var map = new OpenLayers.Map('map', {tileManager: null});
         layer = new OpenLayers.Layer.Grid(name, url, params);
         map.addLayer(layer);
         layer.destroy();
@@ -1130,32 +1130,31 @@
     
     function test_backbuffer_replace(t) {
         t.plan(6);
-        var map = new OpenLayers.Map('map');
+        var map = new OpenLayers.Map('map', {tileManager: null});
         var layer = new OpenLayers.Layer.WMS('', '../../img/blank.gif');
         map.addLayer(layer);
         map.zoomToMaxExtent();
         
-        t.delay_call(1, function() {
-            layer.mergeNewParams({foo: 'bar'});
-            var tile = layer.grid[1][1];
-            t.ok(OpenLayers.Element.hasClass(tile.imgDiv, 'olTileReplacing'), 'tile is marked for being replaced');
-            t.ok(document.getElementById(tile.id + '_bb'), 'backbuffer created for tile');
-            // simulate a css declaration where '.olTileReplacing' sets display
-            // to none.
-            tile.imgDiv.style.display = 'none';
-            tile.onImageLoad();
-            t.ok(!OpenLayers.Element.hasClass(tile.imgDiv, 'olTileReplacing'), 'tile replaced, no longer marked');
-            t.ok(!document.getElementById(tile.id + '_bb'), 'backbuffer removed for tile');
-            
-            layer.mergeNewParams({foo: 'baz'});
-            tile = layer.grid[1][1];
-            // simulate a css declaration where '.olTileReplacing' does not set
-            // display to none.
-            tile.imgDiv.style.display = 'block';
-            tile.onImageLoad();
-            t.ok(!OpenLayers.Element.hasClass(tile.imgDiv, 'olTileReplacing'), 'tile replaced, no longer marked');
-            t.ok(document.getElementById(tile.id + '_bb'), 'backbuffer not removed for visible tile');
-        });
+        layer.grid[1][1].onImageLoad();
+        layer.mergeNewParams({foo: 'bar'});
+        var tile = layer.grid[1][1];
+        t.ok(OpenLayers.Element.hasClass(tile.imgDiv, 'olTileReplacing'), 'tile is marked for being replaced');
+        t.ok(document.getElementById(tile.id + '_bb'), 'backbuffer created for tile');
+        // simulate a css declaration where '.olTileReplacing' sets display
+        // to none.
+        tile.imgDiv.style.display = 'none';
+        tile.onImageLoad();
+        t.ok(!OpenLayers.Element.hasClass(tile.imgDiv, 'olTileReplacing'), 'tile replaced, no longer marked');
+        t.ok(!document.getElementById(tile.id + '_bb'), 'backbuffer removed for tile');
+        
+        layer.mergeNewParams({foo: 'baz'});
+        tile = layer.grid[1][1];
+        // simulate a css declaration where '.olTileReplacing' does not set
+        // display to none.
+        tile.imgDiv.style.display = 'block';
+        tile.onImageLoad();
+        t.ok(!OpenLayers.Element.hasClass(tile.imgDiv, 'olTileReplacing'), 'tile replaced, no longer marked');
+        t.ok(document.getElementById(tile.id + '_bb'), 'backbuffer not removed for visible tile');
     }
 
     function test_backbuffer_replace_singleTile(t) {
@@ -1185,13 +1184,14 @@
         // zoom transition.
         //
 
-        t.plan(4);
+        t.plan(5);
 
         var map = new OpenLayers.Map('map', {zoomMethod: null});
         var layer = new OpenLayers.Layer.WMS('', '', {}, {
             isBaseLayer: true,
             transitionEffect: null,
             singleTile: true,
+            displayOutsideMaxExtent: true,
             ratio: 1.1
         });
         map.addLayer(layer);
@@ -1208,6 +1208,13 @@
         t.eq(layer.backBuffer, null,
              'back buffer removed when zooming');
 
+        // now the single tile image will be clipped to maxExtent
+        layer.displayOutsideMaxExtent = false;
+        map.setCenter(new OpenLayers.LonLat(0, 0), 0);
+        // move again
+        map.setCenter(new OpenLayers.LonLat(50, 50));
+        t.eq(layer.backBuffer.style.left, '122px', 'proper offset for single tile smaller than the map viewport');
+
         map.destroy();
     }
 
@@ -1220,7 +1227,8 @@
 
         var map = new OpenLayers.Map('map', {
             resolutions: [32, 16, 8, 4, 2, 1],
-            zoomMethod: null
+            zoomMethod: null,
+            tileManager: null
         });
         var layer = new OpenLayers.Layer.WMS(
             "WMS",

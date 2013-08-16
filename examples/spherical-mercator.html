@@ -54,7 +54,9 @@
         div: "map",
         projection: "EPSG:900913",
         displayProjection: "EPSG:4326",
-        numZoomLevels: 18
+        numZoomLevels: 18,
+        // approximately match Google's zoom animation
+        zoomDuration: 10
     });
 
     // create Google Mercator layers
