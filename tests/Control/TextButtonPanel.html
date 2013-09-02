@@ -1,0 +1,54 @@
+<html>
+<head>
+  <script src="../OLLoader.js"></script>
+  <script type="text/javascript">
+    function test_Control_TextButtonpanelPanel_constructor (t) {
+        t.plan( 2 );
+    
+        control = new OpenLayers.Control.TextButtonPanel();
+        t.ok( control instanceof OpenLayers.Control.TextButtonPanel, "new OpenLayers.Control.TextButtonPanel returns object" );
+        t.eq( control.displayClass,  "olControlTextButtonPanel", "displayClass is correct" );
+    }
+    
+    function test_Control_TextButtonPanel_setOrientationClass (t) {
+        t.plan( 2 );
+        var b1 = new OpenLayers.Control.Button({
+            trigger: function() {  },
+        });
+        var panel = new OpenLayers.Control.TextButtonPanel({
+            vertical: true,
+        });
+        panel.addControls( [ b1 ] );
+        var map = new OpenLayers.Map( 'map', {} );
+        map.addControl(panel);
+        t.ok( OpenLayers.Element.hasClass(panel.div, "vertical"),
+            "'vertical' class set from 'vertical' option" );
+        panel.vertical = false;
+        panel.setOrientationClass();
+        t.ok( !OpenLayers.Element.hasClass(panel.div, "vertical"),
+            "'vertical' class properly removed by setOrientationClass");
+        map.destroy();
+    }
+    
+    function test_Control_TextButtonPanel_setAdditionalClass (t) {
+        t.plan( 1 );
+        var b1 = new OpenLayers.Control.Button({
+            trigger: function() {  },
+        });
+        var panel = new OpenLayers.Control.TextButtonPanel({
+            additionalClass: "panel2",
+        });
+        panel.addControls( [ b1 ] );
+        var map = new OpenLayers.Map( 'map', {} );
+        map.addControl(panel);
+        t.ok( OpenLayers.Element.hasClass(panel.div, "panel2"),
+            "class set from 'additionalClass' option" );
+        map.destroy();
+    }
+    
+  </script>
+</head>
+<body>
+    <div id="map" style="width: 1024px; height: 512px;"/>
+</body>
+</html>

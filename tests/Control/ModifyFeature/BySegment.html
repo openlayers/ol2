@@ -1,0 +1,67 @@
+<html>
+<head>
+    <script src="http://mourner.github.io/rbush/rbush.js"></script>
+    <script src="../../OLLoader.js"></script>
+    <script type="text/javascript">
+    
+    function test_initialize(t) {
+        t.plan(2);
+        var map = new OpenLayers.Map("map");
+        var layer = new OpenLayers.Layer.Vector();
+        map.addLayer(layer);
+        var options = {
+            bySegment: true
+        };
+        var control = new OpenLayers.Control.ModifyFeature(layer, options);
+        map.addControl(control);
+        t.eq(control.hoverTolerance, 25, "mixin applied correctly");
+        t.ok(control.handlers.hover, "hover handler created");
+        map.destroy();
+    }
+
+    function test_createBBOX(t) {
+        t.plan(2)
+        var map = new OpenLayers.Map("map");
+        var layer = new OpenLayers.Layer.Vector();
+        map.addLayer(layer);
+        var options = {
+            bySegment: true
+        };
+        var control = new OpenLayers.Control.ModifyFeature(layer, options);
+        map.addControl(control);
+        var point1 = new OpenLayers.Geometry.Point(100, 100);
+        var point2 = new OpenLayers.Geometry.Point(200, 200);
+        var bbox = control.createBBOX(point1, point2);
+        t.eq(bbox, [100, 100, 200, 200], "bbox created correctly (minx < maxx, miny < maxy)");
+        bbox = control.createBBOX(point2, point1);
+        t.eq(bbox, [100, 100, 200, 200], "bbox created correctly (minx < maxx, miny < maxy)");
+        map.destroy();
+    }
+
+    function test_spatialIndex(t) {
+        t.plan(2);
+        var map = new OpenLayers.Map("map");
+        var layer = new OpenLayers.Layer.Vector();
+        map.addLayer(layer);
+        var options = {
+            bySegment: true
+        };
+        var control = new OpenLayers.Control.ModifyFeature(layer, options);
+        map.addControl(control);
+        var components = [new OpenLayers.Geometry.Point(10,14), new OpenLayers.Geometry.Point(5,3)];
+        var components2 = [new OpenLayers.Geometry.Point(12,15), new OpenLayers.Geometry.Point(2,3), new OpenLayers.Geometry.Point(10,0), new OpenLayers.Geometry.Point(10,10)];
+        var linearRing = new OpenLayers.Geometry.LinearRing(components);
+        var linearRing2 = new OpenLayers.Geometry.LinearRing(components2);
+        var geometry = new OpenLayers.Geometry.Polygon([linearRing, linearRing2]);
+        control.createSpatialIndex({feature: new OpenLayers.Feature.Vector(geometry)});
+        t.ok(control.tree, "spatial tree created");
+        t.eq(control.tree.search([12, 15, 12, 15]).length, 2, "2 items found");
+        map.destroy();
+    }
+
+    </script>
+</head>
+<body>
+    <div id="map" style="width: 400px; height: 250px;"/>
+</body>
+</html>

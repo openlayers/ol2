@@ -129,6 +129,27 @@
             t.eq(tileManager.tileQueue[map.id].length, 0, "tiles loaded after moveDelay");
         });
     }
+
+    function test_handleLayerRefresh(t) {
+        t.plan(1);
+        var map = new OpenLayers.Map( 'map', {maxResolution: 1.40625/2} );
+        var layer = new OpenLayers.Layer.TMS( "TMS",
+                "../img/blank.gif/", {layername: 'basic', type:'png'} );
+        map.addLayer(layer);
+        map.setCenter(new OpenLayers.LonLat(5, 40), 5);
+        var log = 0;
+        t.delay_call(1, function() {
+            var origSetImgSrc = OpenLayers.Tile.Image.prototype.setImgSrc;
+            OpenLayers.Tile.Image.prototype.setImgSrc = function() {
+                ++log;
+                OpenLayers.Tile.Image.prototype.setImgSrc = origSetImgSrc;
+            };
+            layer.redraw(true);
+        });
+        t.delay_call(1.5, function() {
+            t.ok(log > 0, 'setImgSrc called to refresh tile.');
+        });
+    }
   </script>
 </head>
 <body>
