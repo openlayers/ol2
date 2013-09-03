@@ -17,21 +17,21 @@
         control.destroy();
         t.ok(!control.handler, "handler destroyed");
     }
-    
+
     function test_activate(t) {
         t.plan(3);
         var control = new OpenLayers.Control.PinchZoom();
         t.ok(!control.active, "control not activated after construction");
-        
+
         var map = new OpenLayers.Map({
             div: "map",
             controls: [control]
         });
         t.ok(control.active, "control activated after being added to the map");
-        
+
         control.deactivate();
         t.ok(!control.active, "control deactivated");
-        
+
         map.destroy();
     }
 
@@ -41,14 +41,16 @@
 
         var map = new OpenLayers.Map({
             div: "map",
-            controls: [control]
+            controls: [control],
+            numZoomLevels: 3,
+            zoom: 1
         });
-        
+
         var log = [];
         map.applyTransform = function(x, y, scale) {
             log.push([x, y, scale]);
         }
-        
+
         map.layerContainerOriginPx = {
             x: -50, y: -50
         };
@@ -65,10 +67,10 @@
             {x: 150, y: 60, scale: 2, transform: [-150, -140, 2]},
             {x: 50, y: 20, scale: 0.25, transform: [13, -5, 0.25]}
         ];
-        
+
         var len = cases.length;
         t.plan(len*2);
-        
+
         var c;
         for (var i=0; i<len; ++i) {
             c = cases[i];
@@ -76,7 +78,7 @@
             t.eq(log.length, i+1, i + " called once");
             t.eq(log[i], c.transform, i + " correct transform");
         }
-        
+
     }
 
     function test_pinchMove_preservecenter(t) {
@@ -88,9 +90,10 @@
         var map = new OpenLayers.Map({
             div: "map",
             controls: [control],
-            layers: [new OpenLayers.Layer('fake', {isBaseLayer: true})]
+            layers: [new OpenLayers.Layer('fake', {isBaseLayer: true, numZoomLevels: 3})]
         });
         map.zoomToMaxExtent();
+        map.zoom = 1;
 
         var centerPx = map.getPixelFromLonLat(map.getCenter());
 
@@ -111,7 +114,7 @@
             {scale: 1, transform: [0, 0, 1]},
             {scale: 2, transform: [-128, -128, 2]},
             {scale: 2.5, transform: [-192, -192, 2.5]},
-            {scale: 0.25, transform: [96, 96, 0.25]}
+            {scale: 0.25, transform: [96,96,0.25]}
         ];
 
         var len = cases.length;
