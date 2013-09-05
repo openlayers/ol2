@@ -1,0 +1,560 @@
+<html>
+<head>
+  <script src="../../OLLoader.js"></script>
+  <script type="text/javascript">
+
+    function test_initialize(t) {
+        t.plan(1);
+
+        var format = new OpenLayers.Format.WFST.v2_0_0({});
+        t.ok(format instanceof OpenLayers.Format.WFST.v2_0_0, "constructor returns instance");
+    }
+    
+	function test_read(t) {
+	     t.plan(1);
+	
+	     var data = readXML("FeatureCollection");
+	     var format = new OpenLayers.Format.WFST.v2_0_0({
+	         featureNS: "http://www.openplans.org/topp",
+	         featureType: "states"
+	     });
+	     var features = format.read(data);
+	
+	     t.eq(features.length, 1, "number of features read from FeatureCollection is correct");
+	 }
+	
+    function test_write(t) {
+
+        var format = new OpenLayers.Format.WFST.v2_0_0({
+            featureNS: "http://www.openplans.org/topp",
+            featureType: "states",
+            featurePrefix: "topp",
+            geometryName: "the_geom"
+        });
+
+        var feature = new OpenLayers.Feature.Vector(
+            new OpenLayers.Geometry.Point(1,2),
+            {foo: "bar"}
+        );
+
+        var insertFeature = feature.clone();
+        // null value does not show up in insert
+        insertFeature.attributes.nul = null;
+        insertFeature.state = OpenLayers.State.INSERT;
+        var updateFeature = feature.clone();
+        // undefined value means don't create a Property element
+        updateFeature.attributes.unwritten = undefined;
+        // null value gets Property element with no Value
+        updateFeature.attributes.nul = null;
+        updateFeature.fid = "fid.42";
+        updateFeature.state = OpenLayers.State.UPDATE;
+        var deleteFeature = feature.clone();
+        deleteFeature.state = OpenLayers.State.DELETE;
+        deleteFeature.fid = "fid.37";
+
+        t.plan(9);
+        var snippets = {
+            "GetFeature": {handle: "handle_g", maxFeatures: 1, outputFormat: 'json'},
+            "Transaction": {handle: "handle_t"},
+            "Insert": {feature: insertFeature, options: {handle: "handle_i"}},
+            "Update": {feature: updateFeature, options: {handle: "handle_u"}},
+            "Delete": {feature: deleteFeature, options: {handle: "handle_d"}}
+        }
+
+        var arg;
+        for(var snippet in snippets) {
+            arg = snippets[snippet]
+            var expected = readXML(snippet);
+            var got = format.writers["wfs"][snippet].apply(format, [arg]);
+            t.xml_eq(got, expected, snippet + " request created correctly");
+        }
+        
+        updateFeature.modified = {geometry: updateFeature.geometry.clone()};
+        updateFeature.geometry = new OpenLayers.Geometry.Point(2,3);
+        var expected = readXML("UpdateModified");
+        var got = format.writers["wfs"]["Update"].apply(format, [{feature: updateFeature}]);
+        t.xml_eq(got, expected, "Update request for feature with modified geometry created correctly");
+        
+        updateFeature.modified.attributes = {foo: "bar"};
+        updateFeature.attributes.foo = "baz";
+        delete updateFeature.modified.geometry;
+        var expected = readXML("UpdateModifiedNoGeometry");
+        var got = format.writers["wfs"]["Update"].apply(format, [{feature: updateFeature}]);
+        t.xml_eq(got, expected, "Update request for feature with no modified geometry but modified attributes created correctly");
+
+        // test for a feature that originally had a null geometry and a null value for the attribute
+        updateFeature.modified = {attributes: {foo: null, nul: "nul"}, geometry: null};
+        updateFeature.attributes.foo = "bar";
+        updateFeature.geometry = new OpenLayers.Geometry.Point(2,3);
+        var expected = readXML("UpdateModified");
+        var got = format.writers["wfs"]["Update"].apply(format, [{feature: updateFeature}]);
+        t.xml_eq(got, expected, "Update request for feature with modified geometry created correctly even if original geometry was null");
+
+        updateFeature.modified.attributes = {foo: undefined};
+        updateFeature.attributes.foo = "baz";
+        delete updateFeature.modified.geometry;
+        var expected = readXML("UpdateModifiedNoGeometry");
+        var got = format.writers["wfs"]["Update"].apply(format, [{feature: updateFeature}]);
+        t.xml_eq(got, expected, "Update request for feature with no modified geometry but modified attributes with undefined created correctly");
+    }
+    
+    function test_write_query(t) {
+
+        var format = new OpenLayers.Format.WFST.v2_0_0({
+            featureNS: "http://www.openplans.org/topp",
+            featureType: "states",
+            featurePrefix: "topp",
+            srsName: "urn:ogc:def:crs:EPSG::4326",
+            geometryName: "the_geom"
+        });
+
+        var cases = [{
+            id: "query0",
+            writer: "wfs:Query",
+            arg: {
+                filter: new OpenLayers.Filter.Spatial({
+                    type: OpenLayers.Filter.Spatial.BBOX,
+                    value: new OpenLayers.Bounds (1,2,3,4)
+                })
+            }
+        }, {
+            id: "getfeature0",
+            writer: "wfs:GetFeature",
+            arg: {
+                resultType: "hits",
+                propertyNames: ["STATE_NAME", "STATE_FIPS", "STATE_ABBR"]
+            }
+        }, {
+            id: "getfeature1",
+            writer: "wfs:GetFeature",
+            arg: {
+                count: 10,
+                startIndex: 20
+            }
+        }];
+        
+        t.plan(cases.length);
+        
+        var test, got, exp;
+        for(var i=0; i<cases.length; ++i) {
+            test = cases[i];
+            exp = readXML(test.id);
+            got = format.writeNode(test.writer, test.arg);
+            t.xml_eq(got, exp, test.id + ": correct request");
+        }
+    }
+
+    
+    function test_writeNative(t) {
+        t.plan(1);
+        var format = new OpenLayers.Format.WFST({
+            featureNS: "http://www.openplans.org/topp",
+            featureType: "states",
+            version: "2.0.0",
+            featurePrefix: "topp",
+            geometryName: null
+        });
+        var output = format.write(null, {nativeElements: [
+            {
+                vendorId: "ORACLE",
+                safeToIgnore: true,
+                value: "ALTER SESSION ENABLE PARALLEL DML"
+            }, {
+                vendorId: "ORACLE",
+                safeToIgnore: false,
+                value: "Another native line goes here"
+            }]
+        });
+        var expected = '<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs/2.0" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Native vendorId="ORACLE" safeToIgnore="true">ALTER SESSION ENABLE PARALLEL DML</wfs:Native><wfs:Native vendorId="ORACLE" safeToIgnore="false">Another native line goes here</wfs:Native></wfs:Transaction>';
+        t.xml_eq(output, expected, "Native elements written out correctly");
+    }
+
+    function test_write_no_geometry(t) {
+        var format = new OpenLayers.Format.WFST({
+            featureNS: "http://www.openplans.org/topp",
+            featureType: "states",
+            featurePrefix: "topp",
+            version: "2.0.0",
+            geometryName: null
+        });
+
+        var feature = new OpenLayers.Feature.Vector(null, {foo: "bar"});
+        feature.state = OpenLayers.State.UPDATE;
+        feature.fid = "fid.36";
+
+        t.plan(1);
+        var snippets = {
+            "UpdateNoGeometry": {feature: feature}
+        }
+
+        var arg;
+        for(var snippet in snippets) {
+            arg = snippets[snippet]
+            var expected = readXML(snippet);
+            var got = format.writers["wfs"]["Update"].apply(format, [arg]);
+            t.xml_eq(got, expected, snippet + " request without geometry created correctly");
+        }
+    }
+    
+    function test_setFilterProperty(t) {
+        t.plan(2);
+        var format = new OpenLayers.Format.WFST({
+            geometryName: "foo"
+        });
+        var filter = new OpenLayers.Filter.Logical({
+            type: OpenLayers.Filter.Logical.AND,
+            filters: [new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.BBOX,
+                value: new OpenLayers.Bounds(1,2,3,4)
+            }), new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.DWITHIN,
+                property: "bar",
+                value: new OpenLayers.Geometry.Point(1,2),
+                distance: 10
+            })]
+        });
+        format.setFilterProperty(filter);
+        t.eq(filter.filters[0].property, "foo", "property set if not set on filter");
+        t.eq(filter.filters[1].property, "bar", "property not set if set on filter");
+    }
+
+    function test_update_null_geometry(t) {
+        var format = new OpenLayers.Format.WFST({
+            featureNS: "http://www.openplans.org/topp",
+            featureType: "states",
+            featurePrefix: "topp",
+            version: "2.0.0",
+            geometryName: "the_geom"
+        });
+
+        var feature = new OpenLayers.Feature.Vector(null, {foo: "bar"});
+        feature.state = OpenLayers.State.UPDATE;
+        feature.fid = "fid.36";
+
+        t.plan(1);
+        var snippets = {
+            "UpdateNullGeometry": {feature: feature}
+        };
+
+        var arg;
+        for (var snippet in snippets) {
+            arg = snippets[snippet]
+            var expected = readXML(snippet);
+            var got = format.writers["wfs"]["Update"].apply(format, [arg]);
+            t.xml_eq(got, expected, snippet + " request with null geometry created correctly");
+        }
+    }
+
+     function test_read_hits(t) {
+        t.plan(2);
+        var data = readXML("NumberOfFeatures");
+        var format = new OpenLayers.Format.WFST.v2_0_0({
+            featureNS: "http://mapserver.gis.umn.edu/mapserver",
+            featureType: "AAA64"
+        });
+        var result = format.read(data, {output: "object"});
+        t.eq(result.numberReturned, 625, "numberReturned of FeatureCollection correctly read");
+        t.eq(result.numberMatched, 625, "numberMatched of FeatureCollection correctly read");
+    }
+
+    function test_read_boundedBy(t) {
+        t.plan(4);
+        var data = readXML("boundedBy");
+        var format = new OpenLayers.Format.WFST.v2_0_0({
+            featureNS: "http://www.someserver.com/myns",
+            featureType: "Town"
+        });
+        var result = format.read(data, {output: "object"});
+        var bounds = result.bounds;
+        t.eq(bounds.left.toFixed(3), '49.733', "Left bounds of the feature collection correctly parsed");
+        t.eq(bounds.bottom.toFixed(3), '-11.521', "Bottom bounds of the feature collection correctly parsed");
+        t.eq(bounds.right.toFixed(3), '59.452', "Right bounds of the feature collection correctly parsed");
+        t.eq(bounds.top.toFixed(3), '-1.141', "Top bounds of the feature collection corectly parsed");
+    }
+
+    function test_write_poorconfig(t) {
+        t.plan(1);
+        var format = new OpenLayers.Format.WFST.v2_0_0({
+            featureType: "states",
+            featurePrefix: "topp"
+        });
+        var exp = "topp:states";
+        var got = format.writeNode("wfs:Query").getAttribute("typeNames");
+        t.eq(got, exp, "Query without featureNS but with featurePrefix queries for the correct featureType");
+    }
+    
+    var xmlFormat = new OpenLayers.Format.XML();
+    function readXML(id) {
+        var xml = document.getElementById(id).firstChild.nodeValue;
+        return xmlFormat.read(xml).documentElement;        
+    }
+
+  </script>
+</head>
+<body>
+<div id="map" style="width:512px; height:256px"> </div>
+
+<div id="GetFeature"><!--
+<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" service="WFS" version="2.0.0" handle="handle_g" outputFormat="json" maxFeatures="1" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <wfs:Query typeNames="topp:states" xmlns:topp="http://www.openplans.org/topp"/>
+</wfs:GetFeature>
+--></div>
+<div id="GetFeatureMultiple"><!--
+<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <wfs:Query typeName="topp:states" xmlns:topp="http://www.openplans.org/topp"/>
+    <wfs:Query typeName="topp:cities" xmlns:topp="http://www.openplans.org/topp"/>
+</wfs:GetFeature>
+--></div>
+<div id="Transaction"><!--
+<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs/2.0" service="WFS" version="2.0.0"/>
+--></div>
+<div id="Insert"><!--
+<wfs:Insert xmlns:wfs="http://www.opengis.net/wfs/2.0" handle="handle_i">
+    <feature:states xmlns:feature="http://www.openplans.org/topp">
+        <feature:the_geom>
+            <gml:Point xmlns:gml="http://www.opengis.net/gml/3.2">
+                <gml:pos>1 2</gml:pos>
+            </gml:Point>
+        </feature:the_geom>
+        <feature:foo>bar</feature:foo>
+    </feature:states>
+</wfs:Insert>
+--></div>
+<div id="Update"><!--
+<wfs:Update xmlns:wfs="http://www.opengis.net/wfs/2.0" handle="handle_u" typeName="topp:states" xmlns:topp="http://www.openplans.org/topp">
+    <wfs:Property>
+        <wfs:ValueReference>the_geom</wfs:ValueReference>
+        <wfs:Value>
+            <gml:Point xmlns:gml="http://www.opengis.net/gml/3.2">
+                <gml:pos>1 2</gml:pos>
+            </gml:Point>
+        </wfs:Value>
+    </wfs:Property>
+    <wfs:Property>
+        <wfs:ValueReference>foo</wfs:ValueReference>
+        <wfs:Value>bar</wfs:Value>
+    </wfs:Property>
+    <wfs:Property>
+        <wfs:ValueReference>nul</wfs:ValueReference>
+    </wfs:Property>
+    <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+        <fes:ResourceId rid="fid.42"/>
+    </fes:Filter>
+</wfs:Update>
+--></div>
+<div id="UpdateModified"><!--
+<wfs:Update xmlns:wfs="http://www.opengis.net/wfs/2.0" typeName="topp:states" xmlns:topp="http://www.openplans.org/topp">
+    <wfs:Property>
+        <wfs:ValueReference>the_geom</wfs:ValueReference>
+        <wfs:Value>
+            <gml:Point xmlns:gml="http://www.opengis.net/gml/3.2">
+                <gml:pos>2 3</gml:pos>
+            </gml:Point>
+        </wfs:Value>
+    </wfs:Property>
+    <wfs:Property>
+        <wfs:ValueReference>foo</wfs:ValueReference>
+        <wfs:Value>bar</wfs:Value>
+    </wfs:Property>
+    <wfs:Property>
+        <wfs:ValueReference>nul</wfs:ValueReference>
+    </wfs:Property>
+    <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+        <fes:ResourceId rid="fid.42"/>
+    </fes:Filter>
+</wfs:Update>
+--></div>
+<div id="UpdateModifiedNoGeometry"><!--
+<wfs:Update xmlns:wfs="http://www.opengis.net/wfs/2.0" typeName="topp:states" xmlns:topp="http://www.openplans.org/topp">
+    <wfs:Property>
+        <wfs:ValueReference>foo</wfs:ValueReference>
+        <wfs:Value>baz</wfs:Value>
+    </wfs:Property>
+    <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+        <fes:ResourceId rid="fid.42"/>
+    </fes:Filter>
+</wfs:Update>
+--></div>
+<div id="Delete"><!--
+<wfs:Delete xmlns:wfs="http://www.opengis.net/wfs/2.0" handle="handle_d" typeName="topp:states" xmlns:topp="http://www.openplans.org/topp">
+    <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+        <fes:ResourceId rid="fid.37"/>
+    </fes:Filter>
+</wfs:Delete>
+--></div>
+<div id="UpdateNoGeometry"><!--
+<wfs:Update xmlns:wfs="http://www.opengis.net/wfs/2.0" typeName="topp:states" xmlns:topp="http://www.openplans.org/topp">
+    <wfs:Property>
+        <wfs:ValueReference>foo</wfs:ValueReference>
+        <wfs:Value>bar</wfs:Value>
+    </wfs:Property>
+    <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+        <fes:ResourceId rid="fid.36"/>
+    </fes:Filter>
+</wfs:Update>
+--></div>
+<div id="UpdateNullGeometry"><!--
+<wfs:Update xmlns:wfs="http://www.opengis.net/wfs/2.0" typeName="topp:states" xmlns:topp="http://www.openplans.org/topp">
+    <wfs:Property>
+        <wfs:ValueReference>the_geom</wfs:ValueReference>
+    </wfs:Property>
+    <wfs:Property>
+        <wfs:ValueReference>foo</wfs:ValueReference>
+        <wfs:Value>bar</wfs:Value>
+    </wfs:Property>
+    <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+        <fes:ResourceId rid="fid.36"/>
+    </fes:Filter>
+</wfs:Update>
+--></div>
+<div id="NumberOfFeatures"><!--
+<?xml version='1.0' encoding="ISO-8859-1" ?>
+<wfs:FeatureCollection
+   xmlns:rws="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:wfs="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver http://intranet.rijkswaterstaat.nl/services/geoservices/nwb_wegen?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=feature:AAA64&amp;OUTPUTFORMAT=text/xml; subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" numberReturned="625" numberMatched="625">
+</wfs:FeatureCollection>
+--></div>
+<div id="TransactionResponse"><!--
+<wfs:TransactionResponse xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+	<wfs:TransactionSummary>
+		<wfs:totalInserted>3</wfs:totalInserted>
+		<wfs:totalUpdated>3</wfs:totalUpdated>
+		<wfs:totalReplaced>1</wfs:totalReplaced>
+		<wfs:totalDeleted>2</wfs:totalDeleted>
+	</wfs:TransactionSummary>
+	<wfs:InsertResults>
+		<wfs:Feature handle="Statement 1">
+			<fes:ResourceId rid="ElevP_1M.1001"/>
+		</wfs:Feature>
+		<wfs:Feature handle="ComplexInsert">
+			<fes:ResourceId rid="RoadL_1M.1553"/>
+		</wfs:Feature>
+		<wfs:Feature handle="Statement 2">
+			<fes:ResourceId rid="BuiltUpA_1M.509876"/>
+			<fes:ResourceId rid="BuiltUpA_1M.509877"/>
+		</wfs:Feature>
+	</wfs:InsertResults>
+</wfs:TransactionResponse>
+--></div>
+<div id="query0"><!--
+<wfs:Query xmlns:wfs="http://www.opengis.net/wfs/2.0" typeNames="topp:states" srsName="urn:ogc:def:crs:EPSG::4326" xmlns:topp="http://www.openplans.org/topp">
+    <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+        <fes:BBOX>
+            <fes:ValueReference>the_geom</fes:ValueReference>
+            <gml:Envelope xmlns:gml="http://www.opengis.net/gml/3.2" srsName="urn:ogc:def:crs:EPSG::4326">
+                <gml:lowerCorner>1 2</gml:lowerCorner>
+                <gml:upperCorner>3 4</gml:upperCorner>
+            </gml:Envelope>
+        </fes:BBOX>
+    </fes:Filter>
+</wfs:Query>
+--></div>
+<div id="getfeature0"><!--
+<wfs:GetFeature service="WFS" version="2.0.0" resultType="hits" xmlns:topp="http://www.openplans.org/topp"
+                xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                xmlns:fes="http://www.opengis.net/fes/2.0"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+    <wfs:Query xmlns:wfs="http://www.opengis.net/wfs/2.0" typeNames="topp:states" srsName="urn:ogc:def:crs:EPSG::4326" xmlns:topp="http://www.openplans.org/topp">
+        <wfs:PropertyName>STATE_NAME</wfs:PropertyName>
+        <wfs:PropertyName>STATE_FIPS</wfs:PropertyName>
+        <wfs:PropertyName>STATE_ABBR</wfs:PropertyName>
+    </wfs:Query>
+</wfs:GetFeature>
+--></div>
+<div id="getfeature1"><!--
+<wfs:GetFeature service="WFS" version="2.0.0" startIndex="20" count="10" xmlns:topp="http://www.openplans.org/topp"
+                xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                xmlns:fes="http://www.opengis.net/fes/2.0"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+    <wfs:Query xmlns:wfs="http://www.opengis.net/wfs/2.0" typeNames="topp:states" srsName="urn:ogc:def:crs:EPSG::4326" xmlns:topp="http://www.openplans.org/topp">
+    </wfs:Query>
+</wfs:GetFeature>
+--></div>
+<div id="FeatureCollection"><!--
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:tiger="http://www.census.gov" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:cite="http://www.opengeospatial.net/cite" xmlns:nurc="http://www.nurc.nato.int" xmlns:sde="http://geoserver.sf.net" xmlns:topp="http://www.openplans.org/topp" xmlns:it.geosolutions="http://www.geo-solutions.it" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sf="http://www.openplans.org/spearfish" numberMatched="49" numberReturned="49" timeStamp="2013-08-06T11:54:15.559Z" xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://localhost:8082/geoserver/schemas/gml/3.2.1/gml.xsd http://www.openplans.org/topp http://localhost:8082/geoserver/wfs?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=topp%3Astates http://www.opengis.net/wfs/2.0 http://localhost:8082/geoserver/schemas/wfs/2.0/wfs.xsd">
+   <wfs:boundedBy>
+      <gml:Envelope>
+         <gml:lowerCorner>-1.3885038382960923E7 2870337.130793682</gml:lowerCorner>
+         <gml:upperCorner>-7455049.489182421 6338174.0557576185</gml:upperCorner>
+      </gml:Envelope>
+   </wfs:boundedBy>
+   <wfs:member>
+      <topp:states gml:id="states.1">
+         <gml:boundedBy>
+            <gml:Envelope srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#3857">
+               <gml:lowerCorner>-1.0187528879651537E7 4437262.995631081</gml:lowerCorner>
+               <gml:upperCorner>-9741333.643874306 5237587.2815526575</gml:upperCorner>
+            </gml:Envelope>
+         </gml:boundedBy>
+         <topp:the_geom>
+            <gml:MultiSurface srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#3857">
+               <gml:surfaceMember>
+                  <gml:Polygon srsDimension="2">
+                     <gml:exterior>
+                        <gml:LinearRing>
+                           <gml:posList>-9804081.657847203 4510573.570048137 -9805898.28061746 4505702.664324028 -9830814.254324773 4501015.72870541 -9836098.59055273 4496313.788384076 -9842853.011976104 4497853.114945388 -9848173.081760604 4495115.335828296 -9853035.294479474 4480565.297336921 -9851933.788118074 4475099.443555139 -9846286.772989111 4467813.297693937 -9843149.455780085 4461000.643837322 -9846261.28082572 4452869.190793547 -9849192.211698815 4449167.506882168 -9850739.663940333 4448614.465657501 -9853697.756769184 4448138.739395508 -9858373.175382502 4449261.124945198 -9864489.847443119 4454317.452023299 -9872744.187685441 4457998.039407824 -9878392.872606762 4458804.050146454 -9879215.857602198 4460329.801924502 -9892216.081695508 4467327.6217995165 -9899920.948931275 4469593.788107706 -9906674.59111821 4469821.507927165 -9914674.121046105 4465045.034948174 -9920439.134835308 4454748.786355814 -9923725.954120472 4452103.546096644 -9926308.677626366 4448064.2434366895 -9926841.23007032 4442691.175264947 -9924159.988815073 4438889.345599151 -9921890.62967576 4437450.02223913 -9928976.337903734 4437262.995631081 -9930817.562281456 4443146.019612607 -9933892.985853603 4444925.426762354 -9936828.926103784 4451257.716902817 -9939075.353427993 4451832.666853606 -9941196.88028353 4451014.907621134 -9941910.326900024 4447600.12031354 -9936850.188126527 4442973.115106779 -9936600.498508675 4440317.572799773 -9938912.270373981 4438996.253853614 -9942053.03848722 4440456.419127982 -9950064.47960063 4445968.66655027 -9949734.973907884 4452926.693143724 -9954611.658160556 4458248.410033331 -9956473.254005091 4462175.103896018 -9959556.24730261 4470412.84755195 -9959232.641542876 4474532.874986916 -9961936.035376789 4474850.351029055 -9964640.097127648 4477704.009021743 -9964640.097127648 4481700.233926405 -9963158.991302645 4485126.637721484 -9959614.80135477 4486522.210341316 -9955940.812880628 4488805.815899229 -9955032.000557791 4496553.29910406 -9957931.539334483 4502464.737311692 -9962513.449575534 4507870.489861796 -9965874.185002582 4519132.920866387 -9964582.43363142 4525310.639469115 -9965229.5338314 4530152.582520835 -9964583.212867854 4534296.147807098 -9965490.355398327 4536400.271533974 -9972159.840050224 4537990.954535544 -9981624.445796452 4543529.003925382 -9982670.849009909 4548952.808520223 -9984362.571311494 4551886.335211437 -9988525.029711235 4556987.603436236 -1.000224716070234E7 4566023.207236599 -1.0003285882870933E7 4566082.885946576 -1.0003927973693829E7 4564162.757935383 -1.000768355935472E7 4561910.0120879505 -1.0011838336709598E7 4562211.816709335 -1.0016406665972773E7 4566985.444813793 -1.0014104244944697E7 4574289.789724424 -1.0019957646409588E7 4575092.381538184 -1.0023421129726637E7 4578466.092983348 -1.0032038928106397E7 4583985.767760285 -1.0033750242638364E7 4587050.085703865 -1.0041855971360477E7 4591992.731710566 -1.004703588990607E7 4596698.599642423 -1.0050996192110531E7 4603018.336881153 -1.0056237225056568E7 4606119.038391172 -1.0059360070731793E7 4612577.482428579 -1.0059869691360647E7 4625235.222881119 -1.0058683136908278E7 4631164.0181526365 -1.0056559049704453E7 4634787.332401642 -1.0052355069134645E7 4639974.179227037 -1.004834122225511E7 4652960.393995351 -1.0047834161974547E7 4654963.872520132 -1.0045575934784316E7 4659239.223492842 -1.003920445240927E7 4665998.995947451 -1.003918998087547E7 4672910.786842571 -1.0041267425212653E7 4678841.574563614 -1.0040636355019346E7 4682208.703332439 -1.003694366487075E7 4689221.727105073 -1.0033802117521076E7 4690990.411295875 -1.0032304759050416E7 4693136.49220776 -1.0031346743512647E7 4697416.436610844 -1.0033538735605858E7 4700641.335474557 -1.0045908000825351E7 4709433.108080555 -1.004980462828108E7 4710893.658542942 -1.005434746538086E7 4710920.988635183 -1.006473702477609E7 4716277.1038072845 -1.0071056632268423E7 4715826.00020265 -1.0077800923618136E7 4706157.36294659 -1.0082242793939767E7 4703256.850119881 -1.008857520317354E7 4704610.834539867 -1.0093213218437953E7 4712401.359326277 -1.0097353524259027E7 4727086.398941798 -1.0097522507246053E7 4730008.501326762 -1.0095609036518807E7 4735102.1946359705 -1.0098540857947828E7 4742349.662911801 -1.0098703050445916E7 4749767.661822176 -1.0100277664643187E7 4753915.973012006 -1.0100917195117794E7 4757230.647161204 -1.0105510237307921E7 4764275.667575246 -1.0113430730397357E7 4771995.861950482 -1.0124272914842147E7 4779215.456295107 -1.0134118901163831E7 4785531.183069953 -1.013724085628313E7 4789794.92689745 -1.0140494613679526E7 4797721.521708938 -1.0147460542135404E7 4801137.734314944 -1.0152699014733156E7 4807987.527154785 -1.016543596823074E7 4820405.016274203 -1.0170937711424215E7 4826008.027807813 -1.0171642697759409E7 4831311.3798096515 -1.0172565870296558E7 4837467.800663898 -1.0180077041618345E7 4846060.845475296 -1.0180277528021263E7 4849279.946300798 -1.0178392109805696E7 4851686.5757499095 -1.0177984346510923E7 4854590.337890092 -1.0179860525208753E7 4858107.5397222275 -1.018431842553706E7 4866778.325006238 -1.018617924214516E7 4875641.281075712 -1.0187528879651537E7 4885513.152508497 -1.0186462104971264E7 4895115.337766316 -1.0185614518368363E7 4902539.22352504 -1.0184252190440034E7 4911038.536129932 -1.018001080652132E7 4920134.15867877 -1.017669604604397E7 4922322.199239335 -1.0173015934997836E7 4923124.003387151 -1.0171568781617524E7 4924677.374188916 -1.0172976082620133E7 4931149.882711003 -1.017179553942027E7 4939404.117010152 -1.0172609173578478E7 4943041.728874968 -1.0176034362990694E7 4945897.617376829 -1.0175839108603844E7 4949557.568905235 -1.0171886376124755E7 4954023.8038917845 -1.0159246270584162E7 4959319.137172085 -1.0153997556593258E7 4959946.0080705555 -1.014816285680282E7 4961779.025136117 -1.0144451464979773E7 4965571.010330402 -1.0143430553929705E7 4968985.156726282 -1.0140398656278463E7 4977233.268681194 -1.013997052151687E7 4987847.5769731235 -1.0135551694329832E7 4994596.670245673 -1.0128211955023868E7 5001127.380787999 -1.0125699808075137E7 5005043.754075937 -1.012502543459991E7 5022725.588938968 -1.012537453252304E7 5027746.799941758 -1.0128998427226322E7 5033659.731877658 -1.0132106022131307E7 5036831.667628284 -1.0136343175909372E7 5038374.543425472 -1.014137526217119E7 5046551.317376963 -1.0141466989431605E7 5051925.377064774 -1.0138231154473227E7 5061864.950815576 -1.0136283731301289E7 5071726.462726873 -1.0133133723670311E7 5075011.124111179 -1.0130150917914506E7 5076135.905438489 -1.0124469171104416E7 5074673.537160142 -1.0112723295033365E7 5078146.170256631 -1.0105572242264293E7 5078918.283989316 -1.0097592193247288E7 5078954.076874659 -1.0092090450053813E7 5080774.491244318 -1.008562378951414E7 5087798.550118103 -1.0078960204795254E7 5090234.421034555 -1.0069403871788617E7 5090468.763399351 -1.0067174476346498E7 5092853.10512966 -1.006584276127814E7 5096377.68358779 -1.005753409712431E7 5099290.939867389 -1.0056530217956336E7 5101664.96595854 -1.0056728923247404E7 5108558.906123816 -1.005504733101948E7 5119536.701835704 -1.0052693925664619E7 5124568.752455289 -1.0047175150589053E7 5128340.719408752 -1.0040554869152086E7 5131983.797647508 -1.0035955036473017E7 5150615.508548303 -1.0034636123146096E7 5158577.481854369 -1.003551176226068E7 5165988.112312521 -1.0037466755157989E7 5170127.779800905 -1.003730545321583E7 5176532.632466528 -1.0038355975250445E7 5179047.18533362 -1.0040080091523852E7 5179375.265187534 -1.0044461626681477E7 5184934.983299134 -1.0054777269934816E7 5190582.853801676 -1.005968957642454E7 5192519.928347542 -1.006408046241939E7 5197396.072847533 -1.0065283937434357E7 5200596.333346887 -1.006636340253658E7 5212141.977634381 -1.006791252457046E7 5215070.172096852 -1.0073416828112222E7 5219396.338955011 -1.0081491943974365E7 5224379.5326696215 -1.008619452454344E7 5230220.722893911 -1.0090927717972476E7 5232496.903027368 -1.0091309098547934E7 5235373.283363911 -1.0089812630633201E7 5237587.2815526575 -1.0065505574540526E7 5237436.423890345 -1.00102459113938E7 5236794.059994191 -1.0000343931368249E7 5236696.214322979 -9952017.802705582 5235794.813484654 -9947447.803650044 5235857.621875817 -9900652.98590273 5234794.465000342 -9881269.479568353 5234800.8055413775 -9874764.636443337 5234611.949822939 -9829276.932156917 5234961.434001078 -9817789.317304507 5234605.60940872 -9773551.842219185 5234532.996873226 -9777963.990236778 5208163.855569051 -9769425.117375987 5184444.682182559 -9759440.649607757 5169944.7059558295 -9752992.802062029 5138137.880605197 -9743779.555726014 5119664.223398593 -9744089.580507874 5081873.352668125 -9744067.5392487 5056886.0325055 -9743987.723173797 5038004.514775069 -9744020.005826129 5013806.446930743 -9744092.140856162 4974862.059157537 -9744593.189884223 4938080.139428916 -9744426.767245486 4936416.783240098 -9744389.36389658 4890122.75670336 -9744437.787875075 4849578.802714823 -9744415.7466159 4809334.120216452 -9744748.703212861 4790294.49116782 -9744932.15773369 4772006.370827116 -9751327.351160271 4770242.041055282 -9754396.763479913 4765800.702555224 -9752769.495163498 4764399.088851934 -9753346.130125808 4762062.828273016 -9752354.941379784 4758718.961630332 -9749869.06583088 4757366.200756999 -9750317.572059287 4751576.6812662175 -9750942.631000089 4750091.575003462 -9752469.6004553 4749795.671642305 -9756514.060194802 4745837.577368545 -9759416.048000293 4742703.912082091 -9758205.782496387 4740403.810552741 -9758518.367626535 4737937.947208509 -9755112.659125205 4736571.4708002 -9755023.49221308 4734424.359806931 -9752924.00661672 4733797.9121429 -9749953.223365918 4730618.800568355 -9749555.701464297 4721061.812199303 -9750681.030196726 4720824.048536127 -9745788.20461789 4718388.581212782 -9744181.307768287 4716473.671570964 -9743815.289282558 4711924.239963079 -9744819.168450532 4708052.874953907 -9747029.862218197 4703040.378050157 -9746077.857932933 4701336.07176051 -9741333.643874306 4692429.318140128 -9742573.631682253 4689735.907590863 -9741346.334296254 4688739.697550353 -9741381.177296873 4684016.415077351 -9745341.479501337 4676789.343939147 -9750304.770317845 4674820.794170547 -9754391.642783338 4670635.696913094 -9754776.362943519 4667800.7042107945 -9753794.525034722 4664423.224628617 -9756106.296900025 4663564.21674506 -9757471.185176644 4660814.908092914 -9759707.3711077 4657049.728047072 -9757308.10212263 4652488.182239468 -9757546.77111089 4650364.849992316 -9760482.822680563 4650871.530463769 -9761919.845987216 4647675.396447819 -9768963.92072563 4645484.53257022 -9769249.232580533 4644200.916361872 -9767055.570694963 4642549.753153745 -9768110.322870228 4638639.677096441 -9772072.294867052 4632980.627598 -9777692.14804026 4629346.02637084 -9779426.394387327 4619921.075634839 -9780865.198805831 4619816.695535485 -9782093.275428262 4624274.498274765 -9783140.457878156 4624099.134215803 -9783699.281721937 4621986.345767715 -9786553.736104857 4619204.901940741 -9786502.863097565 4622225.50759058 -9787868.530610617 4622569.649362098 -9793890.915062534 4613539.242131068 -9794557.607492894 4612650.468707529 -9793658.146007285 4607818.900338107 -9788577.63576697 4603629.170491141 -9788544.573878204 4601703.199176652 -9790612.556058673 4598785.123374764 -9793165.557260524 4598055.83938258 -9798179.832403816 4594029.216580492 -9797487.647810064 4592479.431662503 -9792204.202138033 4593102.090232319 -9793365.153107516 4589786.815560131 -9799981.204403833 4587069.029371835 -9800912.057985848 4585801.717882557 -9800731.943049742 4584838.1561048785 -9798530.600119308 4584163.7020940315 -9799367.166092617 4580589.348788441 -9798531.490675233 4575902.661285274 -9800847.492681189 4573249.223937362 -9800765.116258 4570176.705064864 -9803308.766622625 4569511.248999743 -9804902.861730786 4571517.908685193 -9805466.02703471 4568647.137191132 -9799503.866427312 4567790.717160487 -9799074.952429285 4566121.120004894 -9801109.872720987 4564745.0647345185 -9807256.267085645 4566179.247330112 -9807409.220065996 4564646.60068051 -9804546.194082284 4560768.451946129 -9799926.880492326 4557375.818290291 -9800805.85919163 4555089.027160649 -9806052.012834245 4555614.307528577 -9805691.894281527 4553692.448811149 -9800075.492012536 4552011.589174394 -9804182.735944845 4542113.987418192 -9810991.481279723 4537236.946740006 -9813856.177055798 4531602.397200321 -9813662.592461308 4527074.485299873 -9811051.037207298 4520764.381898589 -9804081.657847203 4510573.570048137</gml:posList>
+                        </gml:LinearRing>
+                     </gml:exterior>
+                  </gml:Polygon>
+               </gml:surfaceMember>
+            </gml:MultiSurface>
+         </topp:the_geom>
+         <topp:STATE_NAME>Illinois</topp:STATE_NAME>
+         <topp:STATE_FIPS>17</topp:STATE_FIPS>
+         <topp:SUB_REGION>E N Cen</topp:SUB_REGION>
+         <topp:STATE_ABBR>IL</topp:STATE_ABBR>
+         <topp:LAND_KM>143986.61</topp:LAND_KM>
+         <topp:WATER_KM>1993.335</topp:WATER_KM>
+         <topp:PERSONS>1.1430602E7</topp:PERSONS>
+         <topp:FAMILIES>2924880.0</topp:FAMILIES>
+         <topp:HOUSHOLD>4202240.0</topp:HOUSHOLD>
+         <topp:MALE>5552233.0</topp:MALE>
+         <topp:FEMALE>5878369.0</topp:FEMALE>
+         <topp:WORKERS>4199206.0</topp:WORKERS>
+         <topp:DRVALONE>3741715.0</topp:DRVALONE>
+         <topp:CARPOOL>652603.0</topp:CARPOOL>
+         <topp:PUBTRANS>538071.0</topp:PUBTRANS>
+         <topp:EMPLOYED>5417967.0</topp:EMPLOYED>
+         <topp:UNEMPLOY>385040.0</topp:UNEMPLOY>
+         <topp:SERVICE>1360159.0</topp:SERVICE>
+         <topp:MANUAL>828906.0</topp:MANUAL>
+         <topp:P_MALE>0.486</topp:P_MALE>
+         <topp:P_FEMALE>0.514</topp:P_FEMALE>
+         <topp:SAMP_POP>1747776.0</topp:SAMP_POP>
+      </topp:states>
+   </wfs:member>
+</wfs:FeatureCollection>
+--></div>
+<div id="boundedBy"><!--
+	<?xml version="1.0" encoding="UTF-8"?>
+	<wfs:FeatureCollection timeStamp="2009-02-14T01:27:44"
+		numberMatched="1" numberReturned="1"
+		xmlns:myns="http://www.someserver.com/myns"
+		xmlns:wfs="http://www.opengis.net/wfs/2.0"
+		xmlns:gml="http://www.opengis.net/gml/3.2"
+		xmlns:xlink="http://www.w3.org/1999/xlink"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+            http://schema.opengis.net/wfs/2.0.0/wfs.xsd
+            http://www.opengis.net/gml/3.2
+            http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+		<wfs:boundedBy>
+			<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
+				<gml:lowerCorner>49.733 -11.521</gml:lowerCorner>
+				<gml:upperCorner>59.452 -1.141</gml:upperCorner>
+			</gml:Envelope>
+		</wfs:boundedBy>
+		<wfs:member>
+			<myns:Town gml:id="t1"> <gml:name>Bedford</gml:name> <gml:directedNode
+				orientation="+" xlink:href="#n1" /> </myns:Town>
+		</wfs:member>
+	</wfs:FeatureCollection>
+--></div>
+</body>
+</html>
