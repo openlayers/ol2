@@ -1,0 +1,389 @@
+<html> 
+<head> 
+    <script src="../../OLLoader.js"></script>
+    <script type="text/javascript">
+    
+    var test_xml =
+        '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+            '<fes:Or>' +
+                '<fes:PropertyIsBetween>' +
+                    '<fes:ValueReference>DEPTH</fes:ValueReference>' +
+                    '<fes:LowerBoundary>' +
+                        '<fes:Literal>100</fes:Literal>' +
+                    '</fes:LowerBoundary>' +
+                    '<fes:UpperBoundary>' +
+                        '<fes:Literal>200</fes:Literal>' +
+                    '</fes:UpperBoundary>' +
+                '</fes:PropertyIsBetween>' +
+                '<fes:PropertyIsEqualTo matchCase="true">' +
+                    '<fes:ValueReference>FIELD1</fes:ValueReference>' +
+                    '<fes:Literal>10</fes:Literal>' +
+                '</fes:PropertyIsEqualTo>' +
+            '</fes:Or>' +
+        '</fes:Filter>';
+
+
+    function test_read(t) {
+        t.plan(3);
+
+        var parser = new OpenLayers.Format.Filter.v2_0_0();
+        var xml = new OpenLayers.Format.XML();
+        var filter = parser.read(xml.read(test_xml).documentElement);
+
+        t.ok(filter instanceof OpenLayers.Filter.Logical, "instance of correct class");
+        t.eq(filter.type, OpenLayers.Filter.Logical.OR, "correct type");
+        t.eq(filter.filters.length, 2, "correct number of child filters");
+    }
+    
+    function test_write(t) {
+        t.plan(1);
+
+        // read first - testing that write produces the fes:Filter element above
+        var parser = new OpenLayers.Format.Filter.v2_0_0();
+        var xml = new OpenLayers.Format.XML();
+        var filter = parser.read(xml.read(test_xml).documentElement);
+        
+        var node = parser.write(filter);
+        t.xml_eq(node, test_xml, "filter correctly written");
+        
+    }
+    
+    function test_matchCase(t) {
+        var parser = new OpenLayers.Format.Filter.v2_0_0();
+        var xml = new OpenLayers.Format.XML();
+        
+        var cases = [{
+            str:
+                '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                    '<fes:PropertyIsEqualTo>' +
+                        '<fes:ValueReference>cat</fes:ValueReference>' +
+                        '<fes:Literal>dog</fes:Literal>' +
+                    '</fes:PropertyIsEqualTo>' +
+                '</fes:Filter>',
+            exp: true
+        }, {
+            str:
+                '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                    '<fes:PropertyIsEqualTo matchCase="1">' +
+                        '<fes:ValueReference>cat</fes:ValueReference>' +
+                        '<fes:Literal>dog</fes:Literal>' +
+                    '</fes:PropertyIsEqualTo>' +
+                '</fes:Filter>',
+            exp: true
+        }, {
+            str:
+                '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                    '<fes:PropertyIsEqualTo matchCase="true">' +
+                        '<fes:ValueReference>cat</fes:ValueReference>' +
+                        '<fes:Literal>dog</fes:Literal>' +
+                    '</fes:PropertyIsEqualTo>' +
+                '</fes:Filter>',
+            exp: true
+        }, {
+            str:
+                '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                    '<fes:PropertyIsEqualTo matchCase="0">' +
+                        '<fes:ValueReference>cat</fes:ValueReference>' +
+                        '<fes:Literal>dog</fes:Literal>' +
+                    '</fes:PropertyIsEqualTo>' +
+                '</fes:Filter>',
+            exp: false
+        }, {
+            str:
+                '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                    '<fes:PropertyIsEqualTo matchCase="0">' +
+                        '<fes:ValueReference>cat</fes:ValueReference>' +
+                        '<fes:Literal>dog</fes:Literal>' +
+                    '</fes:PropertyIsEqualTo>' +
+                '</fes:Filter>',
+            exp: false
+        }, {
+            str:
+                '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                    '<fes:PropertyIsNotEqualTo matchCase="true">' +
+                        '<fes:ValueReference>cat</fes:ValueReference>' +
+                        '<fes:Literal>dog</fes:Literal>' +
+                    '</fes:PropertyIsNotEqualTo>' +
+                '</fes:Filter>',
+            exp: true
+        }, {
+            str:
+                '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                    '<fes:PropertyIsNotEqualTo matchCase="false">' +
+                        '<fes:ValueReference>cat</fes:ValueReference>' +
+                        '<fes:Literal>dog</fes:Literal>' +
+                    '</fes:PropertyIsNotEqualTo>' +
+                '</fes:Filter>',
+            exp: false
+        }];
+        
+        t.plan(cases.length);
+        
+        var filter, c;
+        for(var i=0; i<cases.length; ++i) {
+            c = cases[i];
+            filter = parser.read(xml.read(c.str).documentElement);
+            t.eq(filter.matchCase, c.exp, "case " + i);
+        }
+        
+    }
+
+    function test_BBOX(t) {
+        t.plan(1);
+        var filter = new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.BBOX,
+            property: "the_geom",
+            value: new OpenLayers.Bounds(-180, -90, 180, 90),
+            projection: "EPSG:4326"
+        });
+        
+        var out =
+            '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                '<fes:BBOX>' +
+                    '<fes:ValueReference>the_geom</fes:ValueReference>' +
+                    '<gml:Envelope xmlns:gml="http://www.opengis.net/gml/3.2" srsName="EPSG:4326">' +
+                        '<gml:lowerCorner>-180 -90</gml:lowerCorner>' +
+                        '<gml:upperCorner>180 90</gml:upperCorner>' +
+                    '</gml:Envelope>' +
+                '</fes:BBOX>' +
+            '</fes:Filter>';
+        
+        var parser = new OpenLayers.Format.Filter.v2_0_0();
+        var node = parser.write(filter);
+        
+        t.xml_eq(node, out, "bbox correctly written");
+    }
+    
+    function test_BBOX_noGeometryName(t) {
+        t.plan(1);
+        var filter = new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.BBOX,
+            value: new OpenLayers.Bounds(-180, -90, 180, 90),
+            projection: "EPSG:4326"
+        });
+        
+        var out =
+            '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                '<fes:BBOX>' +
+                    '<gml:Envelope xmlns:gml="http://www.opengis.net/gml/3.2" srsName="EPSG:4326">' +
+                        '<gml:lowerCorner>-180 -90</gml:lowerCorner>' +
+                        '<gml:upperCorner>180 90</gml:upperCorner>' +
+                    '</gml:Envelope>' +
+                '</fes:BBOX>' +
+            '</fes:Filter>';
+        
+        var parser = new OpenLayers.Format.Filter.v2_0_0();
+        var node = parser.write(filter);
+        
+        t.xml_eq(node, out, "bbox correctly written");
+    }
+
+
+    function test_Intersects(t) {
+        
+        t.plan(4);
+        
+        var str =
+            '<Filter xmlns="http://www.opengis.net/fes/2.0">' +
+                '<Intersects>' +
+                    '<ValueReference>Geometry</ValueReference>' +
+                    '<gml:Envelope xmlns:gml="http://www.opengis.net/gml/3.2" srsName="EPSG:4326">' +
+                        '<gml:lowerCorner>-180 -90</gml:lowerCorner>' +
+                        '<gml:upperCorner>180 90</gml:upperCorner>' +
+                    '</gml:Envelope>' +
+                '</Intersects>' +
+            '</Filter>';
+
+        var format = new OpenLayers.Format.Filter.v2_0_0();
+        var filter = new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.INTERSECTS,
+            property: "Geometry",
+            value: new OpenLayers.Bounds(-180, -90, 180, 90),
+            projection: "EPSG:4326"
+        });
+        
+        // test writing
+        var node = format.write(filter);
+        t.xml_eq(node, str, "filter correctly written");
+        
+        // test reading
+        var doc = (new OpenLayers.Format.XML).read(str);
+        var got = format.read(doc.firstChild);
+        t.eq(got.type, filter.type, "read correct type");
+        t.eq(got.property, filter.property, "read correct property");
+        t.eq(got.value.toArray(), filter.value.toArray(), "read correct value");
+
+    }
+
+    function test_FilterFunctions(t) {
+        t.plan(2);
+
+        var parser = new OpenLayers.Format.Filter.v2_0_0();
+
+        //test spatial intersects with filter function
+        var filter = new OpenLayers.Filter.Spatial({
+            property: 'the_geom',
+            type: OpenLayers.Filter.Spatial.INTERSECTS,
+            value: new OpenLayers.Filter.Function({
+                name  : 'querySingle',
+                params: ['sf:restricted', 'the_geom', 'cat=3']
+            })
+        });
+
+        var out =
+            '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                '<fes:Intersects>' +
+                    '<fes:ValueReference>the_geom</fes:ValueReference>' +
+                    '<fes:Function name="querySingle">' +
+                        '<fes:Literal>sf:restricted</fes:Literal>' +
+                        '<fes:Literal>the_geom</fes:Literal>' +
+                        '<fes:Literal>cat=3</fes:Literal>' +
+                    '</fes:Function>' +
+                '</fes:Intersects>' +
+            '</fes:Filter>';
+
+
+        var node = parser.write(filter);
+
+        //test writer
+        t.xml_eq(node, out, "spatial intersect filter with functions correctly written");
+
+        //test logical filter with custom function
+        filter = new OpenLayers.Filter.Logical({
+            type: OpenLayers.Filter.Logical.AND,
+            filters: [
+                new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.NOT_EQUAL_TO,
+                    matchCase: false,
+                    property: "FOO",
+                    value: new OpenLayers.Filter.Function({
+                        name : 'customFunction',
+                        params : ['param1', 'param2']
+                    })
+                })
+            ]
+        });
+
+        out =
+            '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                '<fes:And>' +
+                    '<fes:PropertyIsNotEqualTo matchCase="false">' +
+                        '<fes:ValueReference>FOO</fes:ValueReference>' +
+                        '<fes:Function name="customFunction">' +
+                            '<fes:Literal>param1</fes:Literal>' +
+                            '<fes:Literal>param2</fes:Literal>' +
+                        '</fes:Function>' +
+                    '</fes:PropertyIsNotEqualTo>' +
+                '</fes:And>' +
+            '</fes:Filter>';
+
+        node = parser.write(filter);
+
+        //test writer
+        t.xml_eq(node, out, "comparison filter with filter functions correctly written");
+
+    }
+
+    function test_NestedFilterFunctions(t) {
+        t.plan(1);
+
+        //test spatial dwithin with nested filter function
+        var filter = new OpenLayers.Filter.Spatial({
+           property: 'the_geom',
+           type: OpenLayers.Filter.Spatial.DWITHIN,
+           value: new OpenLayers.Filter.Function({
+               name : 'collectGeometries',
+               params: [
+                    new OpenLayers.Filter.Function({
+                        name  : 'queryCollection',
+                        params: ['sf:roads', 'the_geom', 'INCLUDE']
+                    })
+               ]
+           }),
+           distanceUnits: "meters",
+           distance: 200
+        });
+
+        var out =
+            '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">' +
+                '<fes:DWithin>' +
+                    '<fes:ValueReference>the_geom</fes:ValueReference>' +
+                    '<fes:Function name="collectGeometries">' +
+                        '<fes:Function name="queryCollection">' +
+                            '<fes:Literal>sf:roads</fes:Literal>' +
+                            '<fes:Literal>the_geom</fes:Literal>' +
+                            '<fes:Literal>INCLUDE</fes:Literal>' +
+                        '</fes:Function>' +
+                    '</fes:Function>' +
+                    '<fes:Distance units="meters">200</fes:Distance>' +
+                '</fes:DWithin>' +
+            '</fes:Filter>';
+
+        var parser = new OpenLayers.Format.Filter.v2_0_0();
+        var node = parser.write(filter);
+
+        //test writer
+        t.xml_eq(node, out, "spatial dwithin filter with nested functions correctly written");
+    }
+
+    function test_write_like_matchcase(t) {
+        t.plan(1);
+
+        var filter = new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.LIKE,
+            property: "person",
+            value: "*me*",
+            matchCase: false
+        });
+
+        var format = new OpenLayers.Format.Filter.v2_0_0();
+        
+        var got = format.write(filter);
+        var exp = readXML("LikeMatchCase");
+        t.xml_eq(got, exp, "wrote matchCase attribute on PropertyIsLike");
+    }
+
+    function readXML(id) {
+        var xml = document.getElementById(id).firstChild.nodeValue;
+        return new OpenLayers.Format.XML().read(xml).documentElement;
+    }
+
+    function test_SortBy(t) {
+        t.plan(1);
+    
+        var out =
+            '<fes:SortBy xmlns:fes="http://www.opengis.net/fes/2.0">'+
+                '<fes:SortProperty>'+
+                    '<fes:ValueReference>Title</fes:ValueReference>'+
+                    '<fes:SortOrder>ASC</fes:SortOrder>'+
+                '</fes:SortProperty>'+
+                '<fes:SortProperty>'+
+                    '<fes:ValueReference>Relevance</fes:ValueReference>'+
+                    '<fes:SortOrder>DESC</fes:SortOrder>'+
+                '</fes:SortProperty>'+
+            '</fes:SortBy>';
+        
+        var parser = new OpenLayers.Format.Filter.v2_0_0();
+        var node = parser.writers['fes'].SortBy.call(parser, [{
+            "property": 'Title',
+            "order": "ASC"
+        },{
+            "property": 'Relevance',
+            "order": "DESC"
+        }]);
+        
+        t.xml_eq(node, out, "Check SortBy");
+    }
+    </script> 
+</head> 
+<body>
+<div id="LikeMatchCase"><!--
+<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+    <fes:PropertyIsLike wildCard="*" singleChar="." escapeChar="!" matchCase="false">
+        <fes:ValueReference>person</fes:ValueReference>
+        <fes:Literal>*me*</fes:Literal>
+    </fes:PropertyIsLike>
+</fes:Filter>
+--></div>
+</body> 
+</html> 
