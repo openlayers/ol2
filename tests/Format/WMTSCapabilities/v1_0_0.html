@@ -197,7 +197,7 @@
         }
 
         function test_createLayer(t) {
-            t.plan(43);
+            t.plan(48);
 
             var format = new OpenLayers.Format.WMTSCapabilities();
 
@@ -239,12 +239,29 @@
             }
             t.ok(!success, "createLayer returns undefined given bad matrixSet identifier");
 
+            // bogus projection
+            try {
+                layer = format.createLayer(caps, {
+                    layer: "coastlines",
+                    projection: "EPSG:3857"
+                });
+            } catch (err) {
+                success = false;
+            }
+            t.ok(!success, "createLayer returns undefined given unsupported projection");
+
             layer = format.createLayer(caps, {
                 layer: "coastlines",
                 matrixSet: "BigWorld"
             });
             t.ok(layer instanceof OpenLayers.Layer.WMTS, "correct instance");
 
+            layer = format.createLayer(caps, {
+                layer: "coastlines",
+                projection: "OGC:CRS84"
+            });
+            t.ok(layer instanceof OpenLayers.Layer.WMTS, "correct instance with CRS84 tile matrix set");
+            
             // autodetect matrixSet
             layer = format.createLayer(caps, {
                 layer: "coastlines"
@@ -364,6 +381,17 @@
                 layer: "WorldTimeZones"
             });
             t.eq(layer.requestEncoding, "REST", "correct requestEncoding (in RESTfull)");
+            
+            // test serverresolutions and min/maxScaleDenominator
+            xml = document.getElementById("French-IGN-GeoPortal").firstChild.nodeValue;
+            doc = new OpenLayers.Format.XML().read(xml);
+            caps = format.read(doc);
+            layer = format.createLayer(caps, {
+                layer: "ADMINISTRATIVEUNITS.BOUNDARIES"
+            });
+            t.eq(layer.serverResolutions.length, 13, "correct number of server resolutions");
+            t.eq(layer.maxScale, 1/2132, "correct maxScale");
+            t.eq(layer.minScale, 1/8735661, "correct minScale");
         }
 
         function test_parse_projection(t) {
