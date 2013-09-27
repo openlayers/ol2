@@ -8,27 +8,6 @@
 
         var parser = new OpenLayers.Format.WCSDescribeCoverage();
 
-        // // version 1.0.0
-        // // Save original reader
-        // var _v1_0_0 = OpenLayers.Format.WCSDescribeCoverage.v1_0_0.prototype.read;
-        // OpenLayers.Format.WCSDescribeCoverage.v1_0_0.prototype.read = function() {
-        //     t.ok(true, "Version 1.0.0 detected");
-        //     return {};
-        // }
-        //
-        // var text =
-        //     '<?xml version="1.0" encoding="UTF-8"?>' +
-        //     '<CoverageDescription xmlns="http://www.opengis.net/wcs" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0" updateSequence="0" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd">';
-        //
-        // var res = parser.read(text);
-        // t.eq(res.version, "1.0.0", "version 1.0.0 written to result object");
-        //
-        // // Restore original reader
-        // OpenLayers.Format.WCSDescribeCoverage.v1_0_0.prototype.read = _v1_0_0;
-
-
-        // version 1.1.0
-
         // Save original reader
         var _v1_1_0 = OpenLayers.Format.WCSDescribeCoverage.v1_1_0.prototype.read;
 

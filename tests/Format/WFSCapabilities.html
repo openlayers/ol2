@@ -11,7 +11,7 @@
         // version 1.0.0
 
         // Save original reader
-        var _v1_0_0 = OpenLayers.Format.WCSCapabilities.v1_0_0.prototype.read;
+        var _v1_0_0 = OpenLayers.Format.WFSCapabilities.v1_0_0.prototype.read;
 
         OpenLayers.Format.WFSCapabilities.v1_0_0.prototype.read = function() {
             t.ok(true, "Version 1.0.0 detected");
@@ -25,13 +25,13 @@
         t.eq(res.version, "1.0.0", "version 1.0.0 written to result object");
 
         // Restore original reader
-        OpenLayers.Format.WCSCapabilities.v1_1_0.prototype.read = _v1_0_0;
+        OpenLayers.Format.WFSCapabilities.v1_1_0.prototype.read = _v1_0_0;
 
 
         // version 1.1.0
 
         // Save original reader
-        var _v1_1_0 = OpenLayers.Format.WCSCapabilities.v1_1_0.prototype.read;
+        var _v1_1_0 = OpenLayers.Format.WFSCapabilities.v1_1_0.prototype.read;
 
         OpenLayers.Format.WFSCapabilities.v1_1_0.prototype.read = function() {
             t.ok(true, "Version 1.1.0 detected");
@@ -45,7 +45,7 @@
         t.eq(res.version, "1.1.0", "version 1.1.0 written to result object");
 
         // Restore original reader
-        OpenLayers.Format.WCSCapabilities.v1_1_0.prototype.read = _v1_1_0;        
+        OpenLayers.Format.WFSCapabilities.v1_1_0.prototype.read = _v1_1_0;        
     }
 
     </script> 
