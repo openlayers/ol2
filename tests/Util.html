@@ -1,6 +1,20 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    #map {
+        position: absolute;
+        top:  1234px;
+        left: 123px;
+    }
+    .test_getRenderedDimensions p{
+        padding: 20px; 
+    }
+  </style>
   <script>
     var OpenLayers = [
         "OpenLayers/BaseTypes/Class.js",
@@ -15,6 +29,7 @@
     ];
   </script>
   <script src="OLLoader.js"></script>
+  <script src="Util_common.js"></script>
   <script type="text/javascript">
     var isMozilla = (navigator.userAgent.indexOf("compatible") == -1);
     var map; 
@@ -99,10 +114,30 @@
     }
     
     function test_Util_pagePosition(t) {
-        t.plan( 1 );
+        t.plan( 2 );
+
+        // making sure that the test iframe is visible
+        var origDisplay;
+        var parents = window.parent.document.getElementsByTagName('iframe');
+        if (parents.length) {
+            origDisplay = parents[1].parentNode.style.display;
+            // span containing the test iframe is the invisible element
+            parents[1].parentNode.style.display = "";
+        }
+
         var pp = OpenLayers.Util.pagePosition(window);
-        t.eq( pp.toString(), "0,0", "Page position doesn't bail if passed 'window'")
+        t.eq( pp.toString(), "0,0", "Page position doesn't bail if passed 'window'");
         
+        var mapDiv = document.getElementById("map");
+        var beforeScrollPp = OpenLayers.Util.pagePosition(mapDiv);
+        window.scrollTo(100, 1200);
+        pp = OpenLayers.Util.pagePosition(mapDiv);
+        t.eq(pp, beforeScrollPp, "Page position should work after page has been scrolled");
+        
+        // reset test iframe visibility
+        if (parents.length) {
+            parents[1].parentNode.style.display = origDisplay;
+        }
     }
 
     function test_Util_createDiv(t) {
@@ -691,6 +726,12 @@
         t.ok(OpenLayers.String.startsWith(id, "chicken"),
              "OpenLayers.Util.createUniqueID starts id correctly");
     }
+    
+    function test_units(t) {
+        t.plan(2);
+        t.eq(OpenLayers.INCHES_PER_UNIT.m, OpenLayers.INCHES_PER_UNIT.Meter, 'Same inches per m and Meters');
+        t.eq(OpenLayers.INCHES_PER_UNIT.km, OpenLayers.INCHES_PER_UNIT.Kilometer, 'Same inches per km and Kilometers');
+    }
         
     function test_Util_normalizeScale(t) {
         t.plan(2); 
@@ -713,7 +754,7 @@
 
         var scale = 1/150000000; 
         var resolution = OpenLayers.Util.getResolutionFromScale(scale, 'm');
-        t.eq(resolution.toFixed(6), "52916.638092", "Calculated correct resolution for " + scale);
+        t.eq(resolution.toFixed(6), "52916.772500", "Calculated correct resolution for " + scale);
 
         scale = 150000000; 
         resolution = OpenLayers.Util.getResolutionFromScale(scale);
@@ -742,7 +783,7 @@
     }
 
     function test_Util_isEquivalentUrl(t) {
-        t.plan(9);
+        t.plan(10);
         
         var url1, url2, options;
 
@@ -805,6 +846,11 @@
         url2 = new Array(window.location.pathname.split("/").length-1).join("../")+"foo/bar";
         
         t.ok(OpenLayers.Util.isEquivalentUrl(url1, url2), "absolute and relative path without host works for "+url2) 
+
+  //ARGS
+        url1 = "foo.html?bbox=1,2,3,4",
+        url2 = url1;
+        t.ok(OpenLayers.Util.isEquivalentUrl(url1, url2), "equal urls with comma delimited params are equal");
     }
     
     function test_createUrlObject(t) {
@@ -1079,17 +1125,8 @@
     }
     
     function test_getRenderedDimensions(t) {
-        t.plan(2);
-        var content = (new Array(100)).join("foo ");
-        
-        // test with fixed width
-        var fw = OpenLayers.Util.getRenderedDimensions(content, {w: 20});
-        t.eq(fw.w, 20, "got the fixed width");
-        
-        // test with fixed height
-        var fh = OpenLayers.Util.getRenderedDimensions(content, {h: 15});
-        t.eq(fh.h, 15, "got the fixed height");
-        
+        // from <script src="Util_common.js"> and shared by Util_w3c.html
+        com_test_getRenderedDimensions(t); 
     }
 
     function test_toFloat(t) {
