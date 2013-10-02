@@ -426,6 +426,7 @@ Group: OpenLayers  {
       File: Strategy  (no auto-title, OpenLayers/Strategy.js)
       File: BBOX  (no auto-title, OpenLayers/Strategy/BBOX.js)
       File: Cluster  (no auto-title, OpenLayers/Strategy/Cluster.js)
+      File: DynamicCluster  (no auto-title, OpenLayers/Strategy/DynamicCluster.js)
       File: Filter  (no auto-title, OpenLayers/Strategy/Filter.js)
       File: Fixed  (no auto-title, OpenLayers/Strategy/Fixed.js)
       File: Paging  (no auto-title, OpenLayers/Strategy/Paging.js)
