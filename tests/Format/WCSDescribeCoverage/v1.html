@@ -1,0 +1,157 @@
+<html> 
+<head> 
+    <script src="../../OLLoader.js"></script>
+    <script type="text/javascript">
+
+    function test_read_exception(t) {
+        t.plan(1);
+        var parser = new OpenLayers.Format.WCSDescribeCoverage();
+        var text = '<?xml version="1.0" encoding="ISO-8859-1"?>' +
+                    '<ows:ExceptionReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows/1.1" version="1.1.0" xml:lang="en-US" xsi:schemaLocation="http://www.opengis.net/ows/1.1 http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd">' +
+                      '<ows:Exception exceptionCode="CoverageNotDefined" locator="coverage">' +
+                        '<ows:ExceptionText>msWCSDescribeCoverage(): WCS server error. COVERAGE blahblah cannot be opened / does not exist</ows:ExceptionText>' +
+                      '</ows:Exception>' +
+                    '</ows:ExceptionReport>';
+        var obj = parser.read(text);
+        t.ok(!!obj.error, "Error reported correctly");      // The above should place an error in obj.error
+    }
+    
+    function test_read(t) {
+        t.plan(59);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
+       
+        var parser = new OpenLayers.Format.WCSDescribeCoverage();
+
+        // MapServer, v1.0.0
+        var text = '<?xml version="1.0" encoding="ISO-8859-1"?><CoverageDescription version="1.0.0" updateSequence="0" xmlns="http://www.opengis.net/wcs" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd"><CoverageOffering><name>ro_dsm</name><label>RO DSM</label><lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84"><gml:pos>4.471333734139 51.912813427383</gml:pos><gml:pos>4.4808508475645 51.9248713705576</gml:pos></lonLatEnvelope><domainSet><spatialDomain><gml:Envelope srsName="EPSG:4326"><gml:pos>4.471333734139 51.912813427383</gml:pos><gml:pos>4.4808508475645 51.9248713705576</gml:pos></gml:Envelope><gml:Envelope srsName="EPSG:28992"><gml:pos>91979 437659.5</gml:pos><gml:pos>92617 436326</gml:pos></gml:Envelope><gml:RectifiedGrid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0</gml:low><gml:high>1275 2666</gml:high></gml:GridEnvelope></gml:limits><gml:axisName>x</gml:axisName><gml:axisName>y</gml:axisName><gml:origin><gml:pos>91979 437659.5</gml:pos></gml:origin><gml:offsetVector>0.5 0</gml:offsetVector><gml:offsetVector>0 -0.5</gml:offsetVector></gml:RectifiedGrid></spatialDomain></domainSet><rangeSet><RangeSet><name>Range 1</name><label>My Label</label></RangeSet></rangeSet><supportedCRSs><requestResponseCRSs>EPSG:28992</requestResponseCRSs><requestResponseCRSs>EPSG:900913</requestResponseCRSs><requestResponseCRSs>EPSG:3857</requestResponseCRSs><requestResponseCRSs>EPSG:4326</requestResponseCRSs><nativeCRSs>EPSG:28992</nativeCRSs></supportedCRSs><supportedFormats><formats>GTiff</formats></supportedFormats><supportedInterpolations default="nearest neighbor"><interpolationMethod>nearest neighbor</interpolationMethod><interpolationMethod>bilinear</interpolationMethod></supportedInterpolations></CoverageOffering><CoverageOffering><name>ro_dsm_mini</name><label>ro_dsm_mini</label><lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84"><gml:pos>4.47489346945755 51.9159453786927</gml:pos><gml:pos>4.47687824892444 51.9170706688033</gml:pos></lonLatEnvelope><domainSet><spatialDomain><gml:Envelope srsName="EPSG:4326"><gml:pos>4.47489346945755 51.9159453786927</gml:pos><gml:pos>4.47687824892444 51.9170706688033</gml:pos></gml:Envelope><gml:Envelope srsName="EPSG:28992"><gml:pos>92213 436671.5</gml:pos><gml:pos>92348 436795</gml:pos></gml:Envelope><gml:RectifiedGrid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0</gml:low><gml:high>269 246</gml:high></gml:GridEnvelope></gml:limits><gml:axisName>x</gml:axisName><gml:axisName>y</gml:axisName><gml:origin><gml:pos>92213 436795</gml:pos></gml:origin><gml:offsetVector>0.5 0</gml:offsetVector><gml:offsetVector>0 -0.5</gml:offsetVector></gml:RectifiedGrid></spatialDomain></domainSet><rangeSet><RangeSet><name>Range 1</name><label>My Label</label></RangeSet></rangeSet><supportedCRSs><requestResponseCRSs>EPSG:28992</requestResponseCRSs><requestResponseCRSs>EPSG:900913</requestResponseCRSs><requestResponseCRSs>EPSG:3857</requestResponseCRSs><requestResponseCRSs>EPSG:4326</requestResponseCRSs><nativeCRSs>EPSG:28992</nativeCRSs></supportedCRSs><supportedFormats><formats>GTiff</formats></supportedFormats><supportedInterpolations default="nearest neighbor"><interpolationMethod>nearest neighbor</interpolationMethod><interpolationMethod>bilinear</interpolationMethod></supportedInterpolations></CoverageOffering><CoverageOffering><name>ro_irra</name><label>ro_irra</label><lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84"><gml:pos>4.471333734139 51.912813427383</gml:pos><gml:pos>4.4808508475645 51.9248713705576</gml:pos></lonLatEnvelope><domainSet><spatialDomain><gml:Envelope srsName="EPSG:4326"><gml:pos>4.471333734139 51.912813427383</gml:pos><gml:pos>4.4808508475645 51.9248713705576</gml:pos></gml:Envelope><gml:Envelope srsName="EPSG:28992"><gml:pos>91979 437659.5</gml:pos><gml:pos>92617 436326</gml:pos></gml:Envelope><gml:RectifiedGrid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0</gml:low><gml:high>1275 2666</gml:high></gml:GridEnvelope></gml:limits><gml:axisName>x</gml:axisName><gml:axisName>y</gml:axisName><gml:origin><gml:pos>91979 437659.5</gml:pos></gml:origin><gml:offsetVector>0.5 0</gml:offsetVector><gml:offsetVector>0 -0.5</gml:offsetVector></gml:RectifiedGrid></spatialDomain></domainSet><rangeSet><RangeSet><name>Range 1</name><label>My Label</label></RangeSet></rangeSet><supportedCRSs><requestResponseCRSs>EPSG:28992</requestResponseCRSs><requestResponseCRSs>EPSG:900913</requestResponseCRSs><requestResponseCRSs>EPSG:3857</requestResponseCRSs><requestResponseCRSs>EPSG:4326</requestResponseCRSs><nativeCRSs>EPSG:28992</nativeCRSs></supportedCRSs><supportedFormats><formats>GTiff</formats></supportedFormats><supportedInterpolations default="nearest neighbor"><interpolationMethod>nearest neighbor</interpolationMethod><interpolationMethod>bilinear</interpolationMethod></supportedInterpolations></CoverageOffering><CoverageOffering><name>ro_irra_ext</name><label>ro_irra_ext</label><lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84"><gml:pos>4.10024171314823 51.9359764992844</gml:pos><gml:pos>4.21909054278063 52.001415228243</gml:pos></lonLatEnvelope><domainSet><spatialDomain><gml:Envelope srsName="EPSG:4326"><gml:pos>4.10024171314823 51.9359764992844</gml:pos><gml:pos>4.21909054278063 52.001415228243</gml:pos></gml:Envelope><gml:Envelope srsName="EPSG:28992"><gml:pos>66606.5 439287.5</gml:pos><gml:pos>74653.5 446432.5</gml:pos></gml:Envelope><gml:RectifiedGrid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0</gml:low><gml:high>16093 14289</gml:high></gml:GridEnvelope></gml:limits><gml:axisName>x</gml:axisName><gml:axisName>y</gml:axisName><gml:origin><gml:pos>66606.5 446432.5</gml:pos></gml:origin><gml:offsetVector>0.5 0</gml:offsetVector><gml:offsetVector>0 -0.5</gml:offsetVector></gml:RectifiedGrid></spatialDomain></domainSet><rangeSet><RangeSet><name>Range 1</name><label>My Label</label></RangeSet></rangeSet><supportedCRSs><requestResponseCRSs>EPSG:28992</requestResponseCRSs><requestResponseCRSs>EPSG:900913</requestResponseCRSs><requestResponseCRSs>EPSG:3857</requestResponseCRSs><requestResponseCRSs>EPSG:4326</requestResponseCRSs><nativeCRSs>EPSG:28992</nativeCRSs></supportedCRSs><supportedFormats><formats>GTiff</formats></supportedFormats><supportedInterpolations default="nearest neighbor"><interpolationMethod>nearest neighbor</interpolationMethod><interpolationMethod>bilinear</interpolationMethod></supportedInterpolations></CoverageOffering></CoverageDescription>'; 
+
+        var res1_0_0 = parser.read(text);
+
+        t.ok(!res1_0_0.error, "Parsing XML generated no errors");
+
+        var count = 0;
+        for (var k in res1_0_0.coverageDescriptions) {
+            if (res1_0_0.coverageDescriptions.hasOwnProperty(k)) {
+               count++;
+            }
+        }
+
+        t.eq(count, 4, "number of coverages correct");
+        t.eq(res1_0_0.coverageDescriptionKeys.length, 4, "number of coverage keys correct");
+        t.eq(res1_0_0.version, "1.0.0", "version correct");
+
+        var metadata = res1_0_0.coverageDescriptions.ro_dsm;
+
+        t.eq(metadata.identifier, "ro_dsm", "correct identifier");
+        t.eq(metadata.title, "RO DSM", "correct title");
+        t.eq(metadata.supportedCRSs.length, 4, "correct number of supported CRSs");
+        t.eq(metadata.supportedCRSs[3], "EPSG:4326", "correct value for selected supported CRS");
+
+        t.eq(metadata.supportedFormats.length, 1, "correct number of supported formats");
+        t.eq(metadata.supportedFormats[0], "GTiff", "correct value for supported format");
+
+        var lonLatEnvelope = metadata.lonLatEnvelope;
+
+        t.eq(lonLatEnvelope.min.x, 4.471333734139, "correct lonLatEnvelope.min.x");
+        t.eq(lonLatEnvelope.min.y, 51.912813427383, "correct lonLatEnvelope.min.y");
+        t.eq(lonLatEnvelope.max.x, 4.4808508475645, "correct lonLatEnvelope.max.x");
+        t.eq(lonLatEnvelope.max.y, 51.9248713705576, "correct lonLatEnvelope.max.y");
+        t.eq(lonLatEnvelope.srsName, "urn:ogc:def:crs:OGC:1.3:CRS84", "correct lonLatEnvelope.srsName");
+
+        var nativeCRSs = metadata.supportedCRSs.nativeCRSs;
+        t.eq(nativeCRSs.length, 1, "correct number of supported CRSs");
+        t.eq(nativeCRSs[0], "EPSG:28992", "correct sample native CRS");
+
+        var supportedCRSs = metadata.supportedCRSs;
+        t.eq(supportedCRSs.length, 4, "correct number of native CRSs");
+        t.eq(supportedCRSs[3], "EPSG:4326", "correct sample supported CRS");
+
+        t.eq(metadata.nativeCRS, "EPSG:28992", "correct native CRS");
+
+        var nativeBB = metadata.domain.spatialDomain.boundingBoxes[metadata.nativeCRS];
+        t.ok(!!nativeBB, "found native bounding box");
+        t.eq(nativeBB.top,    436326,   "correct native bounding box top value");
+        t.eq(nativeBB.bottom, 437659.5, "correct native bounding box bottom value");
+        t.eq(nativeBB.left,   91979,    "correct native bounding box left value");
+        t.eq(nativeBB.right,  92617,    "correct native bounding box right value");
+
+
+        // MapServer, v1.1.0
+        text = '<?xml version="1.0" encoding="ISO-8859-1"?><CoverageDescriptions xmlns="http://www.opengis.net/wcs/1.1" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xsi:schemaLocation="http://www.opengis.net/wcs/1.1 http://schemas.opengis.net/wcs/1.1/wcsDescribeCoverage.xsd http://www.opengis.net/ows/1.1 http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"><CoverageDescription><ows:Title>RO DSM</ows:Title><ows:Abstract>Digital Surface Model (DSM) raster data set of inner city Rotterdam</ows:Abstract><Identifier>ro_dsm</Identifier><Domain><SpatialDomain><ows:BoundingBox crs="urn:ogc:def:crs:OGC::imageCRS" dimensions="2"><ows:LowerCorner>0 0</ows:LowerCorner><ows:UpperCorner>1275 2666</ows:UpperCorner></ows:BoundingBox><ows:BoundingBox crs="urn:ogc:def:crs:EPSG::28992" dimensions="2"><ows:LowerCorner>91979 437659.5</ows:LowerCorner><ows:UpperCorner>92617 436326</ows:UpperCorner></ows:BoundingBox><ows:WGS84BoundingBox dimensions="2"><ows:LowerCorner>4.471333734139 51.912813427383</ows:LowerCorner><ows:UpperCorner>4.4808508475645 51.9248713705576</ows:UpperCorner></ows:WGS84BoundingBox><GridCRS><GridBaseCRS>urn:ogc:def:crs:EPSG::28992</GridBaseCRS><GridType>urn:ogc:def:method:WCS:1.1:2dSimpleGrid</GridType><GridOrigin>91979.25 437659.25</GridOrigin><GridOffsets>0.5 -0.5</GridOffsets><GridCS>urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS</GridCS></GridCRS></SpatialDomain></Domain><Range><Field><ows:Title>My Label</ows:Title><Identifier>Range 1</Identifier><Definition><ows:AnyValue/></Definition><InterpolationMethods><InterpolationMethod>bilinear</InterpolationMethod><Default>nearest neighbor</Default></InterpolationMethods><Axis identifier="bands"><AvailableKeys><Key>1</Key></AvailableKeys></Axis></Field></Range><SupportedCRS>urn:ogc:def:crs:EPSG::28992</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::900913</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::3857</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::4326</SupportedCRS><SupportedFormat>image/tiff</SupportedFormat></CoverageDescription><CoverageDescription><ows:Title>ro_dsm_mini</ows:Title><ows:Abstract>This a test data set of Rotterdams DSM subset</ows:Abstract><Identifier>ro_dsm_mini</Identifier><Domain><SpatialDomain><ows:BoundingBox crs="urn:ogc:def:crs:OGC::imageCRS" dimensions="2"><ows:LowerCorner>0 0</ows:LowerCorner><ows:UpperCorner>269 246</ows:UpperCorner></ows:BoundingBox><ows:BoundingBox crs="urn:ogc:def:crs:EPSG::28992" dimensions="2"><ows:LowerCorner>92213 436671.5</ows:LowerCorner><ows:UpperCorner>92348 436795</ows:UpperCorner></ows:BoundingBox><ows:WGS84BoundingBox dimensions="2"><ows:LowerCorner>4.47489346945755 51.9159453786927</ows:LowerCorner><ows:UpperCorner>4.47687824892444 51.9170706688033</ows:UpperCorner></ows:WGS84BoundingBox><GridCRS><GridBaseCRS>urn:ogc:def:crs:EPSG::28992</GridBaseCRS><GridType>urn:ogc:def:method:WCS:1.1:2dSimpleGrid</GridType><GridOrigin>92213.25 436794.75</GridOrigin><GridOffsets>0.5 -0.5</GridOffsets><GridCS>urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS</GridCS></GridCRS></SpatialDomain></Domain><Range><Field><ows:Title>My Label</ows:Title><Identifier>Range 1</Identifier><Definition><ows:AnyValue/></Definition><InterpolationMethods><InterpolationMethod>bilinear</InterpolationMethod><Default>nearest neighbor</Default></InterpolationMethods><Axis identifier="bands"><AvailableKeys><Key>1</Key></AvailableKeys></Axis></Field></Range><SupportedCRS>urn:ogc:def:crs:EPSG::28992</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::900913</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::3857</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::4326</SupportedCRS><SupportedFormat>image/tiff</SupportedFormat></CoverageDescription><CoverageDescription><ows:Title>ro_irra</ows:Title><ows:Abstract>This a result data set of a solar computation of Ljinbaan area. It shows the sum of kWh/a per sqmeter for 2010</ows:Abstract><Identifier>ro_irra</Identifier><Domain><SpatialDomain><ows:BoundingBox crs="urn:ogc:def:crs:OGC::imageCRS" dimensions="2"><ows:LowerCorner>0 0</ows:LowerCorner><ows:UpperCorner>1275 2666</ows:UpperCorner></ows:BoundingBox><ows:BoundingBox crs="urn:ogc:def:crs:EPSG::28992" dimensions="2"><ows:LowerCorner>91979 437659.5</ows:LowerCorner><ows:UpperCorner>92617 436326</ows:UpperCorner></ows:BoundingBox><ows:WGS84BoundingBox dimensions="2"><ows:LowerCorner>4.471333734139 51.912813427383</ows:LowerCorner><ows:UpperCorner>4.4808508475645 51.9248713705576</ows:UpperCorner></ows:WGS84BoundingBox><GridCRS><GridBaseCRS>urn:ogc:def:crs:EPSG::28992</GridBaseCRS><GridType>urn:ogc:def:method:WCS:1.1:2dSimpleGrid</GridType><GridOrigin>91979.25 437659.25</GridOrigin><GridOffsets>0.5 -0.5</GridOffsets><GridCS>urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS</GridCS></GridCRS></SpatialDomain></Domain><Range><Field><ows:Title>My Label</ows:Title><Identifier>Range 1</Identifier><Definition><ows:AnyValue/></Definition><InterpolationMethods><InterpolationMethod>bilinear</InterpolationMethod><Default>nearest neighbor</Default></InterpolationMethods><Axis identifier="bands"><AvailableKeys><Key>1</Key></AvailableKeys></Axis></Field></Range><SupportedCRS>urn:ogc:def:crs:EPSG::28992</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::900913</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::3857</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::4326</SupportedCRS><SupportedFormat>image/tiff</SupportedFormat></CoverageDescription><CoverageDescription><ows:Title>ro_irra_ext</ows:Title><ows:Abstract>This a result data set of a solar computation of extended Rotterdam area. It shows the sum of kWh/a per sqmeter for 2010</ows:Abstract><Identifier>ro_irra_ext</Identifier><Domain><SpatialDomain><ows:BoundingBox crs="urn:ogc:def:crs:OGC::imageCRS" dimensions="2"><ows:LowerCorner>0 0</ows:LowerCorner><ows:UpperCorner>16093 14289</ows:UpperCorner></ows:BoundingBox><ows:BoundingBox crs="urn:ogc:def:crs:EPSG::28992" dimensions="2"><ows:LowerCorner>66606.5 439287.5</ows:LowerCorner><ows:UpperCorner>74653.5 446432.5</ows:UpperCorner></ows:BoundingBox><ows:WGS84BoundingBox dimensions="2"><ows:LowerCorner>4.10024171314823 51.9359764992844</ows:LowerCorner><ows:UpperCorner>4.21909054278063 52.001415228243</ows:UpperCorner></ows:WGS84BoundingBox><GridCRS><GridBaseCRS>urn:ogc:def:crs:EPSG::28992</GridBaseCRS><GridType>urn:ogc:def:method:WCS:1.1:2dSimpleGrid</GridType><GridOrigin>66606.75 446432.25</GridOrigin><GridOffsets>0.5 -0.5</GridOffsets><GridCS>urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS</GridCS></GridCRS></SpatialDomain></Domain><Range><Field><ows:Title>My Label</ows:Title><Identifier>Range 1</Identifier><Definition><ows:AnyValue/></Definition><InterpolationMethods><InterpolationMethod>bilinear</InterpolationMethod><Default>nearest neighbor</Default></InterpolationMethods><Axis identifier="bands"><AvailableKeys><Key>1</Key></AvailableKeys></Axis></Field></Range><SupportedCRS>urn:ogc:def:crs:EPSG::28992</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::900913</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::3857</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::4326</SupportedCRS><SupportedFormat>image/tiff</SupportedFormat></CoverageDescription></CoverageDescriptions>';
+
+        res1_1_0 = parser.read(text);
+
+        // Most of the parsing is handled by other objects, so not much actually requires testing here
+        t.ok(!res1_1_0.error, "Parsing XML generated no errors");
+
+        var count = 0;
+        for (var k in res1_1_0.coverageDescriptions) {
+            if (res1_1_0.coverageDescriptions.hasOwnProperty(k)) {
+               count++;
+            }
+        }
+
+        t.eq(count, 4, "number of coverages correct");
+        t.eq(res1_1_0.coverageDescriptionKeys.length, 4, "number of coverage keys correct");
+        t.eq(res1_1_0.version, "1.1.0", "version correct");
+
+        var metadata = res1_1_0.coverageDescriptions.ro_dsm;
+
+        t.eq(metadata.identifier, "ro_dsm", "correct identifier");
+        t.eq(metadata.title, "RO DSM", "correct title");
+        t.eq(metadata.abstract, "Digital Surface Model (DSM) raster data set of inner city Rotterdam", "correct abstract");
+        t.eq(metadata.supportedCRSs.length, 4, "correct number of supported CRSs");
+        t.eq(metadata.supportedCRSs[3], "urn:ogc:def:crs:EPSG::4326", "correct value for first supported CRS");
+        t.eq(metadata.supportedFormats.length, 1, "correct number of supported formats");
+        t.eq(metadata.supportedFormats[0], "image/tiff", "correct value for first supported format");
+
+        var gridCRS = metadata.domain.spatialDomain.gridCRS;
+        t.eq(gridCRS.gridBaseCRS, "urn:ogc:def:crs:EPSG::28992", "correct gridBaseCRS");
+        t.eq(gridCRS.gridCS, "urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS", "correct gridCS");
+        t.eq(gridCRS.gridOffsets.x,  0.5, "correct gridOffsets.x");
+        t.eq(gridCRS.gridOffsets.y, -0.5, "correct gridOffsets.y");
+        t.eq(gridCRS.gridOrigin.x, 91979.25, "correct gridOrigin.x");
+        t.eq(gridCRS.gridOrigin.y, 437659.25, "correct gridOrigin.y");
+        t.eq(gridCRS.gridType, "urn:ogc:def:method:WCS:1.1:2dSimpleGrid", "correct gridType");
+
+        t.eq(metadata.nativeCRS, "urn:ogc:def:crs:EPSG::28992", "correct native CRS");
+
+        var nativeBB = metadata.domain.spatialDomain.boundingBoxes[metadata.nativeCRS];
+        t.ok(!!nativeBB, "found native bounding box");
+        t.eq(nativeBB.top,    436326,   "correct native bounding box top value");
+        t.eq(nativeBB.bottom, 437659.5, "correct native bounding box bottom value");
+        t.eq(nativeBB.left,   91979,    "correct native bounding box left value");
+        t.eq(nativeBB.right,  92617,    "correct native bounding box right value");
+
+        t.eq(metadata.supportedFormats.length, 1, "correct number of supported formats");
+        t.eq(metadata.supportedFormats[0], "image/tiff", "correct initial supported format value");
+
+        // Check consistency between 1.0.0 and 1.1.0
+        t.eq(res1_0_0.coverageDescriptions.ro_dsm.identifier, res1_1_0.coverageDescriptions.ro_dsm.identifier, "1.0.0 and 1.1.0 have same identifier");
+        t.eq(res1_0_0.coverageDescriptions.ro_dsm.title, res1_1_0.coverageDescriptions.ro_dsm.title, "1.0.0 and 1.1.0 have same title");
+        // Actual supported formats will be expressed differently (image/tiff v GTiff), so we can't easily compare directly
+        t.eq(res1_0_0.coverageDescriptions.ro_dsm.supportedFormats.length, 
+             res1_1_0.coverageDescriptions.ro_dsm.supportedFormats.length, 
+             "1.0.0 and 1.1.0 have same supportedFormats.length");
+
+        // Use substr here to account for differing CRS formats
+        t.eq(res1_0_0.coverageDescriptions.ro_dsm.nativeCRS.substr(-5),    // EPSG:28992
+             res1_1_0.coverageDescriptions.ro_dsm.nativeCRS.substr(-5),    // urn:ogc:def:crs:EPSG::28992
+             "1.0.0 and 1.1.0 have same native crs");
+        t.eq(res1_0_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_0_0.coverageDescriptions.ro_dsm.nativeCRS].top, 
+             res1_1_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_1_0.coverageDescriptions.ro_dsm.nativeCRS].top, 
+             "1.0.0 and 1.1.0 have same native bounding box top coordinate");
+        t.eq(res1_0_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_0_0.coverageDescriptions.ro_dsm.nativeCRS].bottom, 
+             res1_1_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_1_0.coverageDescriptions.ro_dsm.nativeCRS].bottom, 
+             "1.0.0 and 1.1.0 have same native bounding box bottom coordinate");
+        t.eq(res1_0_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_0_0.coverageDescriptions.ro_dsm.nativeCRS].left, 
+             res1_1_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_1_0.coverageDescriptions.ro_dsm.nativeCRS].left, 
+             "1.0.0 and 1.1.0 have same native bounding box left coordinate");
+        t.eq(res1_0_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_0_0.coverageDescriptions.ro_dsm.nativeCRS].right, 
+             res1_1_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_1_0.coverageDescriptions.ro_dsm.nativeCRS].right, 
+             "1.0.0 and 1.1.0 have same native bounding box right coordinate");
+    }
+
+    </script> 
+</head> 
+<body> </body>
+</html>
