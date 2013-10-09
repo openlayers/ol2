@@ -46,6 +46,15 @@
         t.eq( lonlat.toShortString(), "5, 6", "lonlat.toShortString() returns correctly");
     }
 
+    function test_LonLat_toPoint(t){
+        t.plan( 3 );
+        lonlat = new OpenLayers.LonLat(5,6);
+        var point = lonlat.toPoint();
+        t.ok(point instanceof OpenLayers.Geometry.Point, "lonlat.toPoint() returns point object");
+        t.eq(point.x, 5, 'x is set correctly');
+        t.eq(point.y, 6, 'x is set correctly');
+    }
+
     function test_LonLat_clone(t) {
         t.plan( 3 );
         oldLonLat = new OpenLayers.LonLat(5,6);
