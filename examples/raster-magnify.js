@@ -1,7 +1,8 @@
 var marble = new OpenLayers.Layer.WMS(
     "Blue Marble",
-    "/geoserver/wms",
-    {layers: "topp:bluemarble", format: "image/png"}
+    "http://demo.opengeo.org/geoserver/wms",
+    {layers: "nasa:bluemarble", format: "image/png"},
+    {tileOptions: {crossOriginKeyword: "anonymous"}}
 );
 
 var data = OpenLayers.Raster.Composite.fromLayer(marble);

@@ -18,10 +18,10 @@ var streets = new OpenLayers.Layer.XYZ(
 var imagery = new OpenLayers.Layer.XYZ(
     "Imagery",
     [
-        "http://oatile1.mqcdn.com/naip/${z}/${x}/${y}.png",
-        "http://oatile2.mqcdn.com/naip/${z}/${x}/${y}.png",
-        "http://oatile3.mqcdn.com/naip/${z}/${x}/${y}.png",
-        "http://oatile4.mqcdn.com/naip/${z}/${x}/${y}.png"
+        "http://oatile1.mqcdn.com/tiles/1.0.0/sat/${z}/${x}/${y}.png",
+        "http://oatile2.mqcdn.com/tiles/1.0.0/sat/${z}/${x}/${y}.png",
+        "http://oatile3.mqcdn.com/tiles/1.0.0/sat/${z}/${x}/${y}.png",
+        "http://oatile4.mqcdn.com/tiles/1.0.0/sat/${z}/${x}/${y}.png"
     ],
     {
         attribution: "Tiles by <a href='http://open.mapquest.co.uk/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
@@ -32,16 +32,16 @@ var imagery = new OpenLayers.Layer.XYZ(
 
 var ned = new OpenLayers.Layer.WMS(
     "Elevation",
-    "/geoserver/wms",
+    "http://demo.opengeo.org/geoserver/wms",
     {layers: "usgs:ned", format: "image/png", transparent: true},
-    {singleTile: true, isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false}
+    {singleTile: true, isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false, tileOptions: {crossOriginKeyword: "anonymous"}}
 );
 
 var nlcd = new OpenLayers.Layer.WMS(
     "Land Cover",
-    "/geoserver/wms",
+    "http://demo.opengeo.org/geoserver/wms",
     {layers: "usgs:nlcd", format: "image/png8", transparent: true},
-    {singleTile: true, isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false}
+    {singleTile: true, isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false, tileOptions: {crossOriginKeyword: "anonymous"}}
 );
 
 var map = new OpenLayers.Map({

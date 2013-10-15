@@ -1,7 +1,8 @@
 var marble = new OpenLayers.Layer.WMS(
     "Blue Marble",
     "http://demo.opengeo.org/geoserver/wms",
-    {layers: "topp:bluemarble", format: "image/png"}
+    {layers: "nasa:bluemarble", format: "image/png"},
+    {tileOptions: {crossOriginKeyword: "anonymous"}}
 );
 
 var vector = new OpenLayers.Layer.Vector("Vector Features");

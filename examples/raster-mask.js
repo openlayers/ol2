@@ -18,10 +18,10 @@ var streets = new OpenLayers.Layer.XYZ(
 var imagery = new OpenLayers.Layer.XYZ(
     "Imagery",
     [
-        "http://oatile1.mqcdn.com/naip/${z}/${x}/${y}.png",
-        "http://oatile2.mqcdn.com/naip/${z}/${x}/${y}.png",
-        "http://oatile3.mqcdn.com/naip/${z}/${x}/${y}.png",
-        "http://oatile4.mqcdn.com/naip/${z}/${x}/${y}.png"
+        "http://oatile1.mqcdn.com/tiles/1.0.0/sat/${z}/${x}/${y}.png",
+        "http://oatile2.mqcdn.com/tiles/1.0.0/sat/${z}/${x}/${y}.png",
+        "http://oatile3.mqcdn.com/tiles/1.0.0/sat/${z}/${x}/${y}.png",
+        "http://oatile4.mqcdn.com/tiles/1.0.0/sat/${z}/${x}/${y}.png"
     ],
     {
         attribution: "Tiles by <a href='http://open.mapquest.co.uk/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
@@ -32,9 +32,9 @@ var imagery = new OpenLayers.Layer.XYZ(
 
 var nlcd = new OpenLayers.Layer.WMS(
     "Land Cover",
-    "/geoserver/wms",
+    "http://demo.opengeo.org/geoserver/wms",
     {layers: "usgs:nlcd", format: "image/png8"},
-    {singleTile: true, isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false}
+    {singleTile: true, isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false, tileOptions: {crossOriginKeyword: "anonymous"}}
 );
 
 
@@ -42,7 +42,7 @@ var tracts = new OpenLayers.Layer.Vector("Census Tracts", {
     strategies: [new OpenLayers.Strategy.BBOX()],
     projection: new OpenLayers.Projection("EPSG:900913"),
     protocol: new OpenLayers.Protocol.WFS({
-        url: "/geoserver/wfs",
+        url: "http://demo.opengeo.org/geoserver/wfs",
         version: "1.1.0",
         featureNS: "http://www.usgs.gov/",
         srsName: "EPSG:900913",
