@@ -102,7 +102,6 @@ var map;
         units: "m",
         maxResolution: 38.21851413574219,
         numZoomLevels: 8,
-        tileManager: new OpenLayers.TileManager(),
         controls: [
             new OpenLayers.Control.Navigation(),
             new OpenLayers.Control.Attribution(),
@@ -168,7 +167,7 @@ var map;
                 {layer:"lb"}, defaults
             ));
             labels = format.createLayer(caps, OpenLayers.Util.applyDefaults(
-                {layer:"beschriftung", isBaseLayer: false},
+                {layer:"beschriftung", isBaseLayer: false, transitionEffect: 'map-resize'},
                 defaults
             ));
             map.addLayers([fmzk, aerial, labels]);
@@ -217,7 +216,8 @@ var map;
         ],
         layer: "beschriftung",
         style: "normal",
-        isBaseLayer: false
+        isBaseLayer: false,
+        transitionEffect: 'map-resize'
     },
     defaults));
     map.addLayers([fmzk, aerial, labels]);
