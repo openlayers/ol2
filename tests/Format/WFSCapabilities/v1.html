@@ -21,7 +21,7 @@
     }
     
     function test_read(t) {
-        t.plan(37);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
+        t.plan(41);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
        
         var parser = new OpenLayers.Format.WFSCapabilities();
 
@@ -52,6 +52,10 @@
         t.eq(ft[0]["name"], "poly_landmarks", "name of first feature type correct");
         t.eq(ft[0]["featureNS"], "http://www.census.gov", "ns of first feature type correct");
         t.eq(ft[0]["srs"], "EPSG:4326", "srs of first feature type correct");
+        t.eq(ft[0]["latLongBoundingBox"][0], -74.047185, "latLongBoundingBox[0] (minx) is correct");
+        t.eq(ft[0]["latLongBoundingBox"][1], 40.679648,  "latLongBoundingBox[1] (miny) is correct");
+        t.eq(ft[0]["latLongBoundingBox"][2], -73.90782,  "latLongBoundingBox[2] (maxx) is correct");
+        t.eq(ft[0]["latLongBoundingBox"][3], 40.882078,  "latLongBoundingBox[3] (maxy) is correct");
 
         var service = res.service;
         t.eq(service.name, 'WFS', "service name correct");
