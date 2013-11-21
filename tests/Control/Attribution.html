@@ -40,34 +40,20 @@
     }
 
     function test_Control_Attribution_object (t) {
-        t.plan(2);
+        t.plan(1);
 
         control = new OpenLayers.Control.Attribution();
         map = new OpenLayers.Map("map");
         map.addControl(control);
 
         control.layerTemplate = '<a href="${href}">${title}</a>';
-        map.addLayer(new OpenLayers.Layer("name",{
-            attribution: {
-                title: "test",
-                href: "http://test.org",
-                logo: {
-                    format: "image/png",
-                    width: 10,
-                    height: 10,
-                    href: "http://test.org/img.jpg"
-                }
-            }
-        }));
-        t.eq(control.div.innerHTML, '<a href="http://test.org">test</a>', "Attribution correct with full attribution object.");
-
-        map.removeLayer(map.layers[0]);
         map.addLayer(new OpenLayers.Layer("name", {
             attribution: {
-                title: "test2"
+                title: "test",
+                href: "http://test.org"
             }
         }));
-        t.eq(control.div.innerHTML, 'test2', "Attribution correct with incomplete attribution object.");
+        t.eq(control.div.innerHTML, '<a href="http://test.org">test</a>', "Attribution is correct with attribution object.");
     }
 
     function test_Control_Attribution_no_duplicates(t) {
