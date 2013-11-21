@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>Multiple Google Layers Acceptance Test</title>
-        <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ"></script> 
+        <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
         <script src="../../lib/OpenLayers.js"></script>
         <link rel="stylesheet" href="../../theme/default/style.css" type="text/css" />
         <link rel="stylesheet" href="../../theme/default/google.css" type="text/css" />
@@ -81,13 +81,13 @@
         
             var map1 = new OpenLayers.Map("map1");
             var streets1 = new OpenLayers.Layer.Google("Streets", {
-                type: G_NORMAL_MAP
+                type: google.maps.MapTypeId.ROADMAP
             });
             var sat1 = new OpenLayers.Layer.Google("Imagery", {
-                type: G_SATELLITE_MAP
+                type: google.maps.MapTypeId.SATELLITE
             });
             var topo1 = new OpenLayers.Layer.Google("Topography", {
-                type: G_PHYSICAL_MAP
+                type: google.maps.MapTypeId.TERRAIN
             });
             var dummy1 = new OpenLayers.Layer("Dummy Layer", {
                 isBaseLayer: true
@@ -98,13 +98,13 @@
         
             var map2 = new OpenLayers.Map("map2");
             var streets2 = new OpenLayers.Layer.Google("Streets", {
-                type: G_NORMAL_MAP
+                type: google.maps.MapTypeId.ROADMAP
             });
             var sat2 = new OpenLayers.Layer.Google("Imagery", {
-                type: G_SATELLITE_MAP
+                type: google.maps.MapTypeId.SATELLITE
             });
             var topo2 = new OpenLayers.Layer.Google("Topography", {
-                type: G_PHYSICAL_MAP
+                type: google.maps.MapTypeId.TERRAIN
             });
             var dummy2 = new OpenLayers.Layer("Dummy Layer", {
                 isBaseLayer: true
