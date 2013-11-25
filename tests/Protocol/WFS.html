@@ -12,7 +12,7 @@
             featureType: "type"
         });
         t.ok(protocol instanceof OpenLayers.Protocol.WFS.v1_0_0,
-             "initialize returns instance of default versioned protocol")
+             "initialize returns instance of default versioned protocol");
 
         var protocol = new OpenLayers.Protocol.WFS({
             url: "http://some.url.org",
@@ -21,7 +21,16 @@
             version: "1.1.0"
         });
         t.ok(protocol instanceof OpenLayers.Protocol.WFS.v1_1_0,
-             "initialize returns instance of custom versioned protocol")
+             "initialize returns instance of custom versioned protocol");
+        
+        var protocol = new OpenLayers.Protocol.WFS({
+            url: "http://some.url.org",
+            featureNS: "http://namespace.org",
+            featureType: "type",
+            version: "2.0.0"
+        });
+        t.ok(protocol instanceof OpenLayers.Protocol.WFS.v2_0_0,
+             "initialize returns instance of custom versioned protocol");
     }
 
     function test_setGeometryName(t) {

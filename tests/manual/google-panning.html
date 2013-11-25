@@ -31,7 +31,7 @@
 
     </style>
 
-    <script src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ'></script>
+    <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
 
     <script src="../../lib/OpenLayers.js"></script>
     <script type="text/javascript">
@@ -45,7 +45,7 @@
             evenmap = new OpenLayers.Map('evenmap');
             var evenlayer = new OpenLayers.Layer.Google(
                 "Imagery",
-                {type: G_SATELLITE_MAP}
+                {type: google.maps.MapTypeId.SATELLITE}
             );
             evenmap.addLayer(evenlayer);
             var epc = document.getElementById("epc");
@@ -71,7 +71,7 @@
             oddmap = new OpenLayers.Map('oddmap');
             var oddlayer = new OpenLayers.Layer.Google(
                 "Imagery",
-                {type: G_SATELLITE_MAP}
+                {type: google.maps.MapTypeId.SATELLITE}
             );
             oddmap.addLayer(oddlayer);
             var opc = document.getElementById("opc");
