@@ -44,6 +44,7 @@ import sys
 SUFFIX_JAVASCRIPT = ".js"
 
 RE_REQUIRE = "@requires?:?\s+(\S*)\s*\n"  # TODO: Ensure in comment?
+RE_INCLUDE = "@include?:?\s+(\S*)\s*\n"  # TODO: Ensure in comment?
 
 
 class MissingImport(Exception):
@@ -70,6 +71,16 @@ class SourceFile:
             else:
                 self.requiredFiles.append(filename)
 
+        self.includeFiles = []
+        # All required files are included
+        self.includeFiles.extend(self.requiredFiles)
+        auxReq = re.findall(RE_INCLUDE, self.source)
+        for filename in auxReq:
+            if undesired(filename, cfgExclude):
+                self.excludedFiles.append(filename)
+            else:
+                self.includeFiles.append(filename)
+
         self.requiredBy = []
 
     def _getRequirements(self):
@@ -80,6 +91,15 @@ class SourceFile:
         return self.requiredFiles
 
     requires = property(fget=_getRequirements, doc="")
+
+    def _getIncludes(self):
+        """
+        Extracts the dependencies specified in the source code and returns
+        a list of them.
+        """
+        return self.includeFiles
+
+    includes = property(fget=_getIncludes, doc="")
 
 
 def usage(filename):
@@ -202,7 +222,7 @@ def run(sourceDirectory, outputFilename=None, configFile=None,
         resolution_pass += 1
 
         for filepath, info in files.items():
-            for path in info.requires:
+            for path in info.includes:
                 if path not in files:
                     complete = False
                     fullpath = os.path.join(sourceDirectory, path).strip()
