@@ -128,6 +128,7 @@
                  "vertex deletion: onModification called with the proper feature");
         };
         // run the above four tests twice
+        control._lastVertex = point;
         control.handleKeypress({keyCode:delKey, xy: "foo"});
         control.handleKeypress({keyCode:dKey});
         t.eq(control.feature.state, OpenLayers.State.UPDATE, "feature state set to update");
@@ -587,6 +588,7 @@
         };
         control.feature = poly;
         control.vertices = [point];
+        control._lastVertex = point;
         layer.events.on({"featuremodified": function(event) {
             t.eq(event.feature.id, poly.id, "featuremodified triggered");
         }});
