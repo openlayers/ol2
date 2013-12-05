@@ -287,6 +287,8 @@
         }, {
             got: geoms[0].distanceTo(geoms[1], {details: true}),
             expected: {
+                index: 1,
+                indexDistance: 3,
                 distance: Math.sqrt(5),
                 x0: 1, y0: 2,
                 x1: 0, y1: 0
