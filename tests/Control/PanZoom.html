@@ -61,7 +61,7 @@
         } else {
             t.plan(35);
             t.open_window( "Control/PanZoom.html", function( wnd ) {
-                t.delay_call( 3, function() {
+                t.delay_call(5, function() {
                     var flag;
                     function setFlag(evt) {
                         flag[evt.type] = true;
@@ -145,7 +145,7 @@
                     resetFlags();
                     });
                 });
-            });
+            }, 30);
         }
     }
 
