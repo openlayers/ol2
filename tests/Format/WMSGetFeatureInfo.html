@@ -71,7 +71,7 @@
     }
 
     function test_read_msGMLOutput(t) {
-        t.plan(13);
+        t.plan(14);
 
         var parser = new OpenLayers.Format.WMSGetFeatureInfo();
 
@@ -243,6 +243,9 @@
 
         t.eq((features[0].geometry instanceof OpenLayers.Geometry.MultiLineString), true,
             "Parsed geometry is of type multi line string");
+
+        t.eq(features[0].attributes, {'OGR_FID': '203327'},
+             "Attributes values are correct, and hasn't additional attribute");
 
     }
 
