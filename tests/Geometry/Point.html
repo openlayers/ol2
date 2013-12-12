@@ -24,6 +24,28 @@
         t.eq( point.lat, null, "point.lat is not set");
     }
 
+    function test_Point_constructor_3D (t) {
+        t.plan( 9 );
+
+      //empty
+        point = new OpenLayers.Geometry.Point();
+        t.ok( point instanceof OpenLayers.Geometry.Point, "new OpenLayers.Geometry.Point returns point object" );
+        t.eq( point.CLASS_NAME, "OpenLayers.Geometry.Point", "point.CLASS_NAME is set correctly");
+
+      //valid
+        var x = 10;
+        var y = 20;
+        var z = 30;
+        point = new OpenLayers.Geometry.Point(x, y, z);
+        t.ok( point instanceof OpenLayers.Geometry.Point, "new OpenLayers.Geometry.Point returns point object" );
+        t.eq( point.CLASS_NAME, "OpenLayers.Geometry.Point", "point.CLASS_NAME is set correctly");
+        t.eq( point.x, x, "point.x is set correctly");
+        t.eq( point.y, y, "point.y is set correctly");
+        t.eq( point.z, z, "point.y is set correctly");
+        t.eq( point.lon, null, "point.lon is not set");
+        t.eq( point.lat, null, "point.lat is not set");
+    }
+
     function test_Point_calculateBounds (t) {
         t.plan(4);
 
@@ -66,6 +88,23 @@
         
     }
     
+    function test_Point_transform_string_3D(t) {
+        t.plan(5);
+
+        var x = 10;
+        var y = 20;
+        var z = 30;
+        point = new OpenLayers.Geometry.Point(x, y, z);
+        point.calculateBounds();
+        t.ok( point.bounds != null, "bounds calculated by calcBounds" );
+        point.transform("EPSG:4326", "EPSG:900913");
+        t.eq(point.bounds, null, "Point bounds cleared after transform");
+        t.eq(point.x.toFixed(2), "1113194.91", "transformed x");
+        t.eq(point.y.toFixed(2), "2273030.93", "transformed y");
+        t.eq(point.z, 30, "untouched z");
+        
+    }
+    
     function test_Point_distanceTo(t) {
         t.plan(7);
 
@@ -102,6 +141,18 @@
         
     }
 
+    function test_Point_toString_3D(t) {
+        t.plan(1);
+
+        var x = 10;
+        var y = 20;
+        var z = 30;
+        point = new OpenLayers.Geometry.Point(x, y, z);
+        t.eq(point.toString(), "POINT(" + x + " " + y + " " + z + ")",
+             "toString() returns WKT" );
+        
+    }
+
     function test_Point_toString_no_wkt(t) {
         t.plan(1);
         
@@ -130,6 +181,25 @@
         point.move(dx, dy);
         t.eq(point.x, x + dx, "move() correctly modifies x");
         t.eq(point.y, y + dy, "move() correctly modifies y");
+        
+        t.ok(point.bounds == null, "bounds is cleared after a move()");
+    }
+
+    function test_Point_move_3D(t) {
+        t.plan(4);
+        
+        var x = 10;
+        var y = 20;
+        var z = 30;
+        point = new OpenLayers.Geometry.Point(x, y, z);
+        
+        var dx = 10 * Math.random();
+        var dy = 10 * Math.random();
+        point.bounds = "foo";
+        point.move(dx, dy);
+        t.eq(point.x, x + dx, "move() correctly modifies x");
+        t.eq(point.y, y + dy, "move() correctly modifies y");
+        t.eq(point.z, z, "move() doesn\'t touch z");
         
         t.ok(point.bounds == null, "bounds is cleared after a move()");
     }
@@ -214,6 +284,27 @@
              "equals() returns false for a geometry with offset y");
     }
     
+    function test_Point_equals_3D(t) {
+        t.plan(4);
+        
+        var x = Math.random() * 100;
+        var y = Math.random() * 100;
+        var z = Math.random() * 100;
+        var geometry = new OpenLayers.Geometry.Point(x, y, z);
+        var equal = new OpenLayers.Geometry.Point(x, y, z);
+        var offX = new OpenLayers.Geometry.Point(x + 1, y, z);
+        var offY = new OpenLayers.Geometry.Point(x, y + 1, z);
+        var offZ = new OpenLayers.Geometry.Point(x, y, z + 1);
+        t.ok(geometry.equals(equal),
+             "equals() returns true for a geometry with equivalent coordinates");
+        t.ok(!geometry.equals(offX),
+             "equals() returns false for a geometry with offset x");
+        t.ok(!geometry.equals(offY),
+             "equals() returns false for a geometry with offset y");
+        t.ok(!geometry.equals(offZ),
+             "equals() returns false for a geometry with offset z");
+    }
+    
     function test_getVertices(t) {
         t.plan(3);
         
@@ -234,6 +325,21 @@
         t.ok(clone instanceof OpenLayers.Geometry.Point,
              "clone() creates an OpenLayers.Geometry.Point");
         t.ok(geometry.equals(clone), "clone has equivalent coordinates");
+    }
+    
+    function test_Point_clone_3D(t) {
+        t.plan(3);
+        
+        var x = Math.random() * 100;
+        var y = Math.random() * 100;
+        var z = Math.random() * 100;
+        var geometry = new OpenLayers.Geometry.Point(x, y, z);
+        var clone = geometry.clone();
+        t.ok(clone instanceof OpenLayers.Geometry.Point,
+             "clone() creates an OpenLayers.Geometry.Point");
+        t.ok(geometry.equals(clone), "clone has equivalent coordinates");
+        t.ok(z === clone.z,
+             "clone() copies z coordinate");
     }
     
 

@@ -104,10 +104,10 @@
     function test_LinearRing_getLength(t) {
         t.plan(1);
         var components = [
-            new OpenLayers.Geometry.Point(0,0), 
-            new OpenLayers.Geometry.Point(0,10),
-            new OpenLayers.Geometry.Point(10,10), 
-            new OpenLayers.Geometry.Point(10,0)
+            new OpenLayers.Geometry.Point(0,0,0), 
+            new OpenLayers.Geometry.Point(0,10,20),
+            new OpenLayers.Geometry.Point(10,10,10), 
+            new OpenLayers.Geometry.Point(10,0,0)
         ];
         var ring = new OpenLayers.Geometry.LinearRing(components);
         t.eq(ring.getLength(), 40, "getLength returns the correct perimiter");

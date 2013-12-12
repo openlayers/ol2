@@ -3,6 +3,7 @@
   <script src="../OLLoader.js"></script>
   <script type="text/javascript">
     var point = new OpenLayers.Geometry.Point(10, 15);
+    var point3D = new OpenLayers.Geometry.Point(10, 15, 20);
      
         
     function test_MultiPoint_constructor (t) {
@@ -21,17 +22,19 @@
     }
 
     function test_MultiPoint_move(t) {
-        t.plan(2);
+        t.plan(3);
         
-        var multipoint = new OpenLayers.Geometry.MultiPoint([point]);
-        var x = point.x;
-        var y = point.y;
+        var multipoint = new OpenLayers.Geometry.MultiPoint([point3D]);
+        var x = point3D.x;
+        var y = point3D.y;
+        var z = point3D.z;
         
         var dx = 10 * Math.random();
         var dy = 10 * Math.random();
         multipoint.move(dx, dy);
         t.eq(multipoint.components[0].x, x + dx, "move() correctly modifies x");
         t.eq(multipoint.components[0].y, y + dy, "move() correctly modifies y");
+        t.eq(multipoint.components[0].z, z, "move() doesn't touch z");
     }
     
     function test_distanceTo(t) {
@@ -89,24 +92,29 @@
     }
 
     function test_MultiPoint_equals(t) {
-        t.plan(3);
+        t.plan(4);
         
         var x = Math.random() * 100;
         var y = Math.random() * 100;
+        var z = Math.random() * 100;
         var geometry = new OpenLayers.Geometry.MultiPoint(
-                                        [new OpenLayers.Geometry.Point(x, y)]);
+                                        [new OpenLayers.Geometry.Point(x, y, z)]);
         var equal =  new OpenLayers.Geometry.MultiPoint(
-                                        [new OpenLayers.Geometry.Point(x, y)]);        
+                                        [new OpenLayers.Geometry.Point(x, y, z)]);        
         var offX =  new OpenLayers.Geometry.MultiPoint(
-                                        [new OpenLayers.Geometry.Point(x + 1, y)]);        
+                                        [new OpenLayers.Geometry.Point(x + 1, y, z)]);        
         var offY =  new OpenLayers.Geometry.MultiPoint(
-                                        [new OpenLayers.Geometry.Point(x, y + 1)]);        
+                                        [new OpenLayers.Geometry.Point(x, y + 1, z)]); 
+        var offZ =  new OpenLayers.Geometry.MultiPoint(
+                                        [new OpenLayers.Geometry.Point(x, y, z + 1)]);                                            
         t.ok(geometry.equals(equal),
              "equals() returns true for a geometry with equivalent coordinates");
         t.ok(!geometry.equals(offX),
              "equals() returns false for a geometry with offset x");
         t.ok(!geometry.equals(offY),
              "equals() returns false for a geometry with offset y");
+        t.ok(!geometry.equals(offZ),
+             "equals() returns false for a geometry with offset z");
     }
     
     function test_MultiPoint_clone(t) {

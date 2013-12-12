@@ -71,6 +71,17 @@
 
     }    
     function test_Format_GML_read_point_geom(t) {
+        t.plan(4);
+        
+        var point = shell_start + geoms['point'] + shell_end;
+        var parser = new OpenLayers.Format.GML();
+        data = parser.read(point);
+        t.eq(data[0].geometry.CLASS_NAME, "OpenLayers.Geometry.Point", "Point GML returns correct classname");
+        t.eq(data[0].geometry.x, 1, "x coord correct");
+        t.eq(data[0].geometry.y, 2, "y coord correct");
+        t.eq(data[0].geometry.z, 3, "z coord correct");
+    }
+    function test_Format_GML_read_point_geom_3D(t) {
         t.plan(3);
         
         var point = shell_start + geoms['point'] + shell_end;
@@ -92,6 +103,20 @@
         t.eq(data[0].geometry.components[1].x, 4, "second x coord correct");
         t.eq(data[0].geometry.components[1].y, 5, "second y coord correct");
     }    
+    function test_Format_GML_read_linestring_geom_3D(t) {
+        t.plan(7);
+        
+        var line = shell_start + geoms['linestring'] + shell_end;
+        var parser = new OpenLayers.Format.GML();
+        data = parser.read(line);
+        t.eq(data[0].geometry.CLASS_NAME, "OpenLayers.Geometry.LineString", "LineString GML returns correct classname");
+        t.eq(data[0].geometry.components[0].x, 1, "first x coord correct");
+        t.eq(data[0].geometry.components[0].y, 2, "first y coord correct");
+        t.eq(data[0].geometry.components[0].z, 3, "first z coord correct");
+        t.eq(data[0].geometry.components[1].x, 4, "second x coord correct");
+        t.eq(data[0].geometry.components[1].y, 5, "second y coord correct");
+        t.eq(data[0].geometry.components[1].z, 6, "second z coord correct");
+    }       
     function test_Format_GML_read_polygon_geom(t) {
         t.plan(7);
         
@@ -103,6 +128,22 @@
         t.eq(data[0].geometry.components[0].components[0].y, 2, "first y coord correct");
         t.eq(data[0].geometry.components[0].components[1].x, 4, "second x coord correct");
         t.eq(data[0].geometry.components[0].components[1].y, 5, "second y coord correct");
+        t.eq(data[0].geometry.components[0].components.length, 4, "coords length correct");
+        t.eq(data[0].geometry.components.length, 1, "rings length correct");
+    }   
+    function test_Format_GML_read_polygon_geom_3D(t) {
+        t.plan(9);
+        
+        var polygon = shell_start + geoms['polygon'] + shell_end;
+        var parser = new OpenLayers.Format.GML();
+        data = parser.read(polygon);
+        t.eq(data[0].geometry.CLASS_NAME, "OpenLayers.Geometry.Polygon", "Polygon GML returns correct classname");
+        t.eq(data[0].geometry.components[0].components[0].x, 1, "first x coord correct");
+        t.eq(data[0].geometry.components[0].components[0].y, 2, "first y coord correct");
+        t.eq(data[0].geometry.components[0].components[0].z, 3, "first z coord correct");
+        t.eq(data[0].geometry.components[0].components[1].x, 4, "second x coord correct");
+        t.eq(data[0].geometry.components[0].components[1].y, 5, "second y coord correct");
+        t.eq(data[0].geometry.components[0].components[1].z, 6, "second z coord correct");
         t.eq(data[0].geometry.components[0].components.length, 4, "coords length correct");
         t.eq(data[0].geometry.components.length, 1, "rings length correct");
     }   
@@ -416,16 +457,16 @@
     }    
     var shell_end = '</feature:geometry></feature:features></gml:featureMember></wfs:FeatureCollection>';
     var serialize_geoms = {
-        'point': '<gml:Point><gml:coordinates decimal="." cs="," ts=" ">1,2</gml:coordinates></gml:Point>',
-        'linestring': '<gml:LineString><gml:coordinates decimal="." cs="," ts=" ">1,2 4,5</gml:coordinates></gml:LineString>',
-        'polygon': '<gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates decimal="." cs="," ts=" ">1,2 4,5 3,6 1,2</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon>',
+        'point': '<gml:Point><gml:coordinates decimal="." cs="," ts=" ">1,2,3</gml:coordinates></gml:Point>',
+        'linestring': '<gml:LineString><gml:coordinates decimal="." cs="," ts=" ">1,2,3 4,5,6</gml:coordinates></gml:LineString>',
+        'polygon': '<gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates decimal="." cs="," ts=" ">1,2,3 4,5,6 3,6,4 1,2,3</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon>',
         'multipoint': '<gml:MultiPoint><gml:pointMember><gml:Point><gml:coordinates decimal="." cs="," ts=" ">1,2</gml:coordinates></gml:Point></gml:pointMember><gml:pointMember><gml:Point><gml:coordinates decimal="." cs="," ts=" ">4,5</gml:coordinates></gml:Point></gml:pointMember></gml:MultiPoint>',
         'multilinestring': '<gml:MultiLineString><gml:lineStringMember><gml:LineString><gml:coordinates decimal="." cs="," ts=" ">1,2 4,5</gml:coordinates></gml:LineString></gml:lineStringMember><gml:lineStringMember><gml:LineString><gml:coordinates decimal="." cs="," ts=" ">11,12 14,15</gml:coordinates></gml:LineString></gml:lineStringMember></gml:MultiLineString>'
     };
     var geoms = {
         'point': '<gml:Point><gml:coordinates>1,2,3</gml:coordinates></gml:Point>',
         'linestring': '<gml:LineString><gml:coordinates>1,2,3 4,5,6</gml:coordinates></gml:LineString>',
-        'polygon': '<gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>1,2 4,5 3,6 1,2</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon>',
+        'polygon': '<gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>1,2,3 4,5,6 3,6,4 1,2,3</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon>',
         'polygon_with_holes': '<gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>1,2 4,5 3,6 1,2</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs><gml:innerBoundaryIs><gml:LinearRing><gml:coordinates>11,12 14,15 13,16 11,12</gml:coordinates></gml:LinearRing></gml:innerBoundaryIs></gml:Polygon>',
         'multipoint': '<gml:MultiPoint><gml:Point><gml:coordinates>1,2,3</gml:coordinates></gml:Point><gml:Point><gml:coordinates>4,5,6</gml:coordinates></gml:Point></gml:MultiPoint>',
         'multilinestring': '<gml:MultiLineString><gml:LineString><gml:coordinates>1,2,3 4,5,6</gml:coordinates></gml:LineString><gml:LineString><gml:coordinates>11,12,13 14,15,16</gml:coordinates></gml:LineString></gml:MultiLineString>',
@@ -439,9 +480,9 @@
 //
     
     var serialize_geoms_yx = {
-        'point': '<gml:Point><gml:coordinates decimal="." cs="," ts=" ">2,1</gml:coordinates></gml:Point>',
-        'linestring': '<gml:LineString><gml:coordinates decimal="." cs="," ts=" ">2,1 5,4</gml:coordinates></gml:LineString>',
-        'polygon': '<gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates decimal="." cs="," ts=" ">2,1 5,4 6,3 2,1</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon>',
+        'point': '<gml:Point><gml:coordinates decimal="." cs="," ts=" ">2,1,3</gml:coordinates></gml:Point>',
+        'linestring': '<gml:LineString><gml:coordinates decimal="." cs="," ts=" ">2,1,3 5,4,6</gml:coordinates></gml:LineString>',
+        'polygon': '<gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates decimal="." cs="," ts=" ">2,1,3 5,4,6 6,3,4 2,1,3</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon>',
         'multipoint': '<gml:MultiPoint><gml:pointMember><gml:Point><gml:coordinates decimal="." cs="," ts=" ">2,1</gml:coordinates></gml:Point></gml:pointMember><gml:pointMember><gml:Point><gml:coordinates decimal="." cs="," ts=" ">5,4</gml:coordinates></gml:Point></gml:pointMember></gml:MultiPoint>',
         'multilinestring': '<gml:MultiLineString><gml:lineStringMember><gml:LineString><gml:coordinates decimal="." cs="," ts=" ">2,1 5,4</gml:coordinates></gml:LineString></gml:lineStringMember><gml:lineStringMember><gml:LineString><gml:coordinates decimal="." cs="," ts=" ">12,11 15,14</gml:coordinates></gml:LineString></gml:lineStringMember></gml:MultiLineString>'
     };

@@ -56,14 +56,15 @@
     }
     
     function test_LineString_move(t) {
-        t.plan(4);
+        t.plan(5);
         
-        var components = [new OpenLayers.Geometry.Point(10,15), 
+        var components = [new OpenLayers.Geometry.Point(10,15,20), 
                 new OpenLayers.Geometry.Point(0,0)];
         var line = new OpenLayers.Geometry.LineString(components);
         
         var x0 = components[0].x;
         var y0 = components[0].y;
+        var z0 = components[0].z;
         var x1 = components[1].x;
         var y1 = components[1].y;
         
@@ -73,6 +74,7 @@
         
         t.eq(line.components[0].x, x0 + dx, "move() correctly modifies first x");
         t.eq(line.components[0].y, y0 + dy, "move() correctly modifies first y");
+        t.eq(line.components[0].z, z0, "move() doesn't touch z");
         t.eq(line.components[1].x, x1 + dx, "move() correctly modifies second x");
         t.eq(line.components[1].y, y1 + dy, "move() correctly modifies second y");
     }
@@ -301,6 +303,38 @@
              "equals() returns false for a geometry with offset y");
     }
 
+    function test_LineString_equals_3D(t) {
+        t.plan(4);
+        
+        var x0 = Math.random() * 100;
+        var y0 = Math.random() * 100;
+        var z0 = Math.random() * 100;
+        var x1 = Math.random() * 100;
+        var y1 = Math.random() * 100;
+        var z1 = Math.random() * 100;
+        var point0 = new OpenLayers.Geometry.Point(x0, y0, z0);
+        var point1 = new OpenLayers.Geometry.Point(x1, y1, z1);
+        var geometry = new OpenLayers.Geometry.LineString([point0, point1]);
+        var equal = new OpenLayers.Geometry.LineString([point0, point1]);
+        var offX =  new OpenLayers.Geometry.LineString([
+                            new OpenLayers.Geometry.Point(x0 + 1, y0, z0),
+                            new OpenLayers.Geometry.Point(x1 + 1, y1, z1)]);
+        var offY =  new OpenLayers.Geometry.LineString([
+                            new OpenLayers.Geometry.Point(x0, y0 + 1, z0),
+                            new OpenLayers.Geometry.Point(x1, y1 + 1, z1)]);
+        var offZ =  new OpenLayers.Geometry.LineString([
+                            new OpenLayers.Geometry.Point(x0, y0, z0 + 1),
+                            new OpenLayers.Geometry.Point(x1, y1, z1 + 1)]);
+        t.ok(geometry.equals(equal),
+             "equals() returns true for a geometry with equivalent coordinates");
+        t.ok(!geometry.equals(offX),
+             "equals() returns false for a geometry with offset x");
+        t.ok(!geometry.equals(offY),
+             "equals() returns false for a geometry with offset y");
+        t.ok(!geometry.equals(offZ),
+             "equals() returns false for a geometry with offset z");
+    }
+
     
     function test_getVertices(t) {
         t.plan(14);
@@ -347,6 +381,24 @@
         var y1 = Math.random() * 100;
         var point0 = new OpenLayers.Geometry.Point(x0, y0);
         var point1 = new OpenLayers.Geometry.Point(x1, y1);
+        var geometry = new OpenLayers.Geometry.LineString([point0, point1]);
+        var clone = geometry.clone();
+        t.ok(clone instanceof OpenLayers.Geometry.LineString,
+             "clone() creates an OpenLayers.Geometry.LineString");
+        t.ok(geometry.equals(clone), "clone has equivalent coordinates");
+    }
+    
+    function test_LineString_clone_3D(t) {
+        t.plan(2);
+        
+        var x0 = Math.random() * 100;
+        var y0 = Math.random() * 100;
+        var z0 = Math.random() * 100;
+        var x1 = Math.random() * 100;
+        var y1 = Math.random() * 100;
+        var z1 = Math.random() * 100;
+        var point0 = new OpenLayers.Geometry.Point(x0, y0, z0);
+        var point1 = new OpenLayers.Geometry.Point(x1, y1, z1);
         var geometry = new OpenLayers.Geometry.LineString([point0, point1]);
         var clone = geometry.clone();
         t.ok(clone instanceof OpenLayers.Geometry.LineString,
