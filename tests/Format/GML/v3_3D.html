@@ -1,7 +1,7 @@
 <html> 
 <head> 
     <script src="../../OLLoader.js"></script>
-    <script src="cases.js"></script>
+    <script src="cases3D.js"></script>
     <script type="text/javascript">
 
     function test_readNode_geometry(t) {
@@ -10,7 +10,7 @@
             "v2/linestring-coord.xml", "v2/linestring-coordinates.xml",
             "v2/multipoint-coord.xml", "v2/multipoint-coordinates.xml",
             "v2/multilinestring-coord.xml", "v2/multilinestring-coordinates.xml",
-            "v3/point.xml", "v3/linestring.xml", "v3/linestring3d.xml",
+            "v3/point.xml", "v3/linestring.xml", 
             "v3/curve.xml", "v3/polygon.xml", "v3/surface.xml",
             "v3/multipoint-singular.xml", "v3/multipoint-plural.xml",
             "v3/multilinestring-singular.xml", "v3/multilinestring-plural.xml",
@@ -324,24 +324,19 @@
 --></div>
 <div id="v3/linearring.xml"><!--
 <gml:LinearRing xmlns:gml="http://www.opengis.net/gml" srsName="foo">
-    <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+    <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
 </gml:LinearRing>
 --></div>
 <div id="v3/linestring.xml"><!--
 <gml:LineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
-  <gml:posList>1 2 3 4</gml:posList>
-</gml:LineString>
---></div>
-<div id="v3/linestring3d.xml"><!--
-<gml:LineString xmlns:gml="http://www.opengis.net/gml" srsName="foo" srsDimension="3">
-  <gml:posList>1 2 3 4 5 6</gml:posList>
+  <gml:posList srsDimension="3">1 2 3 3 4 5</gml:posList>
 </gml:LineString>
 --></div>
 <div id="v3/curve.xml"><!--
 <gml:Curve xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:segments>
         <gml:LineStringSegment>
-            <gml:posList>1 2 3 4</gml:posList>
+            <gml:posList srsDimension="3">1 2 3 3 4 5</gml:posList>
         </gml:LineStringSegment>
     </gml:segments>
 </gml:Curve>
@@ -350,10 +345,10 @@
 <gml:MultiLineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:lineStringMembers>
         <gml:LineString>
-            <gml:posList>1 2 2 3</gml:posList>
+            <gml:posList srsDimension="3">1 2 3 2 3 4</gml:posList>
         </gml:LineString>
         <gml:LineString>
-            <gml:posList>3 4 4 5</gml:posList>
+            <gml:posList srsDimension="3">3 4 5 4 5 6</gml:posList>
         </gml:LineString>
     </gml:lineStringMembers>
 </gml:MultiLineString>
@@ -362,12 +357,12 @@
 <gml:MultiLineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:lineStringMember>
         <gml:LineString>
-            <gml:posList>1 2 2 3</gml:posList>
+            <gml:posList srsDimension="3">1 2 3 2 3 4</gml:posList>
         </gml:LineString>
     </gml:lineStringMember>
     <gml:lineStringMember>
         <gml:LineString>
-            <gml:posList>3 4 4 5</gml:posList>
+            <gml:posList srsDimension="3">3 4 5 4 5 6</gml:posList>
         </gml:LineString>
     </gml:lineStringMember>
 </gml:MultiLineString>
@@ -376,12 +371,12 @@
 <gml:MultiCurve xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:curveMember>
         <gml:LineString>
-            <gml:posList>1 2 2 3</gml:posList>
+            <gml:posList srsDimension="3">1 2 3 2 3 4</gml:posList>
         </gml:LineString>
     </gml:curveMember>
     <gml:curveMember>
         <gml:LineString>
-            <gml:posList>3 4 4 5</gml:posList>
+            <gml:posList srsDimension="3">3 4 5 4 5 6</gml:posList>
         </gml:LineString>
     </gml:curveMember>
 </gml:MultiCurve>
@@ -392,7 +387,7 @@
         <gml:Curve>
             <gml:segments>
                 <gml:LineStringSegment>
-                    <gml:posList>1 2 2 3</gml:posList>
+                    <gml:posList srsDimension="3">1 2 3 2 3 4</gml:posList>
                 </gml:LineStringSegment>
             </gml:segments>
         </gml:Curve>
@@ -401,7 +396,7 @@
         <gml:Curve>
             <gml:segments>
                 <gml:LineStringSegment>
-                    <gml:posList>3 4 4 5</gml:posList>
+                    <gml:posList srsDimension="3">3 4 5 4 5 6</gml:posList>
                 </gml:LineStringSegment>
             </gml:segments>
         </gml:Curve>
@@ -412,13 +407,13 @@
 <gml:MultiPoint xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:pointMembers>
         <gml:Point>
-            <gml:pos>1 2</gml:pos>
+            <gml:pos>1 2 3</gml:pos>
         </gml:Point>
         <gml:Point>
-            <gml:pos>2 3</gml:pos>
+            <gml:pos>2 3 4</gml:pos>
         </gml:Point>
         <gml:Point>
-            <gml:pos>3 4</gml:pos>
+            <gml:pos>3 4 5</gml:pos>
         </gml:Point>
     </gml:pointMembers>
 </gml:MultiPoint>
@@ -427,17 +422,17 @@
 <gml:MultiPoint xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:pointMember>
         <gml:Point>
-            <gml:pos>1 2</gml:pos>
+            <gml:pos>1 2 3</gml:pos>
         </gml:Point>
     </gml:pointMember>
     <gml:pointMember>
         <gml:Point>
-            <gml:pos>2 3</gml:pos>
+            <gml:pos>2 3 4</gml:pos>
         </gml:Point>
     </gml:pointMember>
     <gml:pointMember>
         <gml:Point>
-            <gml:pos>3 4</gml:pos>
+            <gml:pos>3 4 5</gml:pos>
         </gml:Point>
     </gml:pointMember>
 </gml:MultiPoint>
@@ -448,24 +443,24 @@
         <gml:Polygon>
             <gml:exterior>
                 <gml:LinearRing>
-                    <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                    <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
             <gml:interior>
                 <gml:LinearRing>
-                    <gml:posList>2 3 4 5 6 7 2 3</gml:posList>
+                    <gml:posList srsDimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
                 </gml:LinearRing>
             </gml:interior>    
             <gml:interior>
                 <gml:LinearRing>
-                    <gml:posList>3 4 5 6 7 8 3 4</gml:posList>
+                    <gml:posList srsDimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
                 </gml:LinearRing>
             </gml:interior>
         </gml:Polygon>
         <gml:Polygon>
             <gml:exterior>
                 <gml:LinearRing>
-                    <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                    <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
         </gml:Polygon>
@@ -478,17 +473,17 @@
         <gml:Polygon>
             <gml:exterior>
                 <gml:LinearRing>
-                    <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                    <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
             <gml:interior>
                 <gml:LinearRing>
-                    <gml:posList>2 3 4 5 6 7 2 3</gml:posList>
+                    <gml:posList srsDimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
                 </gml:LinearRing>
             </gml:interior>    
             <gml:interior>
                 <gml:LinearRing>
-                    <gml:posList>3 4 5 6 7 8 3 4</gml:posList>
+                    <gml:posList srsDimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
                 </gml:LinearRing>
             </gml:interior>
         </gml:Polygon>
@@ -497,7 +492,7 @@
         <gml:Polygon>
             <gml:exterior>
                 <gml:LinearRing>
-                    <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                    <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
         </gml:Polygon>
@@ -510,24 +505,24 @@
         <gml:Polygon>
             <gml:exterior>
                 <gml:LinearRing>
-                    <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                    <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
             <gml:interior>
                 <gml:LinearRing>
-                    <gml:posList>2 3 4 5 6 7 2 3</gml:posList>
+                    <gml:posList srsDimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
                 </gml:LinearRing>
             </gml:interior>    
             <gml:interior>
                 <gml:LinearRing>
-                    <gml:posList>3 4 5 6 7 8 3 4</gml:posList>
+                    <gml:posList srsDimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
                 </gml:LinearRing>
             </gml:interior>
         </gml:Polygon>
         <gml:Polygon>
             <gml:exterior>
                 <gml:LinearRing>
-                    <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                    <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
         </gml:Polygon>
@@ -540,17 +535,17 @@
         <gml:Polygon>
             <gml:exterior>
                 <gml:LinearRing>
-                    <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                    <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
             <gml:interior>
                 <gml:LinearRing>
-                    <gml:posList>2 3 4 5 6 7 2 3</gml:posList>
+                    <gml:posList srsDimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
                 </gml:LinearRing>
             </gml:interior>    
             <gml:interior>
                 <gml:LinearRing>
-                    <gml:posList>3 4 5 6 7 8 3 4</gml:posList>
+                    <gml:posList srsDimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
                 </gml:LinearRing>
             </gml:interior>
         </gml:Polygon>
@@ -559,7 +554,7 @@
         <gml:Polygon>
             <gml:exterior>
                 <gml:LinearRing>
-                    <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                    <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
         </gml:Polygon>
@@ -574,17 +569,17 @@
                 <gml:PolygonPatch interpolation="planar">
                     <gml:exterior>
                         <gml:LinearRing>
-                            <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                            <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                         </gml:LinearRing>
                     </gml:exterior>
                     <gml:interior>
                         <gml:LinearRing>
-                            <gml:posList>2 3 4 5 6 7 2 3</gml:posList>
+                            <gml:posList srsDimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
                         </gml:LinearRing>
                     </gml:interior>    
                     <gml:interior>
                         <gml:LinearRing>
-                            <gml:posList>3 4 5 6 7 8 3 4</gml:posList>
+                            <gml:posList srsDimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
                         </gml:LinearRing>
                     </gml:interior>
                 </gml:PolygonPatch>
@@ -597,7 +592,7 @@
                 <gml:PolygonPatch interpolation="planar">
                     <gml:exterior>
                         <gml:LinearRing>
-                            <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                            <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                         </gml:LinearRing>
                     </gml:exterior>
                 </gml:PolygonPatch>
@@ -608,24 +603,24 @@
 --></div>
 <div id="v3/point.xml"><!--
 <gml:Point xmlns:gml="http://www.opengis.net/gml" srsName="foo">
-  <gml:pos>1 2</gml:pos>
+  <gml:pos>1 2 3</gml:pos>
 </gml:Point>
 --></div>
 <div id="v3/polygon.xml"><!--
 <gml:Polygon xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:exterior>
         <gml:LinearRing>
-            <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+            <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
         </gml:LinearRing>
     </gml:exterior>
     <gml:interior>
         <gml:LinearRing>
-            <gml:posList>2 3 4 5 6 7 2 3</gml:posList>
+            <gml:posList srsDimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
         </gml:LinearRing>
     </gml:interior>    
     <gml:interior>
         <gml:LinearRing>
-            <gml:posList>3 4 5 6 7 8 3 4</gml:posList>
+            <gml:posList srsDimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
         </gml:LinearRing>
     </gml:interior>    
 </gml:Polygon>
@@ -636,17 +631,17 @@
         <gml:PolygonPatch interpolation="planar">
             <gml:exterior>
                 <gml:LinearRing>
-                    <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                    <gml:posList srsDimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
             <gml:interior>
                 <gml:LinearRing>
-                    <gml:posList>2 3 4 5 6 7 2 3</gml:posList>
+                    <gml:posList srsDimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
                 </gml:LinearRing>
             </gml:interior>    
             <gml:interior>
                 <gml:LinearRing>
-                    <gml:posList>3 4 5 6 7 8 3 4</gml:posList>
+                    <gml:posList srsDimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
                 </gml:LinearRing>
             </gml:interior>
         </gml:PolygonPatch>
@@ -666,12 +661,13 @@
   <gml:coord>
     <gml:X>1</gml:X>
     <gml:Y>2</gml:Y>
+    <gml:Z>3</gml:Z>
   </gml:coord>
 </gml:Point>
 --></div>
 <div id="v2/point-coordinates.xml"><!--
 <gml:Point xmlns:gml="http://www.opengis.net/gml" srsName="foo">
-  <gml:coordinates decimal="." cs="," ts=" ">1,2</gml:coordinates>
+  <gml:coordinates decimal="." cs="," ts=" ">1,2,3</gml:coordinates>
 </gml:Point>
 --></div>
 <div id="v2/linestring-coord.xml"><!--
@@ -679,16 +675,18 @@
   <gml:coord>
     <gml:X>1</gml:X>
     <gml:Y>2</gml:Y>
+    <gml:Z>3</gml:Z>
   </gml:coord>
   <gml:coord>
     <gml:X>3</gml:X>
     <gml:Y>4</gml:Y>
+    <gml:Z>5</gml:Z>
   </gml:coord>
 </gml:LineString>
 --></div>
 <div id="v2/linestring-coordinates.xml"><!--
 <gml:LineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
-  <gml:coordinates decimal="." cs="," ts=" ">1,2 3,4</gml:coordinates>
+  <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5</gml:coordinates>
 </gml:LineString>
 --></div>
 <div id="v2/multipoint-coord.xml"><!--
@@ -698,6 +696,7 @@
             <gml:coord>
                 <gml:X>1</gml:X>
                 <gml:Y>2</gml:Y>
+                <gml:Z>3</gml:Z>
             </gml:coord>
         </gml:Point>
     </gml:pointMember>
@@ -706,6 +705,7 @@
             <gml:coord>
                 <gml:X>2</gml:X>
                 <gml:Y>3</gml:Y>
+                <gml:Z>4</gml:Z>
             </gml:coord>
         </gml:Point>
     </gml:pointMember>
@@ -714,6 +714,7 @@
             <gml:coord>
                 <gml:X>3</gml:X>
                 <gml:Y>4</gml:Y>
+                <gml:Z>5</gml:Z>
             </gml:coord>
         </gml:Point>
     </gml:pointMember>
@@ -723,17 +724,17 @@
 <gml:MultiPoint xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:pointMember>
         <gml:Point>
-            <gml:coordinates decimal="." cs="," ts=" ">1,2</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">1,2,3</gml:coordinates>
         </gml:Point>
     </gml:pointMember>
     <gml:pointMember>
         <gml:Point>
-            <gml:coordinates decimal="." cs="," ts=" ">2,3</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">2,3,4</gml:coordinates>
         </gml:Point>
     </gml:pointMember>
     <gml:pointMember>
         <gml:Point>
-            <gml:coordinates decimal="." cs="," ts=" ">3,4</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">3,4,5</gml:coordinates>
         </gml:Point>
     </gml:pointMember>
 </gml:MultiPoint>
@@ -745,10 +746,12 @@
             <gml:coord>
                 <gml:X>1</gml:X>
                 <gml:Y>2</gml:Y>
+                <gml:Z>3</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>2</gml:X>
                 <gml:Y>3</gml:Y>
+                <gml:Z>4</gml:Z>
             </gml:coord>
         </gml:LineString>
     </gml:lineStringMember>
@@ -757,10 +760,12 @@
             <gml:coord>
                 <gml:X>3</gml:X>
                 <gml:Y>4</gml:Y>
+                <gml:Z>5</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>4</gml:X>
                 <gml:Y>5</gml:Y>
+                <gml:Z>6</gml:Z>
             </gml:coord>
         </gml:LineString>
     </gml:lineStringMember>
@@ -770,12 +775,12 @@
 <gml:MultiLineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:lineStringMember>
         <gml:LineString>
-            <gml:coordinates decimal="." cs="," ts=" ">1,2 2,3</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">1,2,3 2,3,4</gml:coordinates>
         </gml:LineString>
     </gml:lineStringMember>
     <gml:lineStringMember>
         <gml:LineString>
-            <gml:coordinates decimal="." cs="," ts=" ">3,4 4,5</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">3,4,5 4,5,6</gml:coordinates>
         </gml:LineString>
     </gml:lineStringMember>
 </gml:MultiLineString>

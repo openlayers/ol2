@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <head> 
     <script src="../../OLLoader.js"></script>
-    <script src="cases.js"></script>
+    <script src="cases3D.js"></script>
     <script type="text/javascript">
 
     function test_readNode_geometry(t) {
@@ -272,12 +272,13 @@
   <gml:coord>
     <gml:X>1</gml:X>
     <gml:Y>2</gml:Y>
+    <gml:Z>3</gml:Z>
   </gml:coord>
 </gml:Point>
 --></div>
 <div id="v2/point-coordinates.xml"><!--
 <gml:Point xmlns:gml="http://www.opengis.net/gml" srsName="foo">
-  <gml:coordinates decimal="." cs="," ts=" ">1,2</gml:coordinates>
+  <gml:coordinates decimal="." cs="," ts=" ">1,2,3</gml:coordinates>
 </gml:Point>
 --></div>
 <div id="v2/linestring-coord.xml"><!--
@@ -285,16 +286,18 @@
   <gml:coord>
     <gml:X>1</gml:X>
     <gml:Y>2</gml:Y>
+    <gml:Z>3</gml:Z>
   </gml:coord>
   <gml:coord>
     <gml:X>3</gml:X>
     <gml:Y>4</gml:Y>
+    <gml:Z>5</gml:Z>
   </gml:coord>
 </gml:LineString>
 --></div>
 <div id="v2/linestring-coordinates.xml"><!--
 <gml:LineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
-  <gml:coordinates decimal="." cs="," ts=" ">1,2 3,4</gml:coordinates>
+  <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5</gml:coordinates>
 </gml:LineString>
 --></div>
 <div id="v2/polygon-coord.xml"><!--
@@ -304,18 +307,22 @@
             <gml:coord>
                 <gml:X>1</gml:X>
                 <gml:Y>2</gml:Y>
+                <gml:Z>3</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>3</gml:X>
                 <gml:Y>4</gml:Y>
+                <gml:Z>5</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>5</gml:X>
                 <gml:Y>6</gml:Y>
+                <gml:Z>7</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>1</gml:X>
                 <gml:Y>2</gml:Y>
+                <gml:Z>3</gml:Z>
             </gml:coord>
         </gml:LinearRing>
     </gml:outerBoundaryIs>
@@ -324,18 +331,22 @@
             <gml:coord>
                 <gml:X>2</gml:X>
                 <gml:Y>3</gml:Y>
+                <gml:Z>4</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>4</gml:X>
                 <gml:Y>5</gml:Y>
+                <gml:Z>6</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>6</gml:X>
                 <gml:Y>7</gml:Y>
+                <gml:Z>8</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>2</gml:X>
                 <gml:Y>3</gml:Y>
+                <gml:Z>4</gml:Z>
             </gml:coord>
         </gml:LinearRing>
     </gml:innerBoundaryIs>    
@@ -344,18 +355,22 @@
             <gml:coord>
                 <gml:X>3</gml:X>
                 <gml:Y>4</gml:Y>
+                <gml:Z>5</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>5</gml:X>
                 <gml:Y>6</gml:Y>
+                <gml:Z>7</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>7</gml:X>
                 <gml:Y>8</gml:Y>
+                <gml:Z>9</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>3</gml:X>
                 <gml:Y>4</gml:Y>
+                <gml:Z>5</gml:Z>
             </gml:coord>
         </gml:LinearRing>
     </gml:innerBoundaryIs>    
@@ -365,17 +380,17 @@
 <gml:Polygon xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:outerBoundaryIs>
         <gml:LinearRing>
-            <gml:coordinates decimal="." cs="," ts=" ">1,2 3,4 5,6 1,2</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5 5,6,7 1,2,3</gml:coordinates>
         </gml:LinearRing>
     </gml:outerBoundaryIs>
     <gml:innerBoundaryIs>
         <gml:LinearRing>
-            <gml:coordinates decimal="." cs="," ts=" ">2,3 4,5 6,7 2,3</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">2,3,4 4,5,6 6,7,8 2,3,4</gml:coordinates>
         </gml:LinearRing>
     </gml:innerBoundaryIs>    
     <gml:innerBoundaryIs>
         <gml:LinearRing>
-            <gml:coordinates decimal="." cs="," ts=" ">3,4 5,6 7,8 3,4</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">3,4,5 5,6,7 7,8,9 3,4,5</gml:coordinates>
         </gml:LinearRing>
     </gml:innerBoundaryIs>    
 </gml:Polygon>
@@ -387,6 +402,7 @@
             <gml:coord>
                 <gml:X>1</gml:X>
                 <gml:Y>2</gml:Y>
+                <gml:Z>3</gml:Z>
             </gml:coord>
         </gml:Point>
     </gml:pointMember>
@@ -395,6 +411,7 @@
             <gml:coord>
                 <gml:X>2</gml:X>
                 <gml:Y>3</gml:Y>
+                <gml:Z>4</gml:Z>
             </gml:coord>
         </gml:Point>
     </gml:pointMember>
@@ -403,6 +420,7 @@
             <gml:coord>
                 <gml:X>3</gml:X>
                 <gml:Y>4</gml:Y>
+                <gml:Z>5</gml:Z>
             </gml:coord>
         </gml:Point>
     </gml:pointMember>
@@ -412,17 +430,17 @@
 <gml:MultiPoint xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:pointMember>
         <gml:Point>
-            <gml:coordinates decimal="." cs="," ts=" ">1,2</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">1,2,3</gml:coordinates>
         </gml:Point>
     </gml:pointMember>
     <gml:pointMember>
         <gml:Point>
-            <gml:coordinates decimal="." cs="," ts=" ">2,3</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">2,3,4</gml:coordinates>
         </gml:Point>
     </gml:pointMember>
     <gml:pointMember>
         <gml:Point>
-            <gml:coordinates decimal="." cs="," ts=" ">3,4</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">3,4,5</gml:coordinates>
         </gml:Point>
     </gml:pointMember>
 </gml:MultiPoint>
@@ -434,10 +452,12 @@
             <gml:coord>
                 <gml:X>1</gml:X>
                 <gml:Y>2</gml:Y>
+                <gml:Z>3</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>2</gml:X>
                 <gml:Y>3</gml:Y>
+                <gml:Z>4</gml:Z>
             </gml:coord>
         </gml:LineString>
     </gml:lineStringMember>
@@ -446,10 +466,12 @@
             <gml:coord>
                 <gml:X>3</gml:X>
                 <gml:Y>4</gml:Y>
+                <gml:Z>5</gml:Z>
             </gml:coord>
             <gml:coord>
                 <gml:X>4</gml:X>
                 <gml:Y>5</gml:Y>
+                <gml:Z>6</gml:Z>
             </gml:coord>
         </gml:LineString>
     </gml:lineStringMember>
@@ -459,12 +481,12 @@
 <gml:MultiLineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:lineStringMember>
         <gml:LineString>
-            <gml:coordinates decimal="." cs="," ts=" ">1,2 2,3</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">1,2,3 2,3,4</gml:coordinates>
         </gml:LineString>
     </gml:lineStringMember>
     <gml:lineStringMember>
         <gml:LineString>
-            <gml:coordinates decimal="." cs="," ts=" ">3,4 4,5</gml:coordinates>
+            <gml:coordinates decimal="." cs="," ts=" ">3,4,5 4,5,6</gml:coordinates>
         </gml:LineString>
     </gml:lineStringMember>
 </gml:MultiLineString>
@@ -478,18 +500,22 @@
                     <gml:coord>
                         <gml:X>1</gml:X>
                         <gml:Y>2</gml:Y>
+                        <gml:Z>3</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>3</gml:X>
                         <gml:Y>4</gml:Y>
+                        <gml:Z>5</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>5</gml:X>
                         <gml:Y>6</gml:Y>
+                        <gml:Z>7</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>1</gml:X>
                         <gml:Y>2</gml:Y>
+                        <gml:Z>3</gml:Z>
                     </gml:coord>
                 </gml:LinearRing>
             </gml:outerBoundaryIs>
@@ -498,18 +524,22 @@
                     <gml:coord>
                         <gml:X>2</gml:X>
                         <gml:Y>3</gml:Y>
+                        <gml:Z>4</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>4</gml:X>
                         <gml:Y>5</gml:Y>
+                        <gml:Z>6</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>6</gml:X>
                         <gml:Y>7</gml:Y>
+                        <gml:Z>8</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>2</gml:X>
                         <gml:Y>3</gml:Y>
+                        <gml:Z>4</gml:Z>
                     </gml:coord>
                 </gml:LinearRing>
             </gml:innerBoundaryIs>    
@@ -518,18 +548,22 @@
                     <gml:coord>
                         <gml:X>3</gml:X>
                         <gml:Y>4</gml:Y>
+                        <gml:Z>5</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>5</gml:X>
                         <gml:Y>6</gml:Y>
+                        <gml:Z>7</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>7</gml:X>
                         <gml:Y>8</gml:Y>
+                        <gml:Z>9</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>3</gml:X>
                         <gml:Y>4</gml:Y>
+                        <gml:Z>5</gml:Z>
                     </gml:coord>
                 </gml:LinearRing>
             </gml:innerBoundaryIs>    
@@ -542,18 +576,22 @@
                     <gml:coord>
                         <gml:X>1</gml:X>
                         <gml:Y>2</gml:Y>
+                        <gml:Z>3</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>3</gml:X>
                         <gml:Y>4</gml:Y>
+                        <gml:Z>5</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>5</gml:X>
                         <gml:Y>6</gml:Y>
+                        <gml:Z>7</gml:Z>
                     </gml:coord>
                     <gml:coord>
                         <gml:X>1</gml:X>
                         <gml:Y>2</gml:Y>
+                        <gml:Z>3</gml:Z>
                     </gml:coord>
                 </gml:LinearRing>
             </gml:outerBoundaryIs>
@@ -567,17 +605,17 @@
         <gml:Polygon>
             <gml:outerBoundaryIs>
                 <gml:LinearRing>
-                    <gml:coordinates decimal="." cs="," ts=" ">1,2 3,4 5,6 1,2</gml:coordinates>
+                    <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5 5,6,7 1,2,3</gml:coordinates>
                 </gml:LinearRing>
             </gml:outerBoundaryIs>
             <gml:innerBoundaryIs>
                 <gml:LinearRing>
-                    <gml:coordinates decimal="." cs="," ts=" ">2,3 4,5 6,7 2,3</gml:coordinates>
+                    <gml:coordinates decimal="." cs="," ts=" ">2,3,4 4,5,6 6,7,8 2,3,4</gml:coordinates>
                 </gml:LinearRing>
             </gml:innerBoundaryIs>    
             <gml:innerBoundaryIs>
                 <gml:LinearRing>
-                    <gml:coordinates decimal="." cs="," ts=" ">3,4 5,6 7,8 3,4</gml:coordinates>
+                    <gml:coordinates decimal="." cs="," ts=" ">3,4,5 5,6,7 7,8,9 3,4,5</gml:coordinates>
                 </gml:LinearRing>
             </gml:innerBoundaryIs>    
         </gml:Polygon>
@@ -586,7 +624,7 @@
         <gml:Polygon>
             <gml:outerBoundaryIs>
                 <gml:LinearRing>
-                    <gml:coordinates decimal="." cs="," ts=" ">1,2 3,4 5,6 1,2</gml:coordinates>
+                    <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5 5,6,7 1,2,3</gml:coordinates>
                 </gml:LinearRing>
             </gml:outerBoundaryIs>
         </gml:Polygon>
@@ -597,29 +635,29 @@
 <gml:GeometryCollection xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:geometryMember>
         <gml:Point srsName="foo">
-          <gml:coordinates decimal="." cs="," ts=" ">1,2</gml:coordinates>
+          <gml:coordinates decimal="." cs="," ts=" ">1,2,3</gml:coordinates>
         </gml:Point>
     </gml:geometryMember>
     <gml:geometryMember>
         <gml:LineString srsName="foo">
-          <gml:coordinates decimal="." cs="," ts=" ">1,2 3,4</gml:coordinates>
+          <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5</gml:coordinates>
         </gml:LineString>
     </gml:geometryMember>
     <gml:geometryMember>
         <gml:Polygon srsName="foo">
             <gml:outerBoundaryIs>
                 <gml:LinearRing>
-                    <gml:coordinates decimal="." cs="," ts=" ">1,2 3,4 5,6 1,2</gml:coordinates>
+                    <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5 5,6,7 1,2,3</gml:coordinates>
                 </gml:LinearRing>
             </gml:outerBoundaryIs>
             <gml:innerBoundaryIs>
                 <gml:LinearRing>
-                    <gml:coordinates decimal="." cs="," ts=" ">2,3 4,5 6,7 2,3</gml:coordinates>
+                    <gml:coordinates decimal="." cs="," ts=" ">2,3,4 4,5,6 6,7,8 2,3,4</gml:coordinates>
                 </gml:LinearRing>
             </gml:innerBoundaryIs>    
             <gml:innerBoundaryIs>
                 <gml:LinearRing>
-                    <gml:coordinates decimal="." cs="," ts=" ">3,4 5,6 7,8 3,4</gml:coordinates>
+                    <gml:coordinates decimal="." cs="," ts=" ">3,4,5 5,6,7 7,8,9 3,4,5</gml:coordinates>
                 </gml:LinearRing>
             </gml:innerBoundaryIs>    
         </gml:Polygon>
@@ -648,24 +686,28 @@
     <gml:coord>
         <gml:X>1</gml:X>
         <gml:Y>2</gml:Y>
+        <gml:Z>3</gml:Z>
     </gml:coord>
     <gml:coord>
         <gml:X>3</gml:X>
         <gml:Y>4</gml:Y>
+        <gml:Z>5</gml:Z>
     </gml:coord>
     <gml:coord>
         <gml:X>5</gml:X>
         <gml:Y>6</gml:Y>
+        <gml:Z>7</gml:Z>
     </gml:coord>
     <gml:coord>
         <gml:X>1</gml:X>
         <gml:Y>2</gml:Y>
+        <gml:Z>3</gml:Z>
     </gml:coord>
 </gml:LinearRing>
 --></div>
 <div id="v2/linearring-coordinates.xml"><!--
 <gml:LinearRing xmlns:gml="http://www.opengis.net/gml" srsName="foo">
-  <gml:coordinates decimal="." cs="," ts=" ">1,2 3,4 5,6 1,2</gml:coordinates>
+  <gml:coordinates decimal="." cs="," ts=" ">1,2,3 3,4,5 5,6,7 1,2,3</gml:coordinates>
 </gml:LinearRing>
 --></div>
 <div id="v2/topp-states.xml"><!--

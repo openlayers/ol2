@@ -5,25 +5,25 @@ function readXML(file) {
 
 var cases = {
 
-    "v2/point-coord.xml": new OpenLayers.Geometry.Point(1, 2, 3),
+    "v2/point-coord.xml": new OpenLayers.Geometry.Point(1, 2),
 
-    "v2/point-coordinates.xml": new OpenLayers.Geometry.Point(1, 2, 3),
+    "v2/point-coordinates.xml": new OpenLayers.Geometry.Point(1, 2),
 
     "v2/linestring-coord.xml": new OpenLayers.Geometry.LineString([
-        new OpenLayers.Geometry.Point(1, 2, 3),
-        new OpenLayers.Geometry.Point(3, 4, 5)
+        new OpenLayers.Geometry.Point(1, 2),
+        new OpenLayers.Geometry.Point(3, 4)
     ]),
     
     "v2/linestring-coordinates.xml": new OpenLayers.Geometry.LineString([
-        new OpenLayers.Geometry.Point(1, 2, 3),
-        new OpenLayers.Geometry.Point(3, 4, 5)
+        new OpenLayers.Geometry.Point(1, 2),
+        new OpenLayers.Geometry.Point(3, 4)
     ]),
     
     "v2/linearring-coord.xml": new OpenLayers.Geometry.LinearRing([
-        new OpenLayers.Geometry.Point(1, 2, 3),
-        new OpenLayers.Geometry.Point(3, 4, 5),
-        new OpenLayers.Geometry.Point(5, 6, 7),
-        new OpenLayers.Geometry.Point(1, 2, 3)
+        new OpenLayers.Geometry.Point(1, 2),
+        new OpenLayers.Geometry.Point(3, 4),
+        new OpenLayers.Geometry.Point(5, 6),
+        new OpenLayers.Geometry.Point(1, 2)
     ]),
     
     "v2/linearring-coordinates.xml": new OpenLayers.Geometry.LinearRing([
@@ -35,43 +35,43 @@ var cases = {
     
     "v2/polygon-coord.xml": new OpenLayers.Geometry.Polygon([
         new OpenLayers.Geometry.LinearRing([
-            new OpenLayers.Geometry.Point(1, 2, 3),
-            new OpenLayers.Geometry.Point(3, 4, 5),
-            new OpenLayers.Geometry.Point(5, 6, 7),
-            new OpenLayers.Geometry.Point(1, 2, 3)
+            new OpenLayers.Geometry.Point(1, 2),
+            new OpenLayers.Geometry.Point(3, 4),
+            new OpenLayers.Geometry.Point(5, 6),
+            new OpenLayers.Geometry.Point(1, 2)
         ]),
         new OpenLayers.Geometry.LinearRing([
-            new OpenLayers.Geometry.Point(2, 3, 4),
-            new OpenLayers.Geometry.Point(4, 5, 6),
-            new OpenLayers.Geometry.Point(6, 7, 8),
-            new OpenLayers.Geometry.Point(2, 3, 4)
+            new OpenLayers.Geometry.Point(2, 3),
+            new OpenLayers.Geometry.Point(4, 5),
+            new OpenLayers.Geometry.Point(6, 7),
+            new OpenLayers.Geometry.Point(2, 3)
         ]),
         new OpenLayers.Geometry.LinearRing([
-            new OpenLayers.Geometry.Point(3, 4, 5),
-            new OpenLayers.Geometry.Point(5, 6, 7),
-            new OpenLayers.Geometry.Point(7, 8, 9),
-            new OpenLayers.Geometry.Point(3, 4, 5)
+            new OpenLayers.Geometry.Point(3, 4),
+            new OpenLayers.Geometry.Point(5, 6),
+            new OpenLayers.Geometry.Point(7, 8),
+            new OpenLayers.Geometry.Point(3, 4)
         ])
     ]),
     
     "v2/polygon-coordinates.xml": new OpenLayers.Geometry.Polygon([
         new OpenLayers.Geometry.LinearRing([
-            new OpenLayers.Geometry.Point(1, 2, 3),
-            new OpenLayers.Geometry.Point(3, 4, 5),
-            new OpenLayers.Geometry.Point(5, 6, 7),
-            new OpenLayers.Geometry.Point(1, 2, 3)
+            new OpenLayers.Geometry.Point(1, 2),
+            new OpenLayers.Geometry.Point(3, 4),
+            new OpenLayers.Geometry.Point(5, 6),
+            new OpenLayers.Geometry.Point(1, 2)
         ]),
         new OpenLayers.Geometry.LinearRing([
-            new OpenLayers.Geometry.Point(2, 3, 4),
-            new OpenLayers.Geometry.Point(4, 5, 6),
-            new OpenLayers.Geometry.Point(6, 7, 8),
-            new OpenLayers.Geometry.Point(2, 3, 4)
+            new OpenLayers.Geometry.Point(2, 3),
+            new OpenLayers.Geometry.Point(4, 5),
+            new OpenLayers.Geometry.Point(6, 7),
+            new OpenLayers.Geometry.Point(2, 3)
         ]),
         new OpenLayers.Geometry.LinearRing([
-            new OpenLayers.Geometry.Point(3, 4, 5),
-            new OpenLayers.Geometry.Point(5, 6, 7),
-            new OpenLayers.Geometry.Point(7, 8, 9),
-            new OpenLayers.Geometry.Point(3, 4, 5)
+            new OpenLayers.Geometry.Point(3, 4),
+            new OpenLayers.Geometry.Point(5, 6),
+            new OpenLayers.Geometry.Point(7, 8),
+            new OpenLayers.Geometry.Point(3, 4)
         ])
     ]),
     
@@ -202,6 +202,7 @@ var cases = {
     "v2/box-coord.xml": new OpenLayers.Bounds(1, 2, 3, 4),
     
     "v2/box-coordinates.xml": new OpenLayers.Bounds(1, 2, 3, 4),
+    
     "v3/linestring3d.xml": new OpenLayers.Geometry.LineString([
         new OpenLayers.Geometry.Point(1, 2, 3),
         new OpenLayers.Geometry.Point(4, 5, 6)
