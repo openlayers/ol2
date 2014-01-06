@@ -82,8 +82,8 @@
         t.eq(metadata.identifier, "ro_dsm", "correct identifier");
         t.eq(metadata.title, "Rotterdam DSM", "correct title");
         t.eq(metadata.abstract, "Digital Surface Model (DSM) raster data set of inner city Rotterdam", "correct abstract");
-        t.eq(metadata.supportedFormat.length, 1, "correct number of supported formats");
-        t.eq(metadata.supportedFormat[0], "image/tiff", "correct format");
+        t.eq(metadata.supportedFormats.length, 1, "correct number of supported formats");
+        t.eq(metadata.supportedFormats[0], "image/tiff", "correct format");
         t.eq(metadata.supportedCRS.length, 4, "correct number of CRS records");
         t.eq(metadata.supportedCRS[2], "urn:ogc:def:crs:EPSG::3857", "correct CRS");
 
