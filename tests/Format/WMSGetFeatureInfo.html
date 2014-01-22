@@ -321,7 +321,7 @@
         var parser = new OpenLayers.Format.WMSGetFeatureInfo();
 
         // read empty attribute
-        text =
+        var text =
             '<?xml version="1.0" encoding="UTF-8"?>' +
             '<msGMLOutput ' +
             '     xmlns:gml="http://www.opengis.net/gml"' +
@@ -344,7 +344,7 @@
             '    </name_layer>' +
             '</msGMLOutput>';
 
-        features = parser.read(text);
+        var features = parser.read(text);
 
         t.eq(features.length, 1,
              "Parsed 1 feature in total");
@@ -352,6 +352,34 @@
              "Attribute html exists");
         t.eq(features[0].attributes.html.length, 7000,
              "Attribute html have the right length");
+    }
+
+
+    function test_read_QGISOutput(t) {
+        t.plan(4);
+
+        var parser = new OpenLayers.Format.WMSGetFeatureInfo();
+
+        var text =
+            '<wfs:FeatureCollection xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wfs="http://www.opengis.net/wfs" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/wfs.xsd http://www.qgis.org/gml" xmlns:gml="http://www.opengis.net/gml" xmlns:ows="http://www.opengis.net/ows" xmlns:qgs="http://www.qgis.org/gml">' +
+            ' <gml:featureMember>' +
+            '  <qgs:camera fid="camera.15">' +
+            '   <qgs:gid>15</qgs:gid>' +
+            '   <qgs:id>i15</qgs:id>' +
+            '  </qgs:camera>' +
+            ' </gml:featureMember>' +
+            '</wfs:FeatureCollection>';
+
+        var features = parser.read(text);
+
+        t.eq(features.length, 1,
+             "Parsed 1 feature in total");
+        t.eq(features[0].type, 'camera',
+             "Attribute type contains the right value");
+        t.eq(features[0].attributes.gid, '15',
+             "Attribute gid contains the right value");
+        t.eq(features[0].attributes.id, 'i15',
+             "Attribute id contains the right value");
     }
     </script>
 </head>
