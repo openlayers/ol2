@@ -534,6 +534,11 @@ div.olControlTextButtonPanel.vertical .olButton:last-child {
     perspective: 1000;
 }
 
+/* Turn on GPU acceleration for webkit when Google Maps V3 base layer is present */
+.olForeignContainer svg {
+    -webkit-transform: translateZ(0);
+}
+
 /* when replacing tiles, do not show tile and backbuffer at the same time */
 .olTileReplacing {
     display: none;
