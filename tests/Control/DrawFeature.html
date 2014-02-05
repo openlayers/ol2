@@ -85,7 +85,7 @@
     }
     
     function test_sketch_events(t) {
-        t.plan(11);
+        t.plan(14);
         var map = new OpenLayers.Map("map", {
             resolutions: [1]
         });
@@ -104,6 +104,9 @@
         
         var log;
         layer.events.on({
+            sketchcreated: function(event) {
+                log['sketchcreated'] = event;
+            },
             sketchstarted: function(event) {
                 log['sketchstarted'] = event;
             },
@@ -122,8 +125,8 @@
 
         log = {};
         map.events.triggerEvent("mousemove", {xy: new OpenLayers.Pixel(0, 0)});
-        t.eq(log.sketchstarted.type, "sketchstarted", "[mousemove] sketchstarted triggered");
-        t.geom_eq(log.sketchstarted.vertex, new OpenLayers.Geometry.Point(-200, 125), "[mousemove] correct vertex");
+        t.eq(log.sketchcreated.type, "sketchcreated", "[mousemove] sketchcreated triggered");
+        t.geom_eq(log.sketchcreated.vertex, new OpenLayers.Geometry.Point(-200, 125), "[mousemove] correct vertex");
         t.eq(log.sketchmodified.type, "sketchmodified", "[mousemove] sketchmodified triggered");
         t.geom_eq(log.sketchmodified.vertex, new OpenLayers.Geometry.Point(-200, 125), "[mousemove] correct vertex");
 
@@ -131,6 +134,7 @@
 
         log = {};
         map.events.triggerEvent("mouseup", {xy: new OpenLayers.Pixel(0, 0)});
+        t.eq(log.sketchstarted.type, "sketchstarted", "[mouseup] sketchstarted triggered");
         t.eq(log.sketchmodified.type, "sketchmodified", "[mouseup] sketchmodified triggered");
         t.geom_eq(log.sketchmodified.vertex, new OpenLayers.Geometry.Point(-200, 125), "[mouseup] correct vertex");
 
@@ -139,6 +143,12 @@
         t.eq(log.sketchmodified.type, "sketchmodified", "[mousemove] sketchmodified triggered");
         t.geom_eq(log.sketchmodified.vertex, new OpenLayers.Geometry.Point(-190, 115), "[mousemove] correct vertex");
 
+        map.events.triggerEvent("mousedown", {xy: new OpenLayers.Pixel(10, 10)});
+        log = {sketchstarted:{}};
+        map.events.triggerEvent("mouseup", {xy: new OpenLayers.Pixel(10, 10)});
+        t.eq(log.sketchstarted.type, undefined, "[mouseup] no sketchstarted triggered");
+        t.eq(log.sketchmodified.type, "sketchmodified", "[mouseup] sketchmodified triggered");
+        
         log = {};
         map.events.triggerEvent("dblclick", {xy: new OpenLayers.Pixel(10, 10)});
         t.eq(log.sketchcomplete.type, "sketchcomplete", "[dblclick] sketchcomplete triggered");
