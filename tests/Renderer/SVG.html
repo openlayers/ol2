@@ -103,6 +103,32 @@
         t.eq(r.rendererRoot.getAttributeNS(null, "height"), size.h.toString(), "height is correct");
     }
     
+    function test_SVG_setstyle(t) { 
+        if (!OpenLayers.Renderer.SVG.prototype.supported()) { 
+            t.plan(0); 
+            return; 
+        } 
+         
+        t.plan(2); 
+         
+        var r = new OpenLayers.Renderer.SVG(document.body); 
+         
+        // test graphic fill 
+        var node = document.createElement('div'); 
+        var style = { 
+            externalGraphic: "graphicfill-20x20.png", 
+            pointRadius: 10, 
+            fillOpacity: 1 
+        }; 
+        var options = { isFilled: true }; 
+        r.setStyle(node, style, options); 
+         
+        t.eq(node.getAttributeNS(null, 'fill'),  
+            'url(#' + r.container.id + '-' + style.externalGraphic + '-' + style.pointRadius + ')', 
+            "GraphicFill: fill is correct"); 
+        t.eq(node.getAttributeNS(null, 'fill-opacity'), '1', "GraphicFill: fill-opacity is correct"); 
+    } 
+    
     function test_SVG_drawpoint(t) {
         if (!OpenLayers.Renderer.SVG.prototype.supported()) {
             t.plan(0);
@@ -432,6 +458,71 @@
         r.drawLineString(node, geometry);
         t.eq(node.getAttribute("points"), "15000,-2500,0,-10000", "2-point line with 1st point outside range correctly clipped at inValidRange bounds");
     }
+    
+    function test_svg_createimagepattern(t) { 
+        if (!OpenLayers.Renderer.SVG.prototype.supported()) { 
+            t.plan(0); 
+            return; 
+        } 
+         
+        t.plan(13); 
+         
+        var r = new OpenLayers.Renderer.SVG(document.body); 
+         
+        var style = { 
+            externalGraphic: "graphicfill-20x20.png", 
+            pointRadius: 8 
+        }; 
+         
+        var pid20x20 = r.createImagePattern(style); 
+         
+        style.externalGraphic = "graphicfill-20x40.png"; 
+        var pid20x40 = r.createImagePattern(style); 
+         
+        style.externalGraphic = "graphicfill-40x20.png"; 
+        var pid40x20 = r.createImagePattern(style); 
+         
+        // need to wait for the patterns to be created, the pattern nodes are not created until images load 
+        t.delay_call(2, function() { 
+            var height = (style.pointRadius * 2) * 72 / 96 + "pt"; 
+            var width = height; 
+             
+            // test pattern attributes 
+            var pattern = document.getElementById(pid20x20); 
+            t.eq(pattern.getAttributeNS(null, "x"), "0", "pattern x is correct"); 
+            t.eq(pattern.getAttributeNS(null, "y"), "0", "pattern y is correct"); 
+            t.eq(pattern.getAttributeNS(null, "height"), height, "pattern height is correct"); 
+            t.eq(pattern.getAttributeNS(null, "width"), width, "pattern width is correct"); 
+            t.eq(pattern.getAttributeNS(null, "patternUnits"), "userSpaceOnUse", "pattern patternUnits is correct"); 
+             
+            // test image attributes for 20x20 pixel image 
+            var image = pattern.firstChild; 
+            t.eq(image.getAttributeNS(r.xlinkns, "href"), style.externalGraphic, "image href is correct"); 
+            t.eq(image.getAttributeNS(null, "style"), "opacity: " + (style.graphicOpacity || style.fillOpacity || 1), "image style is correct"); 
+            t.eq(image.getAttributeNS(null, "height"), height, "image height is correct for 20x20 pixel image"); 
+            t.eq(image.getAttributeNS(null, "width"), width, "image width is correct for 20x20 pixel image"); 
+             
+            // test image attributes for 20x40 pixel image 
+            var height = (style.pointRadius * 2) * 72 / 96; 
+            var width = height * 0.5; 
+            height = height + "pt"; 
+            width = width + "pt"; 
+            pattern = document.getElementById(pid20x40); 
+            var image = pattern.firstChild; 
+            t.eq(image.getAttributeNS(null, "height"), height, "image height is correct for 20x40 pixel image"); 
+            t.eq(image.getAttributeNS(null, "width"), width, "image width is correct  for 20x40 pixel image"); 
+             
+            // test image attributes for 20x40 pixel image 
+            var height = (style.pointRadius * 2) * 72 / 96; 
+            var width = height * 2; 
+            height = height + "pt"; 
+            width = width + "pt"; 
+            pattern = document.getElementById(pid40x20); 
+            var image = pattern.firstChild; 
+            t.eq(image.getAttributeNS(null, "height"), height, "image height is correct for 20x40 pixel image"); 
+            t.eq(image.getAttributeNS(null, "width"), width, "image width is correct  for 20x40 pixel image"); 
+        }); 
+    } 
 
   </script>
 </head>
