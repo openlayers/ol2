@@ -151,6 +151,42 @@
 
         map.destroy();
     }
+    
+    function test_featureType(t) {
+        t.plan(3);
+
+        var map = new OpenLayers.Map("map");
+        var layer = new OpenLayers.Layer.Vector("foo", {
+            maxExtent: new OpenLayers.Bounds(-10, -10, 10, 10),
+            isBaseLayer: true
+        });
+        var control = new OpenLayers.Control.DrawFeature(
+            layer, OpenLayers.Handler.Point
+        );
+        map.addLayer(layer);
+        map.addControl(control);
+        map.zoomToMaxExtent();
+
+        
+        var log;
+        layer.events.on({
+            sketchstarted: function(event) {
+                log = event;
+            }
+        });
+        
+        t.eq(control.featureType, null, "control.type is null by default");
+        
+        control.activate();
+        map.events.triggerEvent("mousemove", {xy: new OpenLayers.Pixel(0, 0)});
+        t.eq(log.feature.type, null, "feature.type is null by default");
+        control.deactivate();
+        
+        control.featureType = "f1"
+        control.activate();
+        map.events.triggerEvent("mousemove", {xy: new OpenLayers.Pixel(0, 0)});
+        t.eq(log.feature.type, "f1", "type of new feature was 'f1'");
+    }
 
     </script>
 </head>

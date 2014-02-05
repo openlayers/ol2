@@ -230,7 +230,7 @@
     }
 
     function test_multipleTypenames(t) {
-        t.plan(5);
+        t.plan(7);
         var doc = readXML("v2/multipletypenames.xml");
         var format = new OpenLayers.Format.GML.v2({
             featureType: ["LKUNSTWERK", "PKUNSTWERK", "VKUNSTWERK"],
@@ -243,6 +243,16 @@
         t.eq(features[1].type, "LKUNSTWERK", "Second feature type is from the LKUNSTWERK typename");
         t.eq(features[2].type, "PKUNSTWERK", "Third feature type is from the PKUNSTWERK typename");
         t.eq(features[0].namespace, "http://mapserver.gis.umn.edu/mapserver", "Namespace is set correctly on feature");
+        
+        var feature = features[0];
+
+        // check type name after write
+        features = format.read(format.write(feature));
+        t.eq(features[0].type, "VKUNSTWERK", "Type was correct written");
+        
+        feature.type = null;
+        features = format.read(format.write(feature));
+        t.eq(features[0].type, "LKUNSTWERK", "Default type was correct written");
     }
 
     function test_noGeom(t) {
