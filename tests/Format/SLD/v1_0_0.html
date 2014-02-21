@@ -261,7 +261,7 @@
     
     function test_writePointSymbolizer(t) {
 
-        t.plan(3);
+        t.plan(4);
 
         var parser = new OpenLayers.Format.SLD.v1_0_0();
         var symbolizer, node, exp;
@@ -319,13 +319,34 @@
             '</PointSymbolizer>';        
         t.xml_eq(node, exp, "graphicName only written");
         
-
+        // test symbolizer with geometry and some graphic
+        symbolizer = {
+            geometry: {
+                property: "SOME_GEOM"
+            },
+            "graphicName": "star"
+        };
+        node = parser.writeNode("sld:PointSymbolizer", symbolizer);
+        exp =
+            '<PointSymbolizer xmlns="http://www.opengis.net/sld">' +
+                '<Geometry>' +
+                    '<ogc:PropertyName xmlns:ogc="http://www.opengis.net/ogc">SOME_GEOM</ogc:PropertyName>' +
+                '</Geometry>' +
+                 '<Graphic>' +
+                    '<Mark>' +
+                        '<WellKnownName>star</WellKnownName>' +
+                        '<Fill/>' +
+                        '<Stroke/>' +
+                    '</Mark>' +
+                '</Graphic>' +
+            '</PointSymbolizer>';
+        t.xml_eq(node, exp, "geometry (with some graphic) written");
     }
     
     
     function test_writeLineSymbolizer(t) {
 
-        t.plan(1);
+        t.plan(2);
 
         var parser = new OpenLayers.Format.SLD.v1_0_0();
         var symbolizer, node, exp;
@@ -349,11 +370,62 @@
             '</LineSymbolizer>';
         t.xml_eq(node, exp, "line symbolizer correctly written");
         
+        // test symbolizer with geometry and some stroke
+        symbolizer = {
+            geometry: {
+                property: "SOME_GEOM"
+            },
+            strokeDashstyle: "4 4",
+            strokeLinecap: "round",
+            strokeColor: "#0000ff",
+            strokeWidth: 2
+        };
+        node = parser.writeNode("sld:LineSymbolizer", symbolizer);
+        exp =
+            '<LineSymbolizer xmlns="http://www.opengis.net/sld">' +
+                '<Geometry>' +
+                    '<ogc:PropertyName xmlns:ogc="http://www.opengis.net/ogc">SOME_GEOM</ogc:PropertyName>' +
+                '</Geometry>' +
+                '<Stroke>' +
+                    '<CssParameter name="stroke">#0000ff</CssParameter>' +
+                    '<CssParameter name="stroke-width">2</CssParameter>' +
+                    '<CssParameter name="stroke-dasharray">4 4</CssParameter>' +
+                    '<CssParameter name="stroke-linecap">round</CssParameter>' +
+                '</Stroke>' +
+            '</LineSymbolizer>';
+        t.xml_eq(node, exp, "line symbolizer with geometry (and some stroke) written");
 
     }
     
-    function test_writeTextSymbolizer(t) {
+    function test_writePolygonSymbolizer(t) {
+
         t.plan(1);
+        var parser = new OpenLayers.Format.SLD.v1_0_0();
+        // test symbolizer with geometry and some stroke
+        var symbolizer = {
+            Polygon: {
+                geometry: {
+                    property: "SOME_GEOM"
+                }
+            }
+        };
+        var node = parser.writers["sld"]["PolygonSymbolizer"].apply(
+            parser, [symbolizer["Polygon"]]
+        );
+
+        var exp =
+            '<PolygonSymbolizer xmlns="http://www.opengis.net/sld">' +
+                 '<Geometry>' +
+                     '<ogc:PropertyName xmlns:ogc="http://www.opengis.net/ogc">SOME_GEOM</ogc:PropertyName>' +
+                 '</Geometry>' +
+                 '<Fill />' +
+                 '<Stroke />' +
+             '</PolygonSymbolizer>';
+        t.xml_eq(node, exp, "polygon symbolizer with geometry written");
+    }
+
+    function test_writeTextSymbolizer(t) {
+        t.plan(2);
         var parser = new OpenLayers.Format.SLD.v1_0_0();
         var symbolizer = {
             "Text": {
@@ -397,7 +469,58 @@
                 '</Fill>' + 
             '</TextSymbolizer>';
         
-        t.xml_eq(node, expected, "TextSymbolizer correctly written");
+        t.xml_eq(node, expected, "Basic TextSymbolizer correctly written");
+
+        // with geometry
+        symbolizer = {
+            "Text": {
+                geometry: {
+                    property: "SOME_GEOM"
+                },
+                "label": "This is the ${city} in ${state}.",
+                "fontFamily": "Arial",
+                "fontSize": 10,
+                "fontColor": "blue",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "haloRadius": 2,
+                "haloColor": "white"
+            }
+        };
+        node = parser.writers["sld"]["TextSymbolizer"].apply(
+            parser, [symbolizer["Text"]]
+        );
+
+        expected =
+            '<TextSymbolizer xmlns="http://www.opengis.net/sld">' +
+                '<Geometry>' +
+                    '<ogc:PropertyName xmlns:ogc="http://www.opengis.net/ogc">SOME_GEOM</ogc:PropertyName>' +
+                '</Geometry>' +
+                '<Label>' +
+                    'This is the ' +
+                    '<ogc:PropertyName xmlns:ogc="http://www.opengis.net/ogc">city</ogc:PropertyName>' +
+                    ' in ' +
+                    '<ogc:PropertyName xmlns:ogc="http://www.opengis.net/ogc">state</ogc:PropertyName>' +
+                    '.' +
+                '</Label>' +
+                '<Font>' +
+                    '<CssParameter name="font-family">Arial</CssParameter>' +
+                    '<CssParameter name="font-size">10</CssParameter>' +
+                    '<CssParameter name="font-weight">bold</CssParameter>' +
+                    '<CssParameter name="font-style">normal</CssParameter>' +
+                '</Font>' +
+                '<Halo>' +
+                    '<Radius>2</Radius>' +
+                    '<Fill>' +
+                        '<CssParameter name="fill">white</CssParameter>' +
+                    '</Fill>' +
+                '</Halo>' +
+                '<Fill>' +
+                    '<CssParameter name="fill">blue</CssParameter>' +
+                '</Fill>' +
+            '</TextSymbolizer>';
+
+        t.xml_eq(node, expected, "TextSymbolizer with geometry correctly written");
         
     }
     
