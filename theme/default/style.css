@@ -543,3 +543,115 @@ div.olControlTextButtonPanel.vertical .olButton:last-child {
 img.olTileImage {
     max-width: none;
 }
+
+
+
+.olPopup.olPopupRight,
+.olPopup.olPopupLeft,
+.olPopup.olPopupBottom,
+.olPopup.olPopupTop
+{
+    /* Allow the CSS arrow heads to show outside of the pop-up */
+    overflow: visible;
+    border: 1px solid #808080;
+    border-radius: 8px;
+}
+
+.olPopupRight:after,
+.olPopupLeft:after,
+.olPopupBottom:after,
+.olPopupTop:after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    /* Prevent the arrow heads from interfering with click events (on markers) */
+    pointer-events: none;
+    border: 16px solid transparent;
+}
+
+/* CSS arrow heads for the SideAnchored pop-ups */
+/* Mostly inspired by the Bootstrap 2.3.2 way of doing arrowheads on drop-downs,
+but with a 0-wide border on the opposite side. This allows for working around
+the non-availability of pointer-events:none in MSIE, creating a big enough
+big area for clicking back on the marker or map, even if it's not perfect. */
+.olPopupRight:after {
+    border-left: 16px solid #ffffff;
+    border-right: 0px;
+    right: -16px;
+    top: 50%;
+    margin-top:-16px;
+}
+
+.olPopupLeft:after {
+    border-right: 16px solid #ffffff;
+    border-left: 0px;
+    left: -16px;
+    top: 50%;
+    margin-top:-16px;
+}
+
+.olPopupBottom:after {
+    border-bottom: 16px solid #ffffff;
+    border-top: 0px;
+    top: -16px;
+    left: 50%;
+    margin-left:-16px;
+}
+
+.olPopupTop:after {
+    border-top: 16px solid #ffffff;
+    border-bottom: 0px;
+    bottom: -16px;
+    left: 50%;
+    margin-left:-16px;
+}
+
+
+
+.olPopupRight:before,
+.olPopupLeft:before,
+.olPopupBottom:before,
+.olPopupTop:before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    /* Prevent the arrow heads from interfering with click events (on markers) */
+    pointer-events: none;
+    border: 17px solid transparent;
+}
+
+/* CSS arrow heads for the SideAnchored pop-ups */
+.olPopupRight:before {
+    border-left: 17px solid #808080;
+    border-right: 0px;
+    right: -17px;
+    top: 50%;
+    margin-top:-17px;
+}
+
+.olPopupLeft:before {
+    border-right: 17px solid #808080;
+    border-left: 0px;
+    left: -17px;
+    top: 50%;
+    margin-top:-17px;
+}
+
+.olPopupBottom:before {
+    border-bottom: 17px solid #808080;
+    border-top: 0px;
+    top: -17px;
+    left: 50%;
+    margin-left:-17px;
+}
+
+.olPopupTop:before {
+    border-top: 17px solid #808080;
+    border-bottom: 0px;
+    bottom: -17px;
+    left: 50%;
+    margin-left:-17px;
+}
+
+
+
