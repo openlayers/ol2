@@ -119,7 +119,7 @@
         });
         var exp = readXML("schemaLocation");
         var got = format.writeNode("wfs:GetFeature");
-        t.xml_eq(got, exp, "schemaLocation correctly writted");
+        t.xml_eq(got, exp, "schemaLocation correctly written");
     }
 
     function test_write_schemaLocationDefaultPrefix(t) {
@@ -133,7 +133,7 @@
         });
         var exp = readXML("schemaLocationDefaultPrefix");
         var got = format.writeNode("wfs:GetFeature");
-        t.xml_eq(got, exp, "schemaLocation correctly writted", {prefix:true});
+        t.xml_eq(got, exp, "schemaLocation correctly written", {prefix:true});
     }
 
     var xmlFormat = new OpenLayers.Format.XML();
