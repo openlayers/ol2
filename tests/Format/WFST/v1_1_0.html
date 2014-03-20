@@ -133,7 +133,7 @@
         });
         var exp = readXML("schemaLocationDefaultPrefix");
         var got = format.writeNode("wfs:GetFeature");
-        t.xml_eq(got, exp, "schemaLocation correctly writted");
+        t.xml_eq(got, exp, "schemaLocation correctly writted", {prefix:true});
     }
 
     var xmlFormat = new OpenLayers.Format.XML();
@@ -262,9 +262,8 @@
 </wfs:FeatureCollection>
 --></div>
 <div id="schemaLocation"><!--
-<wfs:GetFeature service="WFS" version="1.1.0" xmlns:topp="http://www.openplans.org/topp"
+<wfs:GetFeature service="WFS" version="1.1.0"
                 xmlns:wfs="http://www.opengis.net/wfs"
-                xmlns:ogc="http://www.opengis.net/ogc"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd http://www.openplans.org/topp http://foo.bar/topp_schema.xsd">
     <wfs:Query xmlns:wfs="http://www.opengis.net/wfs" typeName="topp:states" srsName="urn:ogc:def:crs:EPSG::4326" xmlns:topp="http://www.openplans.org/topp">
@@ -272,12 +271,11 @@
 </wfs:GetFeature>
 --></div>
 <div id="schemaLocationDefaultPrefix"><!--
-<wfs:GetFeature service="WFS" version="1.1.0" xmlns:topp="http://www.openplans.org/topp"
+<wfs:GetFeature service="WFS" version="1.1.0"
                 xmlns:wfs="http://www.opengis.net/wfs"
-                xmlns:ogc="http://www.opengis.net/ogc"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd http://www.openplans.org/topp http://foo.bar/topp_schema.xsd">
-    <wfs:Query xmlns:wfs="http://www.opengis.net/wfs" typeName="feature:states" srsName="urn:ogc:def:crs:EPSG::4326" xmlns:topp="http://www.openplans.org/topp">
+    <wfs:Query xmlns:wfs="http://www.opengis.net/wfs" typeName="feature:states" srsName="urn:ogc:def:crs:EPSG::4326" xmlns:feature="http://www.openplans.org/topp">
     </wfs:Query>
 </wfs:GetFeature>
 --></div>
