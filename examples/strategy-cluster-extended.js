@@ -67,7 +67,7 @@ OpenLayers.Strategy.RuleCluster = OpenLayers.Class(OpenLayers.Strategy.Cluster, 
 // global variables
 var map, vectorlayer, features, stylemap, select;
 
-// wrap the instanciation code in an anonymous function that gets executed
+// wrap the instantiation code in an anonymous function that gets executed
 // immeadeately
 (function(){
 
