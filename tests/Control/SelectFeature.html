@@ -623,6 +623,26 @@
         t.eq(layer.selectedFeatures[0].id, 3,
              'the remaining selected features is the one expected');
     }
+    
+    function test_addLayer(t) {
+        t.plan(4);
+        
+        var layer = new OpenLayers.Layer.Vector();
+        var layers = [new OpenLayers.Layer.Vector(), new OpenLayers.Layer.Vector()]
+        var layerToAdd = new OpenLayers.Layer.Vector();
+        
+        var controlWithLayer = new OpenLayers.Control.SelectFeature(layer);
+        var controlWithLayers = new OpenLayers.Control.SelectFeature(layers);
+        
+        controlWithLayer.addLayer(layerToAdd);
+        controlWithLayers.addLayer(layerToAdd);
+        
+        t.eq(controlWithLayer.layers.length, 2, "the added layer is added and all layers are active");
+        t.eq(controlWithLayers.layers.length, 3, "the added layer is added and all layers are active");
+
+        t.eq(controlWithLayer.layer.length, null, "layer is empty");
+        t.eq(controlWithLayers.layer.length, null, "layer is empty");
+    }    
    
     </script>
 </head>
