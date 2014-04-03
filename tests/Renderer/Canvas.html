@@ -479,16 +479,19 @@
             };
 
             layer.renderer.redraw();
-            map.setCenter(new OpenLayers.LonLat(45, 0), 0);
-
             t.delay_call(0.1, function() {
-                t.eq(log.length, 2,
-                     "canvas.drawImage called twice");
-                t.ok(log[0].x == log[1].x && log[0].y == log[1].y,
-                     "image drawn at the same location");
 
-                // tear down
-                map.destroy();
+                map.setCenter(new OpenLayers.LonLat(45, 0), 0);
+                t.delay_call(0.1, function() {
+
+                t.eq(log.length, 2,
+                         "canvas.drawImage called twice");
+                    t.ok(log[0].x > log[1].x && log[0].y == log[1].y,
+                         "second image drawn at a location with smaller x and same y");
+
+                    // tear down
+                    map.destroy();
+                });
             });
         });
     }

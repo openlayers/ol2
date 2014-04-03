@@ -9,6 +9,6 @@ Javascript minimizing tools:
  * shrinksafe.py
    shrinksafe.py calls out to a third party javascript shrinking service. This 
    creates file sizes about 4% smaller (as of commit 501) of the OpenLayers 
-   code. However, this also has the side effect of making you dependant on the 
+   code. However, this also has the side effect of making you dependent on the 
    web service -- and since that service sometimes goes dead, it's risky to 
    depend on it.

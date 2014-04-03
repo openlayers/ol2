@@ -14,16 +14,21 @@
             function init(){
                 map = new OpenLayers.Map('map');
 
+                var options = {
+                    attribution: {
+                        title: "Provided by OSGeo",
+                        href: "http://www.osgeo.org/"
+                    }
+                };
                 var ol_wms = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-                    "http://vmap0.tiles.osgeo.org/wms/vmap0?", {layers: 'basic'},
-                    {'attribution': 'Provided by OSGeo'});
+                    "http://vmap0.tiles.osgeo.org/wms/vmap0?", {layers: 'basic'}, options);
 
                 var jpl_wms = new OpenLayers.Layer.WMS( "NASA Global Mosaic",
                     "http://t1.hypercube.telascience.org/cgi-bin/landsat7", 
                     {layers: "landsat7"},{attribution:"Provided by Telascience"});
 
                 var vector = new OpenLayers.Layer.Vector("Simple Geometry",
-                              {attribution:"Vector Attibution in 2nd arg"});
+                              {attribution:"Vector Attribution in 2nd arg"});
 
                 map.addLayers([ol_wms, jpl_wms, vector]);
 

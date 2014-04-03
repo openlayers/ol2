@@ -15,7 +15,7 @@ function init() {
 
     // create Google layer with EPSG:102113 code
     var gsat = new OpenLayers.Layer.Google("Google Imagery", {
-        type: G_SATELLITE_MAP, 
+        type: google.maps.MapTypeId.SATELLITE, 
         sphericalMercator: true,
         projection: "EPSG:102113"
     });

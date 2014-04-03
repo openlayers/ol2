@@ -1,7 +1,7 @@
 // global variables
 var map, map2;
 
-// wrap the instanciation code in an anonymous function that gets executed
+// wrap the instantiation code in an anonymous function that gets executed
 // immedeately
 (function(){
     // style the vectorlayer
