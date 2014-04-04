@@ -72,7 +72,7 @@
 
         var response;
 
-        protocol.createRequest = function(url, params, callback) {
+        protocol.createRequest = function(url, params, response, callback) {
             // 4 tests
             t.ok(this == protocol,
                 'createRequest called with correct scope');
@@ -80,6 +80,8 @@
                 'createRequest called with correct url');
             t.ok(params == readOptions.params,
                 'createRequest called with correct params');
+            t.ok(params == readOptions.response,
+                'createRequest called with correct response');
             t.ok(callback instanceof Function,
                 'createRequest called with a function as callback');
 
@@ -106,7 +108,7 @@
 
         // log requests
         var log, exp;
-        OpenLayers.Protocol.Script.prototype.createRequest = function(url, params,
+        OpenLayers.Protocol.Script.prototype.createRequest = function(url, params, response,
                                                                callback) {
             log.push(params.bbox);
             return null;
@@ -159,7 +161,7 @@
             'created script has a correct id');
 
         protocol.callbackTemplate = "customCallback(${id})";
-        script = protocol.createRequest('http://bar_url/', {'k': 'bar_param2'}, 'bar_callback');
+        script = protocol.createRequest('http://bar_url/', {'k': 'bar_param2'}, {'priv': null}, 'bar_callback');
 
         params = OpenLayers.Util.getParameters(script.src);        
         t.eq(params.k, "bar_param2", "custom query string param");
