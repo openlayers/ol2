@@ -1,0 +1,244 @@
+<html>
+<head> 
+    <script src="../OLLoader.js"></script>
+    <script type="text/javascript">
+
+    function test_read_services(t) {
+        t.plan(3);
+        var xml = document.getElementById("services").firstChild.nodeValue;
+        var doc = new OpenLayers.Format.XML().read(xml);
+        var format = new OpenLayers.Format.TMSCapabilities();
+        var obj = format.read(doc);
+        t.eq(obj.services.length, 1, "1 service expected");
+        t.eq(obj.services[0].href, "http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/", "href correctly parsed");
+        t.eq(obj.services[0].version, "1.0.0", "version correctly parsed");
+    }
+
+    function test_read_v1(t) {
+        t.plan(5);
+        var xml = document.getElementById("v1").firstChild.nodeValue;
+        var doc = new OpenLayers.Format.XML().read(xml);
+        var format = new OpenLayers.Format.TMSCapabilities();
+        var obj = format.read(doc);
+        t.eq(obj.tileMaps.length, 39, "39 tileMaps parsed");
+        t.eq(obj.tileMaps[0].href, "http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/linktothepast/", "tileMap href correct");
+        t.eq(obj.tileMaps[0].srs, "EPSG:4326", "tileMap srs correct");
+        t.eq(obj.tileMaps[0].title, "linktothepast", "tileMap title correct");
+        t.eq(obj.tileMaps[0].profile, "global-geodetic", "tileMap profile correct");
+    }
+
+    function test_read_tilemap(t) {
+        t.plan(13);
+        var xml = document.getElementById("tilemap").firstChild.nodeValue;
+        var doc = new OpenLayers.Format.XML().read(xml);
+        var format = new OpenLayers.Format.TMSCapabilities();
+        var obj = format.read(doc);
+        t.eq(obj.title, "basic", "tileMap title read correctly");
+        t.eq(obj['abstract'], "VMap0-based vector layer, styled by Schuyler Erle.", "tileMap abstract correct");
+        t.eq(obj.srs, "EPSG:4326", "tileMap srs correct");
+        t.ok(obj.bbox.equals(new OpenLayers.Bounds(-180, -90, 180, 90)), "bbox correct");
+        t.ok(obj.origin.equals(new OpenLayers.LonLat(-180, -90)), "origin correct");
+        t.eq(obj.tileFormat.width, 256, "width correct");
+        t.eq(obj.tileFormat.height, 256, "height correct");
+        t.eq(obj.tileFormat.mimeType, "image/png", "MIME type correct");
+        t.eq(obj.tileFormat.extension, "png", "extension correct");
+        t.eq(obj.tileSets.length, 20, "20 tileSets");
+        t.eq(obj.tileSets[0].href, "http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/0", "tileSet href correct");
+        t.eq(obj.tileSets[0].unitsPerPixel, 0.70312500000000000000, "unitsPerPixel correct");
+        t.eq(obj.tileSets[0].order, 0, "order correct");
+    }
+
+    </script> 
+</head>
+<body>
+<div id="services"><!--
+<?xml version="1.0" encoding="UTF-8" ?>
+<Services>
+    <TileMapService version="1.0.0" href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/" />
+</Services>
+-->
+</div>
+<div id="v1"><!--
+<?xml version="1.0" encoding="UTF-8" ?>
+<TileMapService version="1.0.0">
+    <TileMaps>
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/linktothepast/"
+            srs="EPSG:4326" title="linktothepast" profile="global-geodetic"/>
+
+        <TileMap
+            href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/xkcd-onlinecommunities/"
+            srs="EPSG:4326" title="xkcd-onlinecommunities" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-7-2/"
+            srs="EPSG:4326" title="mario-7-2" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-7-3/"
+            srs="EPSG:4326" title="mario-7-3" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-7-1/"
+            srs="EPSG:4326" title="mario-7-1" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-6-3/"
+            srs="EPSG:4326" title="mario-6-3" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-6-2/"
+            srs="EPSG:4326" title="mario-6-2" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-6-1/"
+            srs="EPSG:4326" title="mario-6-1" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-6-4/"
+            srs="EPSG:4326" title="mario-6-4" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/dragonwarrior/"
+            srs="EPSG:4326" title="dragonwarrior" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/DRG/" srs="EPSG:4326"
+            title="DRG" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/basic/" srs="EPSG:4326"
+            title="basic" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-5-4/"
+            srs="EPSG:4326" title="mario-5-4" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-5-1/"
+            srs="EPSG:4326" title="mario-5-1" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-5-2/"
+            srs="EPSG:4326" title="mario-5-2" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-5-3/"
+            srs="EPSG:4326" title="mario-5-3" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/avalon/"
+            srs="EPSG:4326" title="avalon" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-4-1/"
+            srs="EPSG:4326" title="mario-4-1" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-4-3/"
+            srs="EPSG:4326" title="mario-4-3" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-4-2/"
+            srs="EPSG:4326" title="mario-4-2" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-4-4/"
+            srs="EPSG:4326" title="mario-4-4" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-8-4/"
+            srs="EPSG:4326" title="mario-8-4" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-8-1/"
+            srs="EPSG:4326" title="mario-8-1" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-3-4/"
+            srs="EPSG:4326" title="mario-3-4" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-8-3/"
+            srs="EPSG:4326" title="mario-8-3" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-8-2/"
+            srs="EPSG:4326" title="mario-8-2" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-3-2/"
+            srs="EPSG:4326" title="mario-3-2" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-7-4/"
+            srs="EPSG:4326" title="mario-7-4" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-2-3/"
+            srs="EPSG:4326" title="mario-2-3" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-2-2/"
+            srs="EPSG:4326" title="mario-2-2" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-2-1/"
+            srs="EPSG:4326" title="mario-2-1" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-2-4/"
+            srs="EPSG:4326" title="mario-2-4" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/DOQ/" srs="EPSG:4326"
+            title="DOQ" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-1-1/"
+            srs="EPSG:4326" title="mario-1-1" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-1-2/"
+            srs="EPSG:4326" title="mario-1-2" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-1-3/"
+            srs="EPSG:4326" title="mario-1-3" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-1-4/"
+            srs="EPSG:4326" title="mario-1-4" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-3-3/"
+            srs="EPSG:4326" title="mario-3-3" profile="global-geodetic"/>
+
+        <TileMap href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/1.0.0/mario-3-1/"
+            srs="EPSG:4326" title="mario-3-1" profile="global-geodetic"/>
+
+    </TileMaps>
+</TileMapService>
+-->
+</div>
+<div id="tilemap"><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<TileMap version="1.0.0"
+    tilemapservice="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/">
+    <Title>basic</Title>
+    <Abstract>VMap0-based vector layer, styled by Schuyler Erle.</Abstract>
+    <SRS>EPSG:4326</SRS>
+    <BoundingBox minx="-180.000000" miny="-90.000000" maxx="180.000000" maxy="90.000000"/>
+    <Origin x="-180.000000" y="-90.000000"/>
+    <TileFormat width="256" height="256" mime-type="image/png" extension="png"/>
+    <TileSets>
+
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/0"
+            units-per-pixel="0.70312500000000000000" order="0"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/1"
+            units-per-pixel="0.35156250000000000000" order="1"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/2"
+            units-per-pixel="0.17578125000000000000" order="2"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/3"
+            units-per-pixel="0.08789062500000000000" order="3"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/4"
+            units-per-pixel="0.04394531250000000000" order="4"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/5"
+            units-per-pixel="0.02197265625000000000" order="5"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/6"
+            units-per-pixel="0.01098632812500000000" order="6"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/7"
+            units-per-pixel="0.00549316406250000000" order="7"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/8"
+            units-per-pixel="0.00274658203125000000" order="8"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/9"
+            units-per-pixel="0.00137329101562500000" order="9"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/10"
+            units-per-pixel="0.00068664550781250000" order="10"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/11"
+            units-per-pixel="0.00034332275390625000" order="11"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/12"
+            units-per-pixel="0.00017166137695312500" order="12"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/13"
+            units-per-pixel="0.00008583068847656250" order="13"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/14"
+            units-per-pixel="0.00004291534423828125" order="14"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/15"
+            units-per-pixel="0.00002145767211914062" order="15"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/16"
+            units-per-pixel="0.00001072883605957031" order="16"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/17"
+            units-per-pixel="0.00000536441802978516" order="17"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/18"
+            units-per-pixel="0.00000268220901489258" order="18"/>
+        <TileSet href="http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/1.0.0/basic/19"
+            units-per-pixel="0.00000134110450744629" order="19"/>
+    </TileSets>
+</TileMap>
+-->
+</div>
+</body>
+</html> 

@@ -461,6 +461,7 @@
         
         layer.features = [];
     }
+    
     function test_drawfeature_ng(t) {
         t.plan(3);
         var layer = new OpenLayers.Layer.Vector();
@@ -904,23 +905,6 @@
             "featuresadded event received expected number of features");
     }
 
-	function test_raiseFeature(t) {
-		t.plan(4);
-        var map = new OpenLayers.Map('map');
-        layer = new OpenLayers.Layer.Vector("");
-        map.addLayer(layer);
-        var feature1 = new OpenLayers.Feature.Vector(new OpenLayers.Geometry(1.0, 1.0));
-        var feature2 = new OpenLayers.Feature.Vector(new OpenLayers.Geometry(2.0, 2.0));
-        layer.addFeatures([feature1,feature2]);
-		layer.raiseFeature(feature1, 1);
-        t.eq(layer.features.indexOf(feature1), 1, "first feature raised one up");
-		layer.raiseFeature(feature1, -1);
-        t.eq(layer.features.indexOf(feature1), 0, "first feature raised one down");
-		layer.raiseFeature(feature1, -1);
-        t.eq(layer.features.indexOf(feature1), 0, "feature stays at index 0 because there is no lower position than index 0.");
-		layer.raiseFeature(feature1, 2);
-        t.eq(layer.features.indexOf(feature1), 1, "first feature raised 2 up, but has index 1 because there are only two features in layer.");
-	}
 
 
   </script>

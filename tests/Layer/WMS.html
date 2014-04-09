@@ -1,7 +1,7 @@
 <html>
 <head>
     <script type="text/javascript">var oldAlert = window.alert, gMess; window.alert = function(message) {gMess = message; return true;};</script>
-    <script src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ'></script>
+    <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
     <script type="text/javascript">window.alert = oldAlert;</script>
 <script src="../OLLoader.js"></script>
   <script type="text/javascript">
@@ -73,7 +73,7 @@
 
         var url = "http://octo.metacarta.com/cgi-bin/mapserv";
         layer = new OpenLayers.Layer.WMS(name, url, params);
-        var map = new OpenLayers.Map('map');
+        var map = new OpenLayers.Map('map', {tileManager: null});
         map.addLayer(layer);
         var pixel = new OpenLayers.Pixel(5,6);
         var tile = layer.addTile(new OpenLayers.Bounds(1,2,3,4), pixel);
@@ -104,7 +104,7 @@
 
         var url = "http://octo.metacarta.com/cgi-bin/mapserv";
         layer = new OpenLayers.Layer.WMS(name, url, params, {encodeBBOX:true});
-        var map = new OpenLayers.Map('map');
+        var map = new OpenLayers.Map('map', {tileManager: null});
         map.addLayer(layer);
         var pixel = new OpenLayers.Pixel(5,6);
         var tile = layer.addTile(new OpenLayers.Bounds(1,2,3,4), pixel);
@@ -423,6 +423,26 @@
         t.ok( layer.grid == null, "grid set to null");
     }
 
+    function test_customProjection(t) {
+        t.plan(1);
+        var map = new OpenLayers.Map('map', {
+            units: 'm', 
+            projection: new OpenLayers.Projection('EPSG:28992'),
+            maxExtent: new OpenLayers.Bounds(0, 300000, 300000, 6250000)
+        });
+        var layer = new OpenLayers.Layer.WMS(null, url, {layers: 'mylayer', version: '1.3.0'});
+        map.addLayer(layer);
+        var error = false;
+        try {
+            map.setCenter(new OpenLayers.LonLat(100000,300000), 5);
+        } catch(err) {
+            error = true;
+        }
+        t.ok(!error, "no error on getURL if layer has a custom projection and no defaults defined");
+        layer.destroy();
+        map.destroy();
+    }
+
     function test_Layer_WMS_v13(t) {
 
         t.plan(6);
@@ -530,6 +550,26 @@
         layer.mergeNewParams({transparent: "true"});
         t.eq(typeof layer.params.TRANSPARENT, "string", "transparent param is string");
         t.ok(layer.getFullRequestString({}).indexOf("TRANSPARENT=true") != -1, "transparent param value passed as provided if String");
+        
+        map.destroy();
+    }
+    
+    function test_tileBounds(t) {
+        t.plan(3);
+        
+        var map = new OpenLayers.Map("map", {projection: "EPSG:3857", zoomMethod: null});
+        var layer = new OpenLayers.Layer.WMS("wms", "../../img/blank.gif");
+        map.addLayer(layer);
+        map.setCenter([0, 0], 1);
+        map.pan(2, -100);
+        map.zoomIn();
+        t.eq(layer.grid[1][0].bounds, new OpenLayers.Bounds(-10018754.17, 0, 0, 10018754.17), "no floating point errors after zooming");
+        map.setCenter([0, 0], 14);
+        var bounds = layer.grid[0][0].bounds.clone();
+        map.pan(260, 520);
+        map.pan(-260, -520);
+        t.eq(layer.grid[0][0].bounds, bounds, "no floating point errors after dragging back and forth");
+        t.eq(bounds.right, 0, "0 is 0, and not some super small number");
         
         map.destroy();
     }

@@ -32,7 +32,8 @@
             projection: "EPSG:900913",
             layers: [layer],
             center: [0, 0],
-            zoom: 1
+            zoom: 1,
+            tileManager: null
         });
     }
     
@@ -57,6 +58,21 @@
 
         layer.destroy();
 
+    }
+
+    function test_createBackBuffer(t) {
+      t.plan(1);
+      setUp();
+
+      var got;
+      try {
+        got = layer.createBackBuffer();
+      } catch (e) {
+        got = e;
+      } finally {
+        tearDown();
+      }
+      t.eq(got, undefined, "createBackBuffer returns undefined");
     }
     
     function test_clone(t) {

@@ -72,16 +72,16 @@
         layer2.drawFeature = drawFeature;
         control.select(feature1);
         t.eq(feature1.renderIntent, "select", "render intent is set to select");
-		t.eq(control.handlers.feature.lastFeature.id,feature1.id, "handler has lastFeature set to the first selected");
+        t.eq(control.handlers.feature.lastFeature.id,feature1.id, "handler has lastFeature set to the first selected");
         control.select(feature2);
         t.eq(feature2.renderIntent, "select", "render intent is set to select");
         t.eq(control.handlers.feature.lastFeature.id,feature1.id, "handler has lastFeature set to the first selected");
         control.unselect(feature1);
         t.eq(feature1.renderIntent, "default", "render intent is set back to default");
-		t.eq(control.handlers.feature.lastFeature,null, "set lastFeature of feature handler is null");
+        t.eq(control.handlers.feature.lastFeature,null, "set lastFeature of feature handler is null");
         control.unselect(feature2);
         t.eq(feature2.renderIntent, "default", "render intent is set back to default");
-		t.eq(control.handlers.feature.lastFeature,null, "set lastFeature of feature handler is null");
+        t.eq(control.handlers.feature.lastFeature,null, "set lastFeature of feature handler is null");
     }
 
     function test_Control_SelectFeature_clickFeature(t) {
@@ -562,6 +562,31 @@
         t.eq((control.layers === null), true, "When using setLayer with a single layer, the layers property is removed if present before");
         map.destroy();
     } 
+    
+    function test_setLayerWithRemoving(t) {
+        t.plan(2);
+        var map = new OpenLayers.Map("map");
+        var layer1 = new OpenLayers.Layer.Vector();
+        var layer2 = new OpenLayers.Layer.Vector();
+        map.addLayer(layer1, layer2);
+        // initialize it with a single layer
+        var control = new OpenLayers.Control.SelectFeature(layer1);
+        map.addControl(control);
+        control.activate();
+        var noError = null;
+        map.events.register("preremovelayer", this, function(e) {
+            try {
+                control.setLayer(layer2);
+            } catch (e) {
+                noError = e;
+            }
+        });
+        layer1.destroy();
+        t.eq(layer2.id, control.layer.id, "Layer is set correctly without error");
+        t.eq(noError, null,"No error occured during setLayer. Error is: '"+noError+"'");
+        control.destroy();
+        map.destroy();
+    }
 
     function test_unselectAll(t) {
         t.plan(2);
@@ -602,6 +627,28 @@
         t.eq(layer.selectedFeatures[0].id, 3,
              'the remaining selected features is the one expected');
     }
+    
+    function test_addLayer(t) {
+        t.plan(5);
+        
+        var layer = new OpenLayers.Layer.Vector();
+        var layers = [new OpenLayers.Layer.Vector(), new OpenLayers.Layer.Vector()]
+        var layerToAdd = new OpenLayers.Layer.Vector();
+        
+        var controlWithLayer = new OpenLayers.Control.SelectFeature(layer);
+        var controlWithLayers = new OpenLayers.Control.SelectFeature(layers);
+        
+        t.ok(controlWithLayer.layer instanceof OpenLayers.Layer.Vector, "layer is an instance of OpenLayers.Layer.Vector");
+        
+        controlWithLayer.addLayer(layerToAdd);
+        controlWithLayers.addLayer(layerToAdd);
+        
+        t.eq(controlWithLayer.layers.length, 2, "the added layer is added and all layers are active");
+        t.eq(controlWithLayers.layers.length, 3, "the added layer is added and all layers are active");
+
+        t.ok(controlWithLayer.layer instanceof OpenLayers.Layer.Vector.RootContainer, "layer has changed from OpenLayers.Layer.Vector to OpenLayers.Layer.Vector.RootContainer");
+        t.ok(controlWithLayers.layer instanceof OpenLayers.Layer.Vector.RootContainer, "layer still a OpenLayers.Layer.Vector.RootContainer");
+    }    
    
     </script>
 </head>

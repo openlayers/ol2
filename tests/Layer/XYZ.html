@@ -140,7 +140,7 @@
                     url, {layername: 'basic', type:'png', resolutions:[0.000634956337608418], buffer: 2} );
             m.addLayer(layer);
             m.zoomToMaxExtent()
-            t.eq(layer.getURL(layer.grid[3][3].bounds), "http://labs.metacarta.com/wms-c/Basic.py/1.0.0/basic/0/1/0.png", "XYZ tiles around rounded properly.");
+            t.eq(layer.getURL(layer.grid[3][3].bounds), "http://labs.metacarta.com/wms-c/Basic.py/1.0.0/basic/0/1/1.png", "XYZ tiles around rounded properly.");
         m.destroy();
     }        
             
@@ -154,7 +154,7 @@
         t.eq(layer.tileOrigin, null, "Tile origin starts out null");
         layer.setMap(map);
         
-        t.eq(layer.tileOrigin.lat, -90, "lat is -90");
+        t.eq(layer.tileOrigin.lat, 90, "lat is 90");
         t.eq(layer.tileOrigin.lon, -180, "lon is -180");
         map.destroy();
     }

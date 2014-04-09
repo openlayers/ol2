@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Modify Feature By Segment</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <style type="text/css">
+        #controls {
+            width: 512px;
+        }
+        #controlToggle {
+            padding-left: 1em;
+        }
+        #controlToggle li {
+            list-style: none;
+        }
+    </style>
+    <script src="http://mourner.github.io/rbush/rbush.js"></script>
+    <script src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var map, vectors, controls;
+        function init(){
+            map = new OpenLayers.Map('map');
+            vectors = new OpenLayers.Layer.Vector("Vector Layer", {
+                isBaseLayer: true,
+                strategies: [new OpenLayers.Strategy.Fixed()],
+                protocol: new OpenLayers.Protocol.HTTP({
+                    url: "data/Admin0_HO.geojson",
+                    format: new OpenLayers.Format.GeoJSON()
+                })
+            });
+            map.addLayers([vectors]);
+            map.addControl(new OpenLayers.Control.LayerSwitcher());
+            map.addControl(new OpenLayers.Control.MousePosition());
+            map.addControl(new OpenLayers.Control.ModifyFeature(vectors, {bySegment: true, autoActivate: true}));
+            map.zoomToExtent(new OpenLayers.Bounds(-89.403480529785, 14.56807565689, -89.051918029785, 14.74385690689));
+        }
+    </script>
+  </head>
+  <body onload="init()">
+    <h1 id="title">OpenLayers Modify Feature By Segment Example</h1>
+    <div id="tags">
+        vertices, digitizing, draw, drawing, large geometry
+    </div>
+    <div id="shortdesc">A demonstration of using the ModifyFeature control to edit large geometries. Click the feature to select and then hover with the mouse over a segment you want to edit.</div>
+    <div id="map" class="smallmap"></div>
+  </body>
+</html>

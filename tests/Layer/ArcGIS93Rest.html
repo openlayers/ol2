@@ -4,9 +4,6 @@
     <script type="text/javascript">window.alert = oldAlert;</script>
 <script src="../OLLoader.js"></script>
   <script type="text/javascript">
-    // turn off animation frame handling, so we can check img urls in tests
-    delete OpenLayers.Layer.Grid.prototype.queueTileDraw;
-    
     var isMozilla = (navigator.userAgent.indexOf("compatible") == -1);
     var layer; 
 
@@ -63,7 +60,7 @@
         t.plan( 6 );
     
         layer = new OpenLayers.Layer.ArcGIS93Rest(name, url, params);
-        var map = new OpenLayers.Map('map');
+        var map = new OpenLayers.Map('map', {tileManager: null});
         map.addLayer(layer);
         var pixel = new OpenLayers.Pixel(5,6);
         var tile = layer.addTile(new OpenLayers.Bounds(1,2,3,4), pixel);
@@ -261,7 +258,7 @@
         t.plan( 9 );
     
         layer = new OpenLayers.Layer.ArcGIS93Rest(name, url, params);
-        var map = new OpenLayers.Map('map');
+        var map = new OpenLayers.Map('map', {tileManager: null});
         map.addLayer(layer);
         var pixel = new OpenLayers.Pixel(5,6);
         var tile = layer.addTile(new OpenLayers.Bounds(1,2,3,4), pixel);
