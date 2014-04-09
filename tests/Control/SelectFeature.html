@@ -75,7 +75,7 @@
 		t.eq(control.handlers.feature.lastFeature.id,feature1.id, "handler has lastFeature set to the first selected");
         control.select(feature2);
         t.eq(feature2.renderIntent, "select", "render intent is set to select");
-		t.eq(control.handlers.feature.lastFeature.id,feature1.id, "handler has lastFeature set to the first selected");
+        t.eq(control.handlers.feature.lastFeature.id,feature1.id, "handler has lastFeature set to the first selected");
         control.unselect(feature1);
         t.eq(feature1.renderIntent, "default", "render intent is set back to default");
 		t.eq(control.handlers.feature.lastFeature,null, "set lastFeature of feature handler is null");
