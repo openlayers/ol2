@@ -144,8 +144,6 @@
         control.toggle = true;
         feature.test = 2;
         control.clickFeature(feature);
-
-
     }
 
     function test_box(t) {
@@ -186,10 +184,7 @@
         control.geometryTypes = ["OpenLayers.Geometry.Point"];
         control.selectBox(new OpenLayers.Bounds(-100, -100, 100, 100));
         t.eq(layer.selectedFeatures.length, 3, "3 features selected with geometryTypes filter");
-
-
     }
-
 
     function test_selectBox_events(t){
         t.plan(8);
@@ -231,6 +226,7 @@
         t.ok(firesBoxselectionend,"selectBox fires boxselectionend event");
         t.eq(afterSelectingNumberOfFeatures,1,"boxselectionend fires after feature selected");
     }
+    
     function test_Control_SelectFeature_activate(t) {
         t.plan(4);
         var map = new OpenLayers.Map("map");
