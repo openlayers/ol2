@@ -495,8 +495,8 @@
         t.eq(log[1]._createSymbolizer().foo, "baz", "_createSymbolizer function added to style and returns correct result");
         OpenLayers.Renderer.NG = OrigRendererNG;
 
-       layer.renderer = renderer;
-       layer.drawFeature(new OpenLayers.Feature.Vector());
+        layer.renderer = renderer;
+        layer.drawFeature(new OpenLayers.Feature.Vector());
         t.eq(log[2]._createSymbolizer, undefined, "no _createSymbolizer function for non-NG renderer");
     }
     function test_deleted_state(t) {
@@ -702,121 +702,119 @@
                
         var root = renderer.vectorRoot;
         if (layer.renderer.CLASS_NAME == 'OpenLayers.Renderer.SVG') {
-                feature.style = customStyle1;
-                layer.drawFeature(feature);
-                t.eq(root.firstChild.getAttributeNS(null, 'width'),
-                             (2*customStyle1.pointRadius).toString(),
-                             "given a pointRadius, width equals 2*pointRadius");
-                t.eq(root.firstChild.getAttributeNS(null, 'height'),
-                             (2*customStyle1.pointRadius).toString(),
-                             "given a pointRadius, height equals 2*pointRadius");
-                feature.style = customStyle2;
-                layer.drawFeature(feature);
-                t.eq(root.firstChild.getAttributeNS(null, 'width'),
-                             root.firstChild.getAttributeNS(null, 'height'),
-                             "given a graphicWidth, width equals height");
-                t.eq(root.firstChild.getAttributeNS(null, 'width'),
-                             customStyle2.graphicWidth.toString(),
-                             "width is set correctly");
-                feature.style = customStyle3;
-                layer.drawFeature(feature);
-                t.eq(root.firstChild.getAttributeNS(null, 'height'),
-                             root.firstChild.getAttributeNS(null, 'width'),
-                             "given a graphicHeight, height equals width");
-                t.eq(root.firstChild.getAttributeNS(null, 'height'),
-                             customStyle3.graphicHeight.toString(),
-                             "height is set correctly");
-                feature.style = customStyle4;
-                layer.drawFeature(feature);
-                t.eq(root.firstChild.getAttributeNS(null, 'height'),
-                             customStyle4.graphicHeight.toString(),
-                             "given graphicHeight and graphicWidth, both are set: height");
-                t.eq(root.firstChild.getAttributeNS(null, 'width'),
-                             customStyle4.graphicWidth.toString(),
-                             "given graphicHeight and graphicWidth, both are set: width");
-                feature.style = customStyle5;
-                layer.drawFeature(feature);
-                // we use startsWith here as some browsers (at least Safari 3 and FireFox 4)
-                // do not append a semi-colon to the opacity string
-                t.ok(OpenLayers.String.startsWith(
-                            root.firstChild.getAttributeNS(null, 'style'),
-                            "opacity: " + customStyle5.graphicOpacity.toString()),
-                     "graphicOpacity correctly set");
-                feature.style = customStyle6;
-                layer.drawFeature(feature);
-                var x = geometryX / renderer.getResolution() + renderer.left;
-                var y = geometryY / renderer.getResolution() - renderer.top;
-                // SVG setStyle() gets x and y using getAttributeNS(), which returns
-                // a value with only 3 decimal digits. To mimic this we use toFixed(3) here
-                x = x.toFixed(3);
-                y = y.toFixed(3);
-                // toFixed() returns a string
-                x = parseFloat(x);
-                y = parseFloat(y);
-                t.eq(root.firstChild.getAttributeNS(null, 'x'),
-                        (x + customStyle6.graphicXOffset).toFixed().toString(),
-                        "graphicXOffset correctly set");
-                t.eq(root.firstChild.getAttributeNS(null, 'y'),
-                        (-y + customStyle6.graphicYOffset).toFixed().toString(),
-                        "graphicYOffset correctly set");
+            feature.style = customStyle1;
+            layer.drawFeature(feature);
+            t.eq(root.firstChild.getAttributeNS(null, 'width'),
+                (2*customStyle1.pointRadius).toString(),
+                "given a pointRadius, width equals 2*pointRadius");
+            t.eq(root.firstChild.getAttributeNS(null, 'height'),
+                (2*customStyle1.pointRadius).toString(),
+                "given a pointRadius, height equals 2*pointRadius");
+            feature.style = customStyle2;
+            layer.drawFeature(feature);
+            t.eq(root.firstChild.getAttributeNS(null, 'width'),
+                root.firstChild.getAttributeNS(null, 'height'),
+                "given a graphicWidth, width equals height");
+            t.eq(root.firstChild.getAttributeNS(null, 'width'),
+                customStyle2.graphicWidth.toString(),
+                 "width is set correctly");
+            feature.style = customStyle3;
+            layer.drawFeature(feature);
+            t.eq(root.firstChild.getAttributeNS(null, 'height'),
+                root.firstChild.getAttributeNS(null, 'width'),
+                "given a graphicHeight, height equals width");
+            t.eq(root.firstChild.getAttributeNS(null, 'height'),
+                customStyle3.graphicHeight.toString(),
+                "height is set correctly");
+            feature.style = customStyle4;
+            layer.drawFeature(feature);
+            t.eq(root.firstChild.getAttributeNS(null, 'height'),
+                customStyle4.graphicHeight.toString(),
+                "given graphicHeight and graphicWidth, both are set: height");
+            t.eq(root.firstChild.getAttributeNS(null, 'width'),
+                customStyle4.graphicWidth.toString(),
+                "given graphicHeight and graphicWidth, both are set: width");
+            feature.style = customStyle5;
+            layer.drawFeature(feature);
+            // we use startsWith here as some browsers (at least Safari 3 and FireFox 4)
+            // do not append a semi-colon to the opacity string
+            t.ok(OpenLayers.String.startsWith(
+                root.firstChild.getAttributeNS(null, 'style'),
+                "opacity: " + customStyle5.graphicOpacity.toString()),
+                "graphicOpacity correctly set");
+            feature.style = customStyle6;
+            layer.drawFeature(feature);
+            var x = geometryX / renderer.getResolution() + renderer.left;
+            var y = geometryY / renderer.getResolution() - renderer.top;
+            // SVG setStyle() gets x and y using getAttributeNS(), which returns
+            // a value with only 3 decimal digits. To mimic this we use toFixed(3) here
+            x = x.toFixed(3);
+            y = y.toFixed(3);
+            // toFixed() returns a string
+            x = parseFloat(x);
+            y = parseFloat(y);
+            t.eq(root.firstChild.getAttributeNS(null, 'x'),
+                (x + customStyle6.graphicXOffset).toFixed().toString(),
+                "graphicXOffset correctly set");
+            t.eq(root.firstChild.getAttributeNS(null, 'y'),
+                (-y + customStyle6.graphicYOffset).toFixed().toString(),
+                "graphicYOffset correctly set");
         }
         if (layer.renderer.CLASS_NAME == 'OpenLayers.Renderer.VML') {
-                feature.style = customStyle1;
-                layer.drawFeature(feature);
-                t.eq(root.firstChild.style.width,
-                             (2*customStyle1.pointRadius).toString()+'px',
-                             "given a pointRadius, width equals 2*pointRadius");
-                t.eq(root.firstChild.style.height,
-                             (2*customStyle1.pointRadius).toString()+'px',
-                             "given a pointRadius, height equals 2*pointRadius");
-                feature.style = customStyle2;
-                layer.drawFeature(feature);
-                t.eq(root.firstChild.style.width,
-                             root.firstChild.style.height,
-                             "given a graphicWidth, width equals height");
-                t.eq(root.firstChild.style.width,
-                             customStyle2.graphicWidth.toString()+'px',
-                             "width is set correctly");
-                feature.style = customStyle3;
-                layer.drawFeature(feature);
-                t.eq(root.firstChild.style.height,
-                             root.firstChild.style.width,
-                             "given a graphicHeight, height equals width");
-                t.eq(root.firstChild.style.height,
-                             customStyle3.graphicHeight.toString()+'px',
-                             "height is set correctly");
-                feature.style = customStyle4;
-                layer.drawFeature(feature);
-                var left = parseInt(root.firstChild.style.left);
-                var top = parseInt(root.firstChild.style.top);
-                t.eq(root.firstChild.style.height,
-                             customStyle4.graphicHeight.toString()+'px',
-                             "given graphicHeight and graphicWidth, both are set: height");
-                t.eq(root.firstChild.style.width,
-                             customStyle4.graphicWidth.toString()+'px',
-                             "given graphicHeight and graphicWidth, both are set: width");
-                feature.style = customStyle5;
-                layer.renderer.clear();
-                layer.drawFeature(feature);
-                var fill = root.firstChild.getElementsByTagName("v:fill")[0];
-                var opacity;
-                if(fill) {
-                    opacity = fill.getAttribute('opacity');
-                }
-                if(opacity === undefined) {
-                    fill = root.firstChild.getElementsByTagName("fill")[0];
-                    opacity = fill.getAttribute('opacity');
-                }
-                t.eq(opacity,
-                             customStyle5.graphicOpacity,
-                             "graphicOpacity correctly set"); 
-                feature.style = customStyle6;
-                layer.drawFeature(feature);
-                var offsetLeft = parseInt(root.firstChild.style.left);
-                var offsetTop = parseInt(root.firstChild.style.top);
-                t.eq((offsetLeft-left)*2, customStyle6.graphicXOffset, "graphicXOffset correctly set");
-                t.eq((top-offsetTop)*2, customStyle6.graphicYOffset, "graphicYOffset correctly set");
-
+            feature.style = customStyle1;
+            layer.drawFeature(feature);
+            t.eq(root.firstChild.style.width,
+                (2*customStyle1.pointRadius).toString()+'px',
+                "given a pointRadius, width equals 2*pointRadius");
+            t.eq(root.firstChild.style.height,
+                (2*customStyle1.pointRadius).toString()+'px',
+                "given a pointRadius, height equals 2*pointRadius");
+            feature.style = customStyle2;
+            layer.drawFeature(feature);
+            t.eq(root.firstChild.style.width,
+                root.firstChild.style.height,
+                "given a graphicWidth, width equals height");
+            t.eq(root.firstChild.style.width,
+                customStyle2.graphicWidth.toString()+'px',
+                "width is set correctly");
+            feature.style = customStyle3;
+            layer.drawFeature(feature);
+            t.eq(root.firstChild.style.height,
+                root.firstChild.style.width,
+                "given a graphicHeight, height equals width");
+            t.eq(root.firstChild.style.height,
+                customStyle3.graphicHeight.toString()+'px',
+                "height is set correctly");
+            feature.style = customStyle4;
+            layer.drawFeature(feature);
+            var left = parseInt(root.firstChild.style.left);
+            var top = parseInt(root.firstChild.style.top);
+            t.eq(root.firstChild.style.height,
+                customStyle4.graphicHeight.toString()+'px',
+                "given graphicHeight and graphicWidth, both are set: height");
+            t.eq(root.firstChild.style.width,
+                customStyle4.graphicWidth.toString()+'px',
+                "given graphicHeight and graphicWidth, both are set: width");
+            feature.style = customStyle5;
+            layer.renderer.clear();
+            layer.drawFeature(feature);
+            var fill = root.firstChild.getElementsByTagName("v:fill")[0];
+            var opacity;
+            if(fill) {
+                opacity = fill.getAttribute('opacity');
+            }
+            if(opacity === undefined) {
+                fill = root.firstChild.getElementsByTagName("fill")[0];
+                opacity = fill.getAttribute('opacity');
+            }
+            t.eq(opacity, customStyle5.graphicOpacity,
+                "graphicOpacity correctly set"); 
+            feature.style = customStyle6;
+            layer.drawFeature(feature);
+            var offsetLeft = parseInt(root.firstChild.style.left);
+            var offsetTop = parseInt(root.firstChild.style.top);
+            t.eq((offsetLeft-left)*2, customStyle6.graphicXOffset, "graphicXOffset correctly set");
+            t.eq((top-offsetTop)*2, customStyle6.graphicYOffset, "graphicYOffset correctly set");
         }
     }
 
