@@ -94,14 +94,15 @@
 
 
 
-            // Create some random moving points in EPSG:3857
-            var radius = 200000;
-            var angleDelta = 10;
+            // Create some moving points in EPSG:3857
+            var radius = 500000;
+            var angleDelta = 5;
             var delay = 50;
+//             if (false)
+//             for (var lon = -1000000; lon <= 1000000; lon += 7000000) {
 //             for (var lon = -1000000; lon <= 1000000; lon += 500000) {
-//             for (var lon = -1000000; lon <= 1000000; lon += 1000000) {
-            for (var lon = -1000000; lon <= 1000000; lon += 100000) {
-//                 for (var lat = -1000000; lat <= 1000000; lat += 1000000) {
+            for (var lon = -1000000; lon <= 1000000; lon += 250000) {
+//                 for (var lat = -1000000; lat <= 1000000; lat += 7000000) {
 //                 for (var lat = -1000000; lat <= 1000000; lat += 500000) {
                 for (var lat = -1000000; lat <= 1000000; lat += 250000) {
 
@@ -118,18 +119,22 @@
                             f.geometry.rotate(angleDelta, g);
 //                             console.log('Destination ',f.geometry.x, f.geometry.y);
 
-                            if (f.layer) {
-                                f.layer.drawFeature(f);
-                            }
+                            // Note that we cannot use f.layer.drawFeature(),
+                            //   because feature.layer might be null if
+                            //   the feature has been added but is not
+                            //   visible because it's inside a cluster.
+                            vectorLayer.drawFeature(f);
 
-//                         rotateFeature(
-//                         movingPoint, angleDelta, geom)
                         }})(movingPoint, pivot)
                     , delay);
 
-                    delay += 1;    // Each point will rotate slower than previous
+                    delay += 1;    // Each point will rotate a bit slower than previous
                 }
             }
+
+//             window.setInterval(function(){
+//                 console.log('Tick: Candidates: ', clusterStrategy.clusters.length, ' Cached: ', clusterStrategy.features.length, ' Visible: ', clusterStrategy.layer.features.length );
+//             },100);
 
         }
 
