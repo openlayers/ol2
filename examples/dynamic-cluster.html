@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>OpenLayers Dynamic Clusters Example</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <style type="text/css">
+        p {
+            width: 500px;
+        }
+    </style>
+    <script src="../lib/OpenLayers.js"></script>
+    <script src="../lib/OpenLayers/Strategy/DynamicCluster.js"></script>
+    <script type="text/javascript">
+        var map, vectorLayer, clusterStrategy;
+
+        function init(){
+            map = new OpenLayers.Map('map');
+//             var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
+//                     "http://vmap0.tiles.osgeo.org/wms/vmap0", {layers: 'basic'} );
+            var layer = new OpenLayers.Layer.XYZ('ControlRoom','http://hiigara.internal.aptomar.com:20008/tile/control-room/${z}/${x}/${y}.png',
+                {projection: 'EPSG:3857'}
+            );
+            map.addLayer(layer);
+
+//             clusterStrategy = new OpenLayers.Strategy.Cluster();
+            clusterStrategy = new OpenLayers.Strategy.DynamicCluster();
+            clusterStrategy.threshold = 2;
+
+            var style = new OpenLayers.Style({
+                pointRadius: "${radius}",
+//                 fillColor: "#ffcc66",
+                fillColor: "#66ccff",
+                fillOpacity: 0.4,
+//                 strokeColor: "#cc6633",
+                strokeColor: "#3366cc",
+                strokeWidth: "${width}",
+                strokeOpacity: 0.4,
+
+                fontColor: '#ffffff',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                labelAlign: 'cm',
+    //             labelXOffset: '0',
+    //             labelYOffset: '-10',
+    //             labelYOffset: '0',
+                labelOutlineColor: 'rgba(0,0,0,0.6)',
+                labelOutlineWidth: 2,
+                label : '${count}',
+            }, {
+                context: {
+                    width: function(feature) {
+                        return (feature.cluster) ? 2 : 1;
+                    },
+                    radius: function(feature) {
+                        var pix = 2;
+                        if(feature.cluster) {
+                            pix = Math.min(feature.attributes.count, 7) + 2;
+                        }
+                        return pix;
+                    },
+                    count: function(feature) {
+                        if (feature.attributes.count) {
+                            return feature.attributes.count;
+                        }
+                        return '';
+                    }
+                }
+            });
+
+            vectorLayer = new OpenLayers.Layer.Vector("Simple Geometry",{
+                strategies: [ clusterStrategy ],
+                styleMap: new OpenLayers.StyleMap({'default': style})
+            });
+
+            // create a point feature
+//             var point = new OpenLayers.Geometry.Point(-110, 45);
+//             pointFeature = new OpenLayers.Feature.Vector(point, null, style_blue);
+
+            map.addLayer(vectorLayer);
+            map.setCenter(new OpenLayers.LonLat(0,0), 2);
+//             vectorLayer.addFeatures([pointFeature]);
+
+
+            var drawControl = new OpenLayers.Control.DrawFeature(vectorLayer,
+                OpenLayers.Handler.Point);
+            map.addControl(drawControl);
+            drawControl.activate();
+
+
+
+
+
+            // Create some random moving points in EPSG:3857
+            var radius = 200000;
+            var angleDelta = 10;
+            var delay = 50;
+//             for (var lon = -1000000; lon <= 1000000; lon += 500000) {
+//             for (var lon = -1000000; lon <= 1000000; lon += 1000000) {
+            for (var lon = -1000000; lon <= 1000000; lon += 100000) {
+//                 for (var lat = -1000000; lat <= 1000000; lat += 1000000) {
+//                 for (var lat = -1000000; lat <= 1000000; lat += 500000) {
+                for (var lat = -1000000; lat <= 1000000; lat += 250000) {
+
+                    var geom  = new OpenLayers.Geometry.Point(lon+radius,lat);
+                    var pivot = new OpenLayers.Geometry.Point(lon,lat);
+                    var movingPoint = new OpenLayers.Feature.Vector(geom);
+
+                    vectorLayer.addFeatures([movingPoint]);
+
+                    window.setInterval((function(f,g){
+                        return function() {
+//                             console.log('Rotating from ',g.x, g.y,f.layer);
+//                             console.log('Origin ',f.geometry.x, f.geometry.y);
+                            f.geometry.rotate(angleDelta, g);
+//                             console.log('Destination ',f.geometry.x, f.geometry.y);
+
+                            if (f.layer) {
+                                f.layer.drawFeature(f);
+                            }
+
+//                         rotateFeature(
+//                         movingPoint, angleDelta, geom)
+                        }})(movingPoint, pivot)
+                    , delay);
+
+                    delay += 1;    // Each point will rotate slower than previous
+                }
+            }
+
+        }
+
+
+    </script>
+  </head>
+  <body onload="init()">
+    <h1 id="title">Dynamic clusters</h1>
+
+    <div id="tags">
+        vector, feature, rotating, rotation, rotate, advanced, light
+    </div>
+  <p id="shortdesc">
+      Dynamic clusters example
+  </p>
+
+    <div id="map" style="width:100%; height:70vh"></div>
+    <div id="docs">This example shows the dynamic cluster strategy. When a feature is added, removed or moved from a layer with this strategy, only the clusters around that feature will be changed.</div>
+  </body>
+</html>
