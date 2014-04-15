@@ -19,34 +19,26 @@
 
         function init(){
             map = new OpenLayers.Map('map');
-//             var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-//                     "http://vmap0.tiles.osgeo.org/wms/vmap0", {layers: 'basic'} );
-            var layer = new OpenLayers.Layer.XYZ('ControlRoom','http://hiigara.internal.aptomar.com:20008/tile/control-room/${z}/${x}/${y}.png',
+            var layer = new OpenLayers.Layer.XYZ('OpenStreetMap','http://tile.openstreetmap.org/${z}/${x}/${y}.png',
                 {projection: 'EPSG:3857'}
             );
             map.addLayer(layer);
 
-//             clusterStrategy = new OpenLayers.Strategy.Cluster();
             clusterStrategy = new OpenLayers.Strategy.DynamicCluster();
             clusterStrategy.threshold = 2;
 
             var style = new OpenLayers.Style({
                 pointRadius: "${radius}",
-//                 fillColor: "#ffcc66",
-                fillColor: "#66ccff",
-                fillOpacity: 0.4,
-//                 strokeColor: "#cc6633",
-                strokeColor: "#3366cc",
+                fillColor: "#ffcc66",
+                fillOpacity: 0.8,
+                strokeColor: "#cc6633",
                 strokeWidth: "${width}",
-                strokeOpacity: 0.4,
+                strokeOpacity: 0.8,
 
                 fontColor: '#ffffff',
                 fontSize: '12px',
                 fontWeight: 'bold',
                 labelAlign: 'cm',
-    //             labelXOffset: '0',
-    //             labelYOffset: '-10',
-    //             labelYOffset: '0',
                 labelOutlineColor: 'rgba(0,0,0,0.6)',
                 labelOutlineWidth: 2,
                 label : '${count}',
@@ -56,7 +48,7 @@
                         return (feature.cluster) ? 2 : 1;
                     },
                     radius: function(feature) {
-                        var pix = 2;
+                        var pix = 3;
                         if(feature.cluster) {
                             pix = Math.min(feature.attributes.count, 7) + 2;
                         }
@@ -76,13 +68,8 @@
                 styleMap: new OpenLayers.StyleMap({'default': style})
             });
 
-            // create a point feature
-//             var point = new OpenLayers.Geometry.Point(-110, 45);
-//             pointFeature = new OpenLayers.Feature.Vector(point, null, style_blue);
-
             map.addLayer(vectorLayer);
             map.setCenter(new OpenLayers.LonLat(0,0), 2);
-//             vectorLayer.addFeatures([pointFeature]);
 
 
             var drawControl = new OpenLayers.Control.DrawFeature(vectorLayer,
@@ -91,19 +78,11 @@
             drawControl.activate();
 
 
-
-
-
-            // Create some moving points in EPSG:3857
+            // Create some moving points (in EPSG:3857).
             var radius = 500000;
-            var angleDelta = 5;
+            var angleDelta = 2;
             var delay = 50;
-//             if (false)
-//             for (var lon = -1000000; lon <= 1000000; lon += 7000000) {
-//             for (var lon = -1000000; lon <= 1000000; lon += 500000) {
             for (var lon = -1000000; lon <= 1000000; lon += 250000) {
-//                 for (var lat = -1000000; lat <= 1000000; lat += 7000000) {
-//                 for (var lat = -1000000; lat <= 1000000; lat += 500000) {
                 for (var lat = -1000000; lat <= 1000000; lat += 250000) {
 
                     var geom  = new OpenLayers.Geometry.Point(lon+radius,lat);
@@ -112,12 +91,9 @@
 
                     vectorLayer.addFeatures([movingPoint]);
 
-                    window.setInterval((function(f,g){
+                    var interval = window.setInterval((function(f,g){
                         return function() {
-//                             console.log('Rotating from ',g.x, g.y,f.layer);
-//                             console.log('Origin ',f.geometry.x, f.geometry.y);
                             f.geometry.rotate(angleDelta, g);
-//                             console.log('Destination ',f.geometry.x, f.geometry.y);
 
                             // Note that we cannot use f.layer.drawFeature(),
                             //   because feature.layer might be null if
@@ -128,16 +104,33 @@
                         }})(movingPoint, pivot)
                     , delay);
 
+                    movingPoint.attributes.interval = interval;
+
                     delay += 1;    // Each point will rotate a bit slower than previous
                 }
             }
-
-//             window.setInterval(function(){
-//                 console.log('Tick: Candidates: ', clusterStrategy.clusters.length, ' Cached: ', clusterStrategy.features.length, ' Visible: ', clusterStrategy.layer.features.length );
-//             },100);
-
         }
 
+
+        // Delete one feature
+        function deleteFeature(){
+
+            // Cannot delete something if there's nothing there
+            if (clusterStrategy.features === 0){
+                return;
+            }
+
+            var feature = clusterStrategy.features[0];
+
+            // We need to clear the interval that rotates the feature,
+            //   or else we'll call vectorLayer.drawFeature() with a non-checked
+            //   feature, and cause glitches.
+            if (feature.attributes.interval) {
+                window.clearInterval( feature.attributes.interval );
+            }
+
+            vectorLayer.removeFeatures([ feature ]);
+        }
 
     </script>
   </head>
@@ -152,6 +145,8 @@
   </p>
 
     <div id="map" style="width:100%; height:70vh"></div>
-    <div id="docs">This example shows the dynamic cluster strategy. When a feature is added, removed or moved from a layer with this strategy, only the clusters around that feature will be changed.</div>
+    <button onclick="deleteFeature()">Delete one feature</button>
+    <div id="docs"><p>This example shows the dynamic cluster strategy. When a feature is added, removed or moved within a layer with this strategy, only the clusters around that feature will be changed.</p>
+    <p>Click anywhere in the map to add a new point feature.</p></div>
   </body>
 </html>
