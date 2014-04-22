@@ -132,6 +132,29 @@
             vectorLayer.removeFeatures([ feature ]);
         }
 
+
+
+        var gridPoints = [];
+        for (var lon = -1000000; lon <= 1000000; lon += 50000) {
+            for (var lat = -1000000; lat <= 1000000; lat += 50000) {
+                var geom  = new OpenLayers.Geometry.Point(lon,lat);
+                var point = new OpenLayers.Feature.Vector(geom);
+                gridPoints.push(point);
+            }
+        }
+
+        var gridPointsVisible = false;
+        function toggleGridPoints(){
+
+            gridPointsVisible = !gridPointsVisible;
+            if (gridPointsVisible) {
+                vectorLayer.addFeatures(gridPoints);
+            } else {
+                vectorLayer.removeFeatures(gridPoints);
+            }
+
+        }
+
     </script>
   </head>
   <body onload="init()">
@@ -146,6 +169,7 @@
 
     <div id="map" style="width:100%; height:500px;"></div>
     <button onclick="deleteFeature()">Delete one feature</button>
+    <button onclick="toggleGridPoints()">Toggle grid</button>
     <div id="docs"><p>This example shows the dynamic cluster strategy. When a feature is added, removed or moved within a layer with this strategy, only the clusters around that feature will be changed.</p>
     <p>Click anywhere in the map to add a new point feature.</p></div>
   </body>
