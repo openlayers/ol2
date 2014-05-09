@@ -206,6 +206,23 @@ var cases = {
     "v3/linestring3d.xml": new OpenLayers.Geometry.LineString([
         new OpenLayers.Geometry.Point(1, 2, 3),
         new OpenLayers.Geometry.Point(4, 5, 6)
+    ]),
+    
+    "v3/curve-members.xml": new OpenLayers.Geometry.MultiLineString([
+        new OpenLayers.Geometry.LineString([
+            new OpenLayers.Geometry.Point(10, 20),
+            new OpenLayers.Geometry.Point(11, 21),
+            new OpenLayers.Geometry.Point(12, 22),
+            new OpenLayers.Geometry.Point(13, 23),
+            new OpenLayers.Geometry.Point(14, 24)
+        ]),
+        new OpenLayers.Geometry.LineString([
+            new OpenLayers.Geometry.Point(110, 120),
+            new OpenLayers.Geometry.Point(111, 121),
+            new OpenLayers.Geometry.Point(112, 122),
+            new OpenLayers.Geometry.Point(113, 123),
+            new OpenLayers.Geometry.Point(114, 124)
+        ])
     ])
     
 };
