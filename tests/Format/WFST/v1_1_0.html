@@ -107,6 +107,35 @@
         t.eq(got, exp, "Query without featureNS but with featurePrefix queries for the correct featureType");
     }
 
+    function test_write_schemaLocation(t) {
+        t.plan(1);
+        var format = new OpenLayers.Format.WFST.v1_1_0({
+            featureNS: "http://www.openplans.org/topp",
+            featureType: "states",
+            featurePrefix: "topp",
+            srsName: "urn:ogc:def:crs:EPSG::4326",
+            geometryName: "the_geom",
+            schema: "http://foo.bar/topp_schema.xsd"
+        });
+        var exp = readXML("schemaLocation");
+        var got = format.writeNode("wfs:GetFeature");
+        t.xml_eq(got, exp, "schemaLocation correctly written");
+    }
+
+    function test_write_schemaLocationDefaultPrefix(t) {
+        t.plan(1);
+        var format = new OpenLayers.Format.WFST.v1_1_0({
+            featureNS: "http://www.openplans.org/topp",
+            featureType: "states",
+            srsName: "urn:ogc:def:crs:EPSG::4326",
+            geometryName: "the_geom",
+            schema: "http://foo.bar/topp_schema.xsd"
+        });
+        var exp = readXML("schemaLocationDefaultPrefix");
+        var got = format.writeNode("wfs:GetFeature");
+        t.xml_eq(got, exp, "schemaLocation correctly written", {prefix:true});
+    }
+
     var xmlFormat = new OpenLayers.Format.XML();
     function readXML(id) {
         var xml = document.getElementById(id).firstChild.nodeValue;
@@ -231,6 +260,24 @@
       </rws:AAA212>
     </gml:featureMember>
 </wfs:FeatureCollection>
+--></div>
+<div id="schemaLocation"><!--
+<wfs:GetFeature service="WFS" version="1.1.0"
+                xmlns:wfs="http://www.opengis.net/wfs"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd http://www.openplans.org/topp http://foo.bar/topp_schema.xsd">
+    <wfs:Query xmlns:wfs="http://www.opengis.net/wfs" typeName="topp:states" srsName="urn:ogc:def:crs:EPSG::4326" xmlns:topp="http://www.openplans.org/topp">
+    </wfs:Query>
+</wfs:GetFeature>
+--></div>
+<div id="schemaLocationDefaultPrefix"><!--
+<wfs:GetFeature service="WFS" version="1.1.0"
+                xmlns:wfs="http://www.opengis.net/wfs"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd http://www.openplans.org/topp http://foo.bar/topp_schema.xsd">
+    <wfs:Query xmlns:wfs="http://www.opengis.net/wfs" typeName="feature:states" srsName="urn:ogc:def:crs:EPSG::4326" xmlns:feature="http://www.openplans.org/topp">
+    </wfs:Query>
+</wfs:GetFeature>
 --></div>
 </body>
 </html>

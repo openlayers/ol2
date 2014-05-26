@@ -56,6 +56,12 @@
             layerInfo: layerInfo,
             params: {foo: "bar"}
         });
+        var layer2 = new OpenLayers.Layer.ArcGISCache(name, url, {
+            layerInfo: layerInfo,
+            hexZoom: true,
+            useArcGISServer: false,
+            params: {foo: "bar"}
+        });
         var map = new OpenLayers.Map('map', { 
             maxExtent: layer.maxExtent,
             units: layer.units,
@@ -65,41 +71,48 @@
             projection: layer.displayProjection,
             StartBounds: layer.initialExtent    
         });
-        map.addLayers([layer]);
+        map.addLayers([layer, layer2]);
     
         //this set represents a few edge cases, and some more specific cases, it is by no means exhaustive,
         var urlSets = [
             { 
                 bounds: new OpenLayers.Bounds(-36787612.973083,-22463925.368666, 43362420.398053,17611091.316902),
-                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/0/0/0" 
+                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/0/0/0",
+                url2: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/L00/R00000000/C00000000.png"
             },            
             { 
                 bounds: new OpenLayers.Bounds(-31793889.951914,4589319.785415, 8281126.733654,24626828.128199),
-                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/1/0/0"
+                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/1/0/0",
+                url2: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/L01/R00000000/C00000000.png"
             },            
             { 
                 bounds: new OpenLayers.Bounds(-24639873.181971,12676071.933457, -4602364.839187,22694826.104849),
-                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/2/0/0" 
+                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/2/0/0",
+                url2: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/L02/R00000000/C00000000.png" 
             },
             { 
                 bounds: new OpenLayers.Bounds(-15521241.455665,11580270.695961, 4516266.887119,21599024.867353),
-                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/2/0/1" 
+                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/2/0/1",
+                url2: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/L02/R00000000/C00000001.png"
             },                    
             { 
                 bounds: new OpenLayers.Bounds(-9265879.5435993,2870892.9335638, -8639707.4078873,3183979.0014198) ,
-                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/7/54/35" 
+                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/7/54/35",
+                url2: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/L07/R00000036/C00000023.png"
             },
             { 
                 bounds: new OpenLayers.Bounds(-10741909.131798,4684560.1640365, -10585366.09787,4762831.6810005),
-                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/9/195/119" 
+                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/9/195/119",
+                url2: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/L09/R000000c3/C00000077.png"
             },
             { 
                 bounds: new OpenLayers.Bounds(-13668958.106938,4456961.2611504, -13512415.07301,4535232.7781144),
-                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/9/198/82" 
+                url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/9/198/82",
+                url2: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/L09/R000000c6/C00000052.png"
             }
         ];
         
-        t.plan( urlSets.length );
+        t.plan( urlSets.length * 2 );
         for(var i=0;i<urlSets.length;i++) 
         {
             var o = urlSets[i];            
@@ -107,6 +120,7 @@
             
             var resultUrl = layer.getURL(o.bounds);            
             t.ok( resultUrl == o.url + "?foo=bar", "correct tile returned for " + o.bounds);        
+            t.ok(layer2.getURL(o.bounds) == o.url2 + "?foo=bar", "correct tile url returned if hexZoom is true for " + o.bounds);
         }
     }    
     

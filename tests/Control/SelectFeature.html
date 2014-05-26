@@ -623,6 +623,28 @@
         t.eq(layer.selectedFeatures[0].id, 3,
              'the remaining selected features is the one expected');
     }
+    
+    function test_addLayer(t) {
+        t.plan(5);
+        
+        var layer = new OpenLayers.Layer.Vector();
+        var layers = [new OpenLayers.Layer.Vector(), new OpenLayers.Layer.Vector()]
+        var layerToAdd = new OpenLayers.Layer.Vector();
+        
+        var controlWithLayer = new OpenLayers.Control.SelectFeature(layer);
+        var controlWithLayers = new OpenLayers.Control.SelectFeature(layers);
+        
+        t.ok(controlWithLayer.layer instanceof OpenLayers.Layer.Vector, "layer is an instance of OpenLayers.Layer.Vector");
+        
+        controlWithLayer.addLayer(layerToAdd);
+        controlWithLayers.addLayer(layerToAdd);
+        
+        t.eq(controlWithLayer.layers.length, 2, "the added layer is added and all layers are active");
+        t.eq(controlWithLayers.layers.length, 3, "the added layer is added and all layers are active");
+
+        t.ok(controlWithLayer.layer instanceof OpenLayers.Layer.Vector.RootContainer, "layer has changed from OpenLayers.Layer.Vector to OpenLayers.Layer.Vector.RootContainer");
+        t.ok(controlWithLayers.layer instanceof OpenLayers.Layer.Vector.RootContainer, "layer still a OpenLayers.Layer.Vector.RootContainer");
+    }    
    
     </script>
 </head>
