@@ -11,6 +11,7 @@
       }
   });
   client.servers.local.processDescription = {
+      'JTS:contains': '<?xml version="1.0" encoding="UTF-8"?><wps:ProcessDescriptions xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xml:lang="en" service="WPS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd"><ProcessDescription wps:processVersion="1.0.0" statusSupported="true" storeSupported="true"><ows:Identifier>JTS:contains</ows:Identifier><ows:Title>Contains Test</ows:Title><ows:Abstract>Tests if no points of the second geometry lie in the exterior of the first geometry and at least one point of the interior of second geometry lies in the interior of first geometry.</ows:Abstract><DataInputs><Input maxOccurs="1" minOccurs="1"><ows:Identifier>a</ows:Identifier><ows:Title>a</ows:Title><ows:Abstract>First input geometry</ows:Abstract><ComplexData><Default><Format><MimeType>text/xml; subtype=gml/3.1.1</MimeType></Format></Default><Supported><Format><MimeType>text/xml; subtype=gml/3.1.1</MimeType></Format><Format><MimeType>text/xml; subtype=gml/2.1.2</MimeType></Format><Format><MimeType>application/wkt</MimeType></Format><Format><MimeType>application/gml-3.1.1</MimeType></Format><Format><MimeType>application/gml-2.1.2</MimeType></Format></Supported></ComplexData></Input><Input maxOccurs="1" minOccurs="1"><ows:Identifier>b</ows:Identifier><ows:Title>b</ows:Title><ows:Abstract>Second input geometry, tested to be contained in first geometry</ows:Abstract><ComplexData><Default><Format><MimeType>text/xml; subtype=gml/3.1.1</MimeType></Format></Default><Supported><Format><MimeType>text/xml; subtype=gml/3.1.1</MimeType></Format><Format><MimeType>text/xml; subtype=gml/2.1.2</MimeType></Format><Format><MimeType>application/wkt</MimeType></Format><Format><MimeType>application/gml-3.1.1</MimeType></Format><Format><MimeType>application/gml-2.1.2</MimeType></Format></Supported></ComplexData></Input></DataInputs><ProcessOutputs><Output><ows:Identifier>result</ows:Identifier><ows:Title>result</ows:Title><LiteralOutput><ows:DataType>boolean</ows:DataType></LiteralOutput></Output></ProcessOutputs></ProcessDescription></wps:ProcessDescriptions>',
       'JTS:intersection': '<?xml version="1.0" encoding="UTF-8"?>' +
           '<wps:ProcessDescriptions xml:lang="en" service="WPS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"><ProcessDescription wps:processVersion="1.0.0" statusSupported="true" storeSupported="true"><ows:Identifier>JTS:intersection</ows:Identifier><ows:Title>Returns the intersectoin between a and b (eventually an empty collection if there is no intersection)</ows:Title><ows:Abstract>Returns the intersectoin between a and b (eventually an empty collection if there is no intersection)</ows:Abstract><DataInputs><Input maxOccurs="1" minOccurs="1"><ows:Identifier>a</ows:Identifier><ows:Title>a</ows:Title><ows:Abstract>[undescribed]</ows:Abstract><ComplexData><Default><Format><MimeType>text/xml; subtype=gml/3.1.1</MimeType></Format></Default><Supported><Format><MimeType>text/xml; subtype=gml/3.1.1</MimeType></Format><Format><MimeType>text/xml; subtype=gml/2.1.2</MimeType></Format><Format><MimeType>application/wkt</MimeType></Format><Format><MimeType>application/gml-3.1.1</MimeType></Format><Format><MimeType>application/gml-2.1.2</MimeType></Format></Supported></ComplexData></Input><Input maxOccurs="1" minOccurs="1"><ows:Identifier>b</ows:Identifier><ows:Title>b</ows:Title><ows:Abstract>[undescribed]</ows:Abstract><ComplexData><Default><Format><MimeType>text/xml; subtype=gml/3.1.1</MimeType></Format></Default><Supported><Format><MimeType>text/xml; subtype=gml/3.1.1</MimeType></Format><Format><MimeType>text/xml; subtype=gml/2.1.2</MimeType></Format><Format><MimeType>application/wkt</MimeType></Format><Format><MimeType>application/gml-3.1.1</MimeType></Format><Format><MimeType>application/gml-2.1.2</MimeType></Format></Supported></ComplexData></Input></DataInputs><ProcessOutputs><Output><ows:Identifier>result</ows:Identifier><ows:Title>Process result</ows:Title><ComplexOutput><Default><Format><MimeType>text/xml; subtype=gml/3.1.1</MimeType></Format></Default><Supported><Format><MimeType>text/xml; subtype=gml/3.1.1</MimeType></Format><Format><MimeType>text/xml; subtype=gml/2.1.2</MimeType></Format><Format><MimeType>application/wkt</MimeType></Format><Format><MimeType>application/gml-3.1.1</MimeType></Format><Format><MimeType>application/gml-2.1.2</MimeType></Format></Supported></ComplexOutput></Output></ProcessOutputs></ProcessDescription></wps:ProcessDescriptions>' 
   };
@@ -20,7 +21,7 @@
       process = new OpenLayers.WPSProcess();
       t.ok(process instanceof OpenLayers.WPSProcess, 'creates an instance');
   }
-  
+
   function test_describe(t) {
       t.plan(2);
       process = client.getProcess('local', 'JTS:intersection');
@@ -31,6 +32,38 @@
       t.delay_call(0.1, function() {
           t.eq(log.length, 1, 'callback called');
           t.eq(log[0].identifier, 'JTS:intersection', 'callback called with correct description');
+      });
+  }
+
+  function test_boolean_output(t) {
+      t.plan(2);
+      var log = [];
+      var originalPOST = OpenLayers.Request.POST;
+      OpenLayers.Request.POST = function(cfg) {
+          cfg.success.call(cfg.scope, {responseText: 'true'});
+      }
+      process = client.getProcess('local', 'JTS:contains');
+      process.describe();
+      var features = [
+          new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT(
+              'LINESTRING(117 22,112 18,118 13, 115 8)'
+          )), new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT(
+              'POLYGON((110 20,120 20,120 10,110 10,110 20),(112 17,118 18,118 16,112 15,112 17))'
+          ))
+      ];
+      process.execute({
+          inputs: {
+              a: features[0].geometry,
+              b: features[1].geometry
+          },
+          success: function (output) {
+              log.push(output);
+          }
+      });
+      t.delay_call(0.1, function() {
+          t.eq(log.length, 1, 'One execute requests sent');
+          t.eq(log[0].result, true, 'process output is a boolean with value true');
+          OpenLayers.Request.POST = originalPOST;
       });
   }
   
