@@ -262,14 +262,51 @@
             -112.2626894973474,36.10149062823369,630 </coordinates>
         </LineString>
       </Placemark>
-		<Placemark>
-			<name>Blue Icon</name>
-			<description>Just another blue icon.</description>
-			<styleUrl>kml/styles.kml#blueIcons</styleUrl>
-			<Point>
-				<coordinates>-112.292238941097,36.09520916122063,630</coordinates>
-			</Point>
-		</Placemark>
+      <Placemark>
+        <name>Blue Icon</name>
+        <description>Just another blue icon.</description>
+        <styleUrl>kml/styles.kml#blueIcons</styleUrl>
+        <Point>
+            <coordinates>-112.292238941097,36.09520916122063,630</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Blue Polygon</name>
+        <description>A blue polygon using the PolyStyle property</description>
+        <styleUrl>#transBluePoly</styleUrl>
+        <Polygon>
+          <extrude>1</extrude>
+          <altitudeMode>relativeToGround</altitudeMode>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates> -112.120382128906,36.0648971346348,700
+                -112.094289599609,36.0837665840935,700
+                -112.070943652344,36.0537953438073,700
+                -112.107335864258,36.0299211902896,700
+                -112.107335864258,36.0299211902896,700
+                -112.120382128906,36.0648971346348,700</coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
+      <Placemark>
+        <name>Green Polygon</name>
+        <description>A green polygon using the PolyStyle property</description>
+        <styleUrl>#transGreenPoly</styleUrl>
+        <Polygon>
+          <extrude>1</extrude>
+          <altitudeMode>relativeToGround</altitudeMode>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates> -112.159520922852,36.1386841914378,700
+                -112.132741748047,36.1580903178791,700
+                -112.120382128906,36.1320295571082,700
+                -112.12244206543,36.1320295571082,700
+                -112.159520922852,36.1386841914378,700</coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
     </Folder>
   </Document>
 </kml>
