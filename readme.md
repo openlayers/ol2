@@ -1,4 +1,4 @@
-# OpenLayers
+# OpenLayers 2
 
 Copyright (c) 2005-2014 OpenLayers Contributors. See authors.txt for
 more details.
