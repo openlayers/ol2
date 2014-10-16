@@ -31,6 +31,8 @@
               worldExtent: [-180, 30, 180, 90],
               units: 'm'
             }
+            // Allow date line wrapping for 10 worlds by using -1800 and 1800
+            // instead of -180 and 180.
             OpenLayers.Projection.defaults["EPSG:4326"].worldExtent = [-1800, -90, 1800, 90];
             var graticuleCtl1, graticuleCtl2;
             var map1, map2;
