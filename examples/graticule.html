@@ -30,9 +30,9 @@
               maxExtent: [-2200000,-712631,3072800,3840000],
               worldExtent: [-180, 0, 180, 90]
             }
-            // Allow date line wrapping for 10 worlds by using -1800 and 1800
-            // instead of -180 and 180.
-            OpenLayers.Projection.defaults["EPSG:4326"].worldExtent = [-1800, -90, 1800, 90];
+            // Enable date line wrapping by using -360 and 360 instead of -180
+            // and 180.
+            OpenLayers.Projection.defaults["EPSG:4326"].worldExtent = [-360, -90, 360, 90];
             var graticuleCtl1, graticuleCtl2;
             var map1, map2;
             function init(){
