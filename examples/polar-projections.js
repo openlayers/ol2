@@ -2,23 +2,19 @@ var map, layer, overlay;
 
 OpenLayers.Projection.defaults['EPSG:3574'] = { 
     maxExtent: [-5505054, -5505054, 5505054, 5505054],
-    worldExtent: [-180.0, 0.0, 180.0, 90.0],
-    units: 'm'
+    worldExtent: [-180.0, 0.0, 180.0, 90.0]
 };
 OpenLayers.Projection.defaults['EPSG:3576'] = { 
     maxExtent: [-5505054, -5505054, 5505054, 5505054],
-    worldExtent: [-180.0, 0.0, 180.0, 90.0],
-    units: 'm'
+    worldExtent: [-180.0, 0.0, 180.0, 90.0]
 };
 OpenLayers.Projection.defaults['EPSG:3571'] = { 
     maxExtent: [-5505054, -5505054, 5505054, 5505054],
-    worldExtent: [-180.0, 0.0, 180.0, 90.0],
-    units: 'm'
+    worldExtent: [-180.0, 0.0, 180.0, 90.0]
 };
 OpenLayers.Projection.defaults['EPSG:3573'] = { 
     maxExtent: [-5505054, -5505054, 5505054, 5505054],
-    worldExtent: [-180.0, 0.0, 180.0, 90.0],
-    units: 'm'
+    worldExtent: [-180.0, 0.0, 180.0, 90.0]
 };
 
 function setProjection() {
