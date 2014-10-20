@@ -9,10 +9,12 @@ var osm = new OpenLayers.Layer.XYZ(
     {transitionEffect: "resize", wrapDateLine: true}
 );
 
-var utfgrid = new OpenLayers.Layer.UTFGrid({
-    url: "utfgrid/geography-class/${z}/${x}/${y}.grid.json",
-    utfgridResolution: 4, // default is 2
-    displayInLayerSwitcher: false
+var utfgrid = new OpenLayers.Layer.XYZ('UTFGrid', 'utfgrid/geography-class/${z}/${x}/${y}.grid.json', {
+    isBaseLayer: false,
+    tileClass: OpenLayers.Tile.UTFGrid,
+    tileOptions: {
+        utfgridResolution: 4 // default is 2
+    }
 });
 
 var map = new OpenLayers.Map({
