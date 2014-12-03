@@ -23,13 +23,13 @@ function init(){
     map = new OpenLayers.Map('map');
 
     var base = new OpenLayers.Layer.WMS("marble", 
-        "http://demo.opengeo.org/geoserver/wms",
+        "http://demo.boundlessgeo.com/geoserver/wms",
         {layers: "topp:naturalearth"},
         {wrapDateLine: true}
     );
     var extent = new OpenLayers.Bounds(142.3828125,-70.902270266175,233.6171875,-12.039326531729);
     var wms = new OpenLayers.Layer.WMS( "world",
-        "http://demo.opengeo.org/geoserver/wms",
+        "http://demo.boundlessgeo.com/geoserver/wms",
         {layers: 'world', transparent: true},
         {maxExtent: extent}
     );

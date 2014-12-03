@@ -18,7 +18,7 @@ import sys, os
 allowedHosts = ['www.openlayers.org', 'openlayers.org', 
                 'labs.metacarta.com', 'world.freemap.in', 
                 'prototype.openmnnd.org', 'geo.openplans.org',
-                'sigma.openplans.org', 'demo.opengeo.org',
+                'sigma.openplans.org', 'demo.boundlessgeo.com',
                 'www.openstreetmap.org', 'sample.azavea.com',
                 'v2.suite.opengeo.org', 'v-swe.uni-muenster.de:8080',
                 'vmap0.tiles.osgeo.org', 'www.openrouteservice.org',

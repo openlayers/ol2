@@ -1,6 +1,6 @@
 OpenLayers.ProxyHost = "proxy.cgi?url=";
 
-var wps = "http://demo.opengeo.org/geoserver/wps",
+var wps = "http://demo.boundlessgeo.com/geoserver/wps",
     capabilities, // the capabilities, read by Format.WPSCapabilities::read
     process; // the process description from Format.WPSDescribeProcess::read
 

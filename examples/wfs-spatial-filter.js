@@ -8,7 +8,7 @@ var wms = new OpenLayers.Layer.WMS(
 var layer = new OpenLayers.Layer.Vector("WFS", {
     strategies: [new OpenLayers.Strategy.BBOX()],
     protocol: new OpenLayers.Protocol.WFS({
-        url:  "http://demo.opengeo.org/geoserver/wfs",
+        url:  "http://demo.boundlessgeo.com/geoserver/wfs",
         featureType: "tasmania_roads",
         featureNS: "http://www.openplans.org/topp"
     })

@@ -20,25 +20,25 @@
         });
 
         var political = new OpenLayers.Layer.WMS("State Boundaries",
-            "http://demo.opengeo.org/geoserver/wms", 
+            "http://demo.boundlessgeo.com/geoserver/wms", 
             {'layers': 'topp:tasmania_state_boundaries', transparent: true, format: 'image/gif'},
             {isBaseLayer: true}
         );
 
         var roads = new OpenLayers.Layer.WMS("Roads",
-            "http://demo.opengeo.org/geoserver/wms", 
+            "http://demo.boundlessgeo.com/geoserver/wms", 
             {'layers': 'topp:tasmania_roads', transparent: true, format: 'image/gif'},
             {isBaseLayer: false}
         );
 
         var cities = new OpenLayers.Layer.WMS("Cities",
-            "http://demo.opengeo.org/geoserver/wms", 
+            "http://demo.boundlessgeo.com/geoserver/wms", 
             {'layers': 'topp:tasmania_cities', transparent: true, format: 'image/gif'},
             {isBaseLayer: false}
         );
 
         var water = new OpenLayers.Layer.WMS("Bodies of Water",
-            "http://demo.opengeo.org/geoserver/wms", 
+            "http://demo.boundlessgeo.com/geoserver/wms", 
             {'layers': 'topp:tasmania_water_bodies', transparent: true, format: 'image/gif'},
             {isBaseLayer: false}
         );
@@ -51,7 +51,7 @@
         map.addLayers([political, roads, cities, water, highlight]); 
 
         info = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: 'http://demo.opengeo.org/geoserver/wms', 
+            url: 'http://demo.boundlessgeo.com/geoserver/wms', 
             title: 'Identify features by clicking',
             queryVisible: true,
             eventListeners: {

@@ -23,7 +23,7 @@ function init() {
     
     client = new OpenLayers.WPSClient({
         servers: {
-            opengeo: 'http://demo.opengeo.org/geoserver/wps'
+            opengeo: 'http://demo.boundlessgeo.com/geoserver/wps'
         }
     });
     

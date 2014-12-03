@@ -41,7 +41,7 @@ function init() {
         protocol: new OpenLayers.Protocol.WFS({
             version: "1.0.0",
             srsName: "EPSG:4326", // this is the default
-            url:  "http://demo.opengeo.org/geoserver/wfs",
+            url:  "http://demo.boundlessgeo.com/geoserver/wfs",
             featureType: "states",
             featureNS: "http://www.openplans.org/topp"
         }),
