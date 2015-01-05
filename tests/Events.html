@@ -130,7 +130,7 @@
 
         events.unregister("doThingA", obj, null);
         var listenerList = events.listeners["doThingA"];
-        t.eq( listenerList.length, 3, "trying to unregister a null callback does nothing -- but doesnt crash :-)" );
+        t.eq( listenerList.length, 3, "trying to unregister a null callback does nothing -- but doesn't crash :-)" );
     
         events.unregister("doThingA", obj, func);
         var found = false;

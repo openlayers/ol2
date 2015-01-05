@@ -81,7 +81,7 @@
         
         ring.removeComponent( ring.components[2] );
         ring.removeComponent( ring.components[1] );
-        t.eq(ring.components.length, 3, "cant remove from linear ring with only 3 points. new length ok");
+        t.eq(ring.components.length, 3, "can't remove from linear ring with only 3 points. new length ok");
         t.ok(ring.components[0].equals(components[0]), "point one correct");
         t.ok(ring.components[1].equals(components[1]), "point two correct");
         t.ok(ring.components[0] === ring.components[ring.components.length - 1],

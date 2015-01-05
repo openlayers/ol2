@@ -338,7 +338,7 @@ function test_BETWEEN(t) {
     t.eq(filter.property, "A",
          "Property name is as specified in CQL");
     t.eq(filter.lowerBoundary, 0, 'Lower boundary is as specified in CQL');
-    t.eq(filter.upperBoundary, 5, 'Upper bondary is as specified in CQL');
+    t.eq(filter.upperBoundary, 5, 'Upper boundary is as specified in CQL');
 
     t.eq(format.write(filter), cql, "write returned test cql");
 
