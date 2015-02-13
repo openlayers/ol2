@@ -381,11 +381,13 @@
         var div   = OpenLayers.Util.getElement('test');
         var obj   = {};
         var events = new OpenLayers.Events(obj, div);
-
+        var touchModel = events.getTouchModel();
+        // +5 because of additional binding to pointer events (down, up, move, out)
         // +1 because of blocking dragstart in attachToElement()
+        var eventsOffset = ((touchModel === events.TOUCH_MODEL_MSPOINTER) ||
+                (touchModel === events.TOUCH_MODEL_POINTER)) ? 5 : 1;
         t.eq(OpenLayers.Event.observers[div._eventCacheID].length,
-             OpenLayers.Events.prototype.BROWSER_EVENTS.length + 1,
-             "construction creates new arrayin hash, registers appropriate events");
+             OpenLayers.Events.prototype.BROWSER_EVENTS.length + eventsOffset);
              
         events.destroy();
         events = null;
