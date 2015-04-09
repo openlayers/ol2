@@ -1,6 +1,6 @@
 # OpenLayers 2
 
-Copyright (c) 2005-2014 OpenLayers Contributors. See authors.txt for
+Copyright (c) 2005-2015 OpenLayers Contributors. See authors.txt for
 more details.
 
 OpenLayers is a JavaScript library for building map applications
@@ -61,7 +61,7 @@ and can be used in place of OpenLayers.js in any of the above instructions:
     
 ## Using OpenLayers in Your Own Website
 
-The [examples directory](http://openlayers.org/dev/examples/) is full of useful examples.
+The [examples directory](http://openlayers.org/en/v3.4.0/examples/) is full of useful examples.
 
 Documentation is available at http://trac.osgeo.org/openlayers/wiki/Documentation.
 You can generate the API documentation with http://www.naturaldocs.org/
@@ -74,6 +74,6 @@ Information on changes in the API is available in release notes found in the not
 
 ## Contributing to OpenLayers
 
-Please join the email lists at http://openlayers.org/mailman/listinfo
+Please join the email lists at https://groups.google.com/d/forum/ol3-dev
 Patches are welcome!
 
