@@ -74,6 +74,6 @@ Information on changes in the API is available in release notes found in the not
 
 ## Contributing to OpenLayers
 
-Please join the email lists at http://openlayers.org/mailman/listinfo
+Please join the email lists at http://trac.osgeo.org/openlayers/wiki/MailingLists
 Patches are welcome!
 
