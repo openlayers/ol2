@@ -17,7 +17,7 @@
     }
     
     function test_read(t) {
-        t.plan(59);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
+        t.plan(84);     // Number of tests performed: If you add a test below, be sure to increment this accordingly
        
         var parser = new OpenLayers.Format.WCSDescribeCoverage();
 
@@ -149,6 +149,60 @@
         t.eq(res1_0_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_0_0.coverageDescriptions.ro_dsm.nativeCRS].right, 
              res1_1_0.coverageDescriptions.ro_dsm.domain.spatialDomain.boundingBoxes[res1_1_0.coverageDescriptions.ro_dsm.nativeCRS].right, 
              "1.0.0 and 1.1.0 have same native bounding box right coordinate");
+
+
+         // ArcGIS Server WCS DescribeCoverage, v1.1.0
+        text = '<CoverageDescriptions xmlns="http://www.opengis.net/wcs/1.1" xmlns:ows="http://www.opengis.net/ows" xmlns:owcs="http://www.opengis.net/wcs/1.1/ows" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/wcs/1.1 ../wcsDescribeCoverage.xsd http://www.opengis.net/wcs/1.1/ows ../owsDataIdentification.xsd"><CoverageDescription><ows:Title>OSDATA.OS_25K_RASTER_1</ows:Title><ows:Abstract>Sample abstract</ows:Abstract><Identifier>1</Identifier><Domain><SpatialDomain><ows:BoundingBox crs="urn:ogc:def:crs:OGC::imageCRS" dimension="2"><ows:LowerCorner>0 0</ows:LowerCorner><ows:UpperCorner>16273 8848</ows:UpperCorner></ows:BoundingBox><ows:BoundingBox crs="urn:ogc:def:crs:EPSG::4326"><ows:LowerCorner>-2.49 57.00</ows:LowerCorner><ows:UpperCorner>-2.00 57.27</ows:UpperCorner></ows:BoundingBox><GridCRS><GridBaseCRS>urn:ogc:def:crs:EPSG::4326</GridBaseCRS><GridOrigin>-2.4975072449484337 57.27084662228944</GridOrigin><GridOffsets>3.057015857620272e-005 -3.0570158576202496e-005</GridOffsets></GridCRS></SpatialDomain></Domain><Range><Field><Title>Field_1</Title><Abstract>Field_1</Abstract><Identifier>Field_1</Identifier><Definition><owcs:AnyValue/></Definition><NullValue>256</NullValue><NullValue>256</NullValue><NullValue>256</NullValue><owcs:InterpolationMethods><owcs:DefaultMethod>nearest</owcs:DefaultMethod><owcs:OtherMethod>bilinear</owcs:OtherMethod><owcs:OtherMethod>bicubic</owcs:OtherMethod></owcs:InterpolationMethods><Axis identifier="BAND"><AvailableKeys><Key>1</Key><Key>2</Key><Key>3</Key></AvailableKeys><owcs:DataType>Byte</owcs:DataType></Axis></Field></Range><SupportedCRS>urn:ogc:def:crs:EPSG::4326</SupportedCRS><SupportedCRS>urn:ogc:def:crs:EPSG::9876</SupportedCRS><SupportedFormat>image/GeoTIFF</SupportedFormat><SupportedFormat>image/NITF</SupportedFormat><SupportedFormat>image/HDF</SupportedFormat><SupportedFormat>image/PNG</SupportedFormat></CoverageDescription></CoverageDescriptions>';
+
+        parser = new OpenLayers.Format.WCSDescribeCoverage();
+        var results = parser.read(text);
+
+        count = 0;
+        for (var k in results.coverageDescriptions) {
+            if (results.coverageDescriptions.hasOwnProperty(k)) {
+               count++;
+            }
+        }
+
+        t.eq(count, 1, "number of coverages correct");
+
+        t.eq(results.coverageDescriptionKeys.length, 1, "number of coverage keys correct");
+        t.eq(results.version, "1.1.0", "version correct");
+
+        var metadata = results.coverageDescriptions["1"];
+
+        t.eq(metadata.identifier, "1", "correct identifier");
+        t.eq(metadata.title, "OSDATA.OS_25K_RASTER_1", "correct title");
+        t.eq(metadata.abstract, "Sample abstract", "correct abstract");
+
+        var supportedCRSs = metadata.supportedCRSs;
+        t.eq(supportedCRSs.length, 2, "correct number of supported CRSs");
+        t.eq(supportedCRSs[0], "urn:ogc:def:crs:EPSG::4326", "correct value for selected supported CRS");
+        t.eq(supportedCRSs[1], "urn:ogc:def:crs:EPSG::9876", "correct value for selected supported CRS");
+
+        t.eq(metadata.supportedFormats.length, 4, "correct number of supported formats");
+        t.eq(metadata.supportedFormats[0], "image/GeoTIFF", "correct value for supported format");
+        t.eq(metadata.supportedFormats[1], "image/NITF", "correct value for supported format");
+
+        t.eq(metadata.nativeCRS, "urn:ogc:def:crs:EPSG::4326", "correct native CRS");
+
+        var nativeBB = metadata.domain.spatialDomain.boundingBoxes[metadata.nativeCRS];
+        t.ok(!!nativeBB, "found native bounding box");
+        t.eq(nativeBB.top,    57.27, "correct native bounding box top value");
+        t.eq(nativeBB.bottom, 57.00, "correct native bounding box bottom value");
+        t.eq(nativeBB.left,   -2.49, "correct native bounding box left value");
+        t.eq(nativeBB.right,  -2.00, "correct native bounding box right value");
+
+
+        var gridCRS = metadata.domain.spatialDomain.gridCRS;
+        t.eq(gridCRS.gridBaseCRS, "urn:ogc:def:crs:EPSG::4326", "correct gridBaseCRS");
+        t.eq(gridCRS.gridCS, undefined, "no gridCS specified");
+        t.eq(gridCRS.gridOffsets.x,  3.057015857620272e-005, "correct gridOffsets.x");
+        t.eq(gridCRS.gridOffsets.y, -3.0570158576202496e-005, "correct gridOffsets.y");
+        t.eq(gridCRS.gridOrigin.x, -2.4975072449484337, "correct gridOrigin.x");
+        t.eq(gridCRS.gridOrigin.y, 57.27084662228944, "correct gridOrigin.y");
+        t.eq(gridCRS.gridType, undefined, "no gird type specified");
+ 
     }
 
     </script> 

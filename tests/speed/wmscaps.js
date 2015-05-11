@@ -1,6 +1,6 @@
 var caps = 
 '<?xml version="1.0" encoding="UTF-8"?>' +
-'<!DOCTYPE WMT_MS_Capabilities SYSTEM "http://demo.opengeo.org/geoserver/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd">' +
+'<!DOCTYPE WMT_MS_Capabilities SYSTEM "http://demo.boundlessgeo.com/geoserver/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd">' +
 '<WMT_MS_Capabilities version="1.1.1" updateSequence="145">' +
 '  <Service>' +
 '    <Name>OGC:WMS</Name>' +
@@ -11,7 +11,7 @@ var caps =
 '      <Keyword>WMS</Keyword>' +
 '      <Keyword>GEOSERVER</Keyword>' +
 '    </KeywordList>' +
-'    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms"/>' +
+'    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms"/>' +
 '    <ContactInformation>' +
 '      <ContactPersonPrimary>' +
 '        <ContactPerson>Claudius Ptolomaeus</ContactPerson>' +
@@ -40,10 +40,10 @@ var caps =
 '        <DCPType>' +
 '          <HTTP>' +
 '            <Get>' +
-'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms?SERVICE=WMS&amp;"/>' +
+'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms?SERVICE=WMS&amp;"/>' +
 '            </Get>' +
 '            <Post>' +
-'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms?SERVICE=WMS&amp;"/>' +
+'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms?SERVICE=WMS&amp;"/>' +
 '            </Post>' +
 '          </HTTP>' +
 '        </DCPType>' +
@@ -80,7 +80,7 @@ var caps =
 '        <DCPType>' +
 '          <HTTP>' +
 '            <Get>' +
-'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms?SERVICE=WMS&amp;"/>' +
+'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms?SERVICE=WMS&amp;"/>' +
 '            </Get>' +
 '          </HTTP>' +
 '        </DCPType>' +
@@ -92,10 +92,10 @@ var caps =
 '        <DCPType>' +
 '          <HTTP>' +
 '            <Get>' +
-'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms?SERVICE=WMS&amp;"/>' +
+'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms?SERVICE=WMS&amp;"/>' +
 '            </Get>' +
 '            <Post>' +
-'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms?SERVICE=WMS&amp;"/>' +
+'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms?SERVICE=WMS&amp;"/>' +
 '            </Post>' +
 '          </HTTP>' +
 '        </DCPType>' +
@@ -105,7 +105,7 @@ var caps =
 '        <DCPType>' +
 '          <HTTP>' +
 '            <Get>' +
-'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms?SERVICE=WMS&amp;"/>' +
+'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms?SERVICE=WMS&amp;"/>' +
 '            </Get>' +
 '          </HTTP>' +
 '        </DCPType>' +
@@ -117,7 +117,7 @@ var caps =
 '        <DCPType>' +
 '          <HTTP>' +
 '            <Get>' +
-'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms?SERVICE=WMS&amp;"/>' +
+'              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms?SERVICE=WMS&amp;"/>' +
 '            </Get>' +
 '          </HTTP>' +
 '        </DCPType>' +
@@ -4086,7 +4086,7 @@ var caps =
 '          <Abstract/>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=og:bugsites"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=og:bugsites"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4131,7 +4131,7 @@ var caps =
 '          <Abstract>A sample style that just prints out a transparent red interior with a red outline</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=og:restricted"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=og:restricted"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4176,7 +4176,7 @@ var caps =
 '          <Abstract>A sample style that just prints out a 6px wide red square</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=og:archsites"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=og:archsites"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4220,7 +4220,7 @@ var caps =
 '          <Abstract>Blue lines, 2px wide</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=og:streams"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=og:streams"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4253,7 +4253,7 @@ var caps =
 '          <Abstract/>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tiger:poly_landmarks"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tiger:poly_landmarks"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4286,7 +4286,7 @@ var caps =
 '          <Abstract>Manhattan points of interest</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tiger:poi"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tiger:poi"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4318,7 +4318,7 @@ var caps =
 '          <Abstract/>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tiger:tiger_roads"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tiger:tiger_roads"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4353,7 +4353,7 @@ var caps =
 '          <Abstract/>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=za:za_natural"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=za:za_natural"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4393,7 +4393,7 @@ var caps =
 '          <Abstract/>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=za:za_points"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=za:za_points"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4425,7 +4425,7 @@ var caps =
 '          <Abstract/>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=za:za_roads"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=za:za_roads"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4457,7 +4457,7 @@ var caps =
 '          <Abstract/>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=za:za_vegetation"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=za:za_vegetation"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4488,7 +4488,7 @@ var caps =
 '          <Abstract/>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:tasmania_cities"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:tasmania_cities"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4519,7 +4519,7 @@ var caps =
 '          <Abstract>Light red line, 2px wide</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:tasmania_roads"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:tasmania_roads"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4551,7 +4551,7 @@ var caps =
 '          <Abstract>Green fill with black outline</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:tasmania_state_boundaries"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:tasmania_state_boundaries"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4585,7 +4585,7 @@ var caps =
 '          <Abstract>A blue fill, solid black outline style</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:tasmania_water_bodies"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:tasmania_water_bodies"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4620,7 +4620,7 @@ var caps =
 '        categories of population, drawn in different colors</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:states"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:states"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4651,7 +4651,7 @@ var caps =
 '          <Abstract>Default line style, 1 pixel wide blue</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tike:waterways"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tike:waterways"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4682,7 +4682,7 @@ var caps =
 '          <Abstract>Default line style, 1 pixel wide blue</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tike:railways"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tike:railways"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4713,7 +4713,7 @@ var caps =
 '          <Abstract>Default line style, 1 pixel wide blue</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tike:roads"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tike:roads"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4756,7 +4756,7 @@ var caps =
 '          <Abstract>Light red line, 2px wide</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=og:roads"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=og:roads"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4787,7 +4787,7 @@ var caps =
 '          <Abstract>Default line style, 1 pixel wide blue</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tike:points"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=tike:points"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4819,7 +4819,7 @@ var caps =
 '          <Abstract>A sample style for rasters, good for displaying imagery</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:bluemarble"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=topp:bluemarble"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4851,7 +4851,7 @@ var caps =
 '          <Abstract>A sample style for rasters, good for displaying imagery</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=nurc:Arc_Sample"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=nurc:Arc_Sample"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4883,7 +4883,7 @@ var caps =
 '          <Abstract>A sample style for rasters, good for displaying imagery</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=nurc:Img_Sample"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=nurc:Img_Sample"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +
@@ -4930,7 +4930,7 @@ var caps =
 '          <Abstract>Classic elevation color progression</Abstract>' +
 '          <LegendURL width="20" height="20">' +
 '            <Format>image/png</Format>' +
-'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.opengeo.org/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=sf:sfdem"/>' +
+'            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.boundlessgeo.com/geoserver/wms/GetLegendGraphic?VERSION=1.0.0&amp;FORMAT=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=sf:sfdem"/>' +
 '          </LegendURL>' +
 '        </Style>' +
 '      </Layer>' +

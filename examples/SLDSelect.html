@@ -28,7 +28,7 @@
         function init(){
             OpenLayers.ProxyHost= "proxy.cgi?url=";
             map = new OpenLayers.Map('map', {allOverlays: true, controls: []});
-            var url = "http://demo.opengeo.org/geoserver/wms";
+            var url = "http://demo.boundlessgeo.com/geoserver/wms";
             layers = {
                 states: new OpenLayers.Layer.WMS("State boundary", url,
                     {layers: 'topp:tasmania_state_boundaries', format: 'image/gif', transparent: 'TRUE'},
