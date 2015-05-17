@@ -53,6 +53,44 @@
 
         map.destroy();
     }
+
+    // See e.g. https://github.com/openlayers/openlayers/issues/956
+    function test_destroy(t) {
+        t.plan(4);
+        // setup
+        var map = new OpenLayers.Map("map", {
+            panMethod: null,
+            controls: [
+                new OpenLayers.Control.PanPanel()
+            ],
+            layers: [new OpenLayers.Layer(null, {isBaseLayer: true})],
+            center: new OpenLayers.LonLat(0, 0),
+            zoom: 1
+        });
+
+        // test wheter the initial count of controls is as expected
+        t.eq(map.controls.length, 5, "Initially we have exactly five " +
+            "controls.");
+        // test whether destroy cascades to subordinate pan-controls.
+        map.controls[0].destroy();
+        t.eq(map.controls.length, 0, "Removing the PanPanel removes " +
+            "subordinate Pan controls from the map.");
+        // readding another PanPanel brings us back to the initial five
+        // controls.
+        map.addControl(new OpenLayers.Control.PanPanel());
+        t.eq(map.controls.length, 5, "Adding another PanPanel gives " +
+            "five controls again.");
+
+        // check whether this PanPanel is usable (copied from above)
+        map.controls[0].controls[0].trigger();
+        map.controls[0].controls[2].trigger();
+        map.pan(-50, 50);
+        t.eq(map.getCenter().toShortString(), "0, 0", "A newly added " +
+            "PanPanel is usable.");
+
+        // teardown
+        map.destroy();
+    }
   </script>
 </head>
 <body>
