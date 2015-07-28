@@ -14,7 +14,7 @@ function init() {
                 {layers: "basic"} 
             ),
             new OpenLayers.Layer.WMS("States WMS",
-                "http://demo.opengeo.org/geoserver/wms",
+                "http://demo.boundlessgeo.com/geoserver/wms",
                 {layers: "topp:states", format: "image/png", transparent: true},
                 {maxScale: 15000000}
             ),
@@ -22,7 +22,7 @@ function init() {
                 minScale: 15000000,
                 strategies: [new OpenLayers.Strategy.BBOX()],
                 protocol: new OpenLayers.Protocol.WFS({
-                    url: "http://demo.opengeo.org/geoserver/wfs",
+                    url: "http://demo.boundlessgeo.com/geoserver/wfs",
                     featureType: "states",
                     featureNS: "http://www.openplans.org/topp"
                 }),

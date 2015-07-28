@@ -1,4 +1,4 @@
-# OpenLayers
+# OpenLayers 2
 
 Copyright (c) 2005-2014 OpenLayers Contributors. See authors.txt for
 more details.
@@ -9,7 +9,7 @@ Please see license.txt in this distribution for more details.
 
 ## Getting OpenLayers
 
-OpenLayers lives at http://www.openlayers.org/.  Find details on downloading stable releases or the development version the [development site](http://trac.osgeo.org/openlayers/wiki/HowToDownload).
+OpenLayers lives at http://www.openlayers.org/two/.  Find details on downloading stable releases or the development version the [development site](http://trac.osgeo.org/openlayers/wiki/HowToDownload).
 
 ## Installing OpenLayers
 
@@ -74,6 +74,6 @@ Information on changes in the API is available in release notes found in the not
 
 ## Contributing to OpenLayers
 
-Please join the email lists at http://openlayers.org/mailman/listinfo
+Please join the email lists at http://trac.osgeo.org/openlayers/wiki/MailingLists
 Patches are welcome!
 

@@ -58,7 +58,7 @@ function init() {
     var wfs = new OpenLayers.Layer.Vector("States", {
         strategies: [new OpenLayers.Strategy.Fixed()],
         protocol: new OpenLayers.Protocol.WFS({
-            url: "http://demo.opengeo.org/geoserver/wfs",
+            url: "http://demo.boundlessgeo.com/geoserver/wfs",
             featureType: "states",
             featureNS: "http://www.openplans.org/topp"
         }),
