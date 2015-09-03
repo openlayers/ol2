@@ -1,0 +1,25 @@
+
+{
+  "name": "openlayers2",
+  "version": "2.13.1",
+  "description": "OpenLayers 2 JavaScript Based Maps",
+  "keywords": [
+    "map",
+    "mapping",
+    "ol2",
+    "old",
+    "legacy"
+  ],
+  "homepage": "http://openlayers.org/two/",
+  "main": "build/OpenLayers.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/openlayers/openlayers.git"
+  },
+  "bugs": {
+    "url": "https://github.com/openlayers/openlayers/issues"
+  },
+  "scripts": {
+    "postinstall" : "cd build && python ./build.py full"
+  }
+}
