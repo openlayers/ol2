@@ -4,12 +4,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <!-- This is the example list source: if you are trying to look at the 
+        <!-- This is the example list source: if you are trying to look at the
         source of an example, YOU ARE IN THE WRONG PLACE. If you want to view
-        the source of just one example, you can typically choose 
+        the source of just one example, you can typically choose
         "This Frame -> View source" when right clicking on the example. If not,
-        choose to open the example in a new window (via the context menu 
-        click on the link), and view source from there. -->  
+        choose to open the example in a new window (via the context menu
+        click on the link), and view source from there. -->
         <title>OpenLayers Examples</title>
         <link rel="alternate" href="example-list.xml" type="application/atom+xml" />
         <link rel="stylesheet" href="style.css" type="text/css">
@@ -149,7 +149,7 @@
                 });
                 document.getElementById("count").innerHTML = "(" + examples.length + ")";
             }
-            
+
             var timerId;
             function inputChange() {
                 if(timerId) {
@@ -160,7 +160,7 @@
                     filterList(text);
                 }, 500);
             }
-            
+
             function filterList(text) {
                 var examples;
                 if(text.length < 2) {
@@ -229,12 +229,12 @@
                 }
                 listExamples(examples);
             }
-            
+
             function showAll() {
                 document.getElementById("keywords").value = "";
                 listExamples(info.examples);
             }
-            
+
             function parseQuery() {
                 var params = {};
                 var list = window.location.search.substring(1).split("&");
@@ -264,7 +264,7 @@
         <div id="toc">
             <div id="filter">
                 <div id="logo">
-                <img src="http://www.openlayers.org/images/OpenLayers.trac.png"
+                <img src="http://openlayers.org/two/images/OpenLayers.trac.png"
                  />
                  OpenLayers
              </div>
@@ -292,7 +292,7 @@
                             Related Classes go here
                         </p>
                         <div class="ex_tags" jugl:content="'...tagged with ' + example.tags">
-                            
+
                         </div>
                     </a>
                 </li>
