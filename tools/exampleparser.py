@@ -7,7 +7,7 @@ import time
 from xml.dom.minidom import Document
 
 try:
-    import xml.etree.ElementTree as ElementTree 
+    import xml.etree.ElementTree as ElementTree
 except ImportError:
     try:
         import cElementTree as ElementTree
@@ -24,15 +24,15 @@ except ImportError:
     try:
         import simplejson as json
     except ImportError, E:
-        missing_deps = E 
-    
+        missing_deps = E
+
 try:
     from BeautifulSoup import BeautifulSoup
 except ImportError, E:
-    missing_deps = E 
+    missing_deps = E
 
 feedName = "example-list.xml"
-feedPath = "http://openlayers.org/dev/examples/"
+feedPath = "http://dev.openlayers.org/examples/"
 
 def getListOfExamples(relPath):
     """
@@ -41,7 +41,7 @@ def getListOfExamples(relPath):
     examples = os.listdir(relPath)
     examples = [example for example in examples if example.endswith('.html') and example != "example-list.html"]
     return examples
-    
+
 
 def getExampleHtml(path):
     """
@@ -52,15 +52,15 @@ def getExampleHtml(path):
     html = f.read()
     f.close()
     return html
-        
-    
+
+
 def extractById(soup, tagId, value=None):
     """
     returns full contents of a particular tag id
     """
     beautifulTag = soup.find(id=tagId)
     if beautifulTag:
-        if beautifulTag.contents: 
+        if beautifulTag.contents:
             value = str(beautifulTag.renderContents()).strip()
             value = value.replace('\t','')
             value = value.replace('\n','')
@@ -68,8 +68,8 @@ def extractById(soup, tagId, value=None):
 
 def getRelatedClasses(html):
     """
-    parses the html, and returns a list of all OpenLayers Classes 
-    used within (ie what parts of OL the javascript uses).  
+    parses the html, and returns a list of all OpenLayers Classes
+    used within (ie what parts of OL the javascript uses).
     """
     rawstr = r'''(?P<class>OpenLayers\..*?)\('''
     return re.findall(rawstr, html)
@@ -102,7 +102,7 @@ def getGitInfo(exampleDir, exampleName):
     td.insert(1, "T")
     d["date"] = "".join(td)
     return d
-    
+
 def createFeed(examples):
     doc = Document()
     atomuri = "http://www.w3.org/2005/Atom"
@@ -114,12 +114,12 @@ def createFeed(examples):
     link = doc.createElementNS(atomuri, "link")
     link.setAttribute("rel", "self")
     link.setAttribute("href", feedPath + feedName)
-    
+
     modtime = time.strftime("%Y-%m-%dT%I:%M:%SZ", time.gmtime())
     id = doc.createElementNS(atomuri, "id")
     id.appendChild(doc.createTextNode("%s%s#%s" % (feedPath, feedName, modtime)))
     feed.appendChild(id)
-    
+
     updated = doc.createElementNS(atomuri, "updated")
     updated.appendChild(doc.createTextNode(modtime))
     feed.appendChild(updated)
@@ -127,42 +127,42 @@ def createFeed(examples):
     examples.sort(key=lambda x:x["modified"])
     for example in sorted(examples, key=lambda x:x["modified"], reverse=True):
         entry = doc.createElementNS(atomuri, "entry")
-        
+
         title = doc.createElementNS(atomuri, "title")
         title.appendChild(doc.createTextNode(example["title"] or example["example"]))
         entry.appendChild(title)
-              
+
         tags = doc.createElementNS(atomuri, "tags")
         tags.appendChild(doc.createTextNode(example["tags"] or example["example"]))
         entry.appendChild(tags)
-        
+
         link = doc.createElementNS(atomuri, "link")
         link.setAttribute("href", "%s%s" % (feedPath, example["example"]))
         entry.appendChild(link)
-    
+
         summary = doc.createElementNS(atomuri, "summary")
         summary.appendChild(doc.createTextNode(example["shortdesc"] or example["example"]))
         entry.appendChild(summary)
-        
+
         updated = doc.createElementNS(atomuri, "updated")
         updated.appendChild(doc.createTextNode(example["modified"]))
         entry.appendChild(updated)
-        
+
         author = doc.createElementNS(atomuri, "author")
         name = doc.createElementNS(atomuri, "name")
         name.appendChild(doc.createTextNode(example["author"]))
         author.appendChild(name)
         entry.appendChild(author)
-        
+
         id = doc.createElementNS(atomuri, "id")
         id.appendChild(doc.createTextNode("%s%s#%s" % (feedPath, example["example"], example["modified"])))
         entry.appendChild(id)
-        
+
         feed.appendChild(entry)
 
     doc.appendChild(feed)
-    return doc    
-    
+    return doc
+
 def wordIndex(examples):
     """
     Create an inverted index based on words in title and shortdesc.  Keys are
@@ -188,27 +188,27 @@ def wordIndex(examples):
                         else:
                             index[word] = {i: 1}
     return index
-    
+
 if __name__ == "__main__":
 
     if missing_deps:
         print "This script requires json or simplejson and BeautifulSoup. You don't have them. \n(%s)" % E
         sys.exit()
-    
+
     if len(sys.argv) == 3:
         inExampleDir = sys.argv[1]
         outExampleDir = sys.argv[2]
     else:
         inExampleDir = "../examples"
         outExampleDir = "../examples"
-    
+
     outFile = open(os.path.join(outExampleDir, "example-list.js"), "w")
-    
+
     print 'Reading examples from %s and writing out to %s' % (inExampleDir, outFile.name)
-   
+
     exampleList = []
     docIds = ['title','shortdesc','tags']
-   
+
     examples = getListOfExamples(inExampleDir)
 
     modtime = time.strftime("%Y-%m-%dT%I:%M:%SZ", time.gmtime())
@@ -225,16 +225,16 @@ if __name__ == "__main__":
         tagvalues['link'] = example
 
         exampleList.append(tagvalues)
-        
+
     print
-    
+
     exampleList.sort(key=lambda x:x['example'].lower())
-    
+
     index = wordIndex(exampleList)
 
     json = json.dumps({"examples": exampleList, "index": index})
     #give the json a global variable we can use in our js.  This should be replaced or made optional.
-    json = 'var info=' + json 
+    json = 'var info=' + json
     outFile.write(json)
     outFile.close()
 
@@ -247,5 +247,3 @@ if __name__ == "__main__":
 
 
     print 'complete'
-
-    
