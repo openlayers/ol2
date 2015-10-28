@@ -102,7 +102,7 @@
             featureType: "states",
             featurePrefix: "topp"
         });
-        var exp = "topp:states";
+        var exp = "states";
         var got = format.writeNode("wfs:Query").getAttribute("typeName");
         t.eq(got, exp, "Query without featureNS but with featurePrefix queries for the correct featureType");
     }
@@ -132,6 +132,20 @@
             schema: "http://foo.bar/topp_schema.xsd"
         });
         var exp = readXML("schemaLocationDefaultPrefix");
+        var got = format.writeNode("wfs:GetFeature");
+        t.xml_eq(got, exp, "schemaLocation correctly written", {prefix:true});
+    }
+
+    function test_write_noFeatureNS(t) {
+        t.plan(1);
+        var format = new OpenLayers.Format.WFST.v1_1_0({
+            featureNS: undefined,
+            featureType: "states",
+            srsName: "urn:ogc:def:crs:EPSG::4326",
+            geometryName: "the_geom",
+            schema: "http://foo.bar/topp_schema.xsd"
+        });
+        var exp = readXML("noFeatureNS");
         var got = format.writeNode("wfs:GetFeature");
         t.xml_eq(got, exp, "schemaLocation correctly written", {prefix:true});
     }
@@ -276,6 +290,15 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd http://www.openplans.org/topp http://foo.bar/topp_schema.xsd">
     <wfs:Query xmlns:wfs="http://www.opengis.net/wfs" typeName="feature:states" srsName="urn:ogc:def:crs:EPSG::4326" xmlns:feature="http://www.openplans.org/topp">
+    </wfs:Query>
+</wfs:GetFeature>
+--></div>
+<div id="noFeatureNS"><!--
+<wfs:GetFeature service="WFS" version="1.1.0"
+                xmlns:wfs="http://www.opengis.net/wfs"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+    <wfs:Query xmlns:wfs="http://www.opengis.net/wfs" typeName="states" srsName="urn:ogc:def:crs:EPSG::4326">
     </wfs:Query>
 </wfs:GetFeature>
 --></div>
