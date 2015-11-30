@@ -278,7 +278,7 @@
             featureType: "states",
             featurePrefix: "topp"
         });
-        var exp = "topp:states";
+        var exp = "states";
         var got = format.writeNode("wfs:Query").getAttribute("typeNames");
         t.eq(got, exp, "Query without featureNS but with featurePrefix queries for the correct featureType");
     }
