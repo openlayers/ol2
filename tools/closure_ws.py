@@ -1,13 +1,21 @@
 #!/usr/bin/python
 
-import httplib, urllib, sys
+try:
+    import httplib  # Python 2
+except ImportError:
+    from http import client as httplib  # Python 3
+try:
+    from urllib import urlencode  # Python 2
+except ImportError:
+    from urllib.parse import urlencode  # Python 3
+import sys
 import time
 # Define the parameters for the POST request and encode them in
 # a URL-safe format.
 
 def minimize(code):
 
-    params = urllib.urlencode([
+    params = urlencode([
         ('js_code', code),
         ('compilation_level', 'SIMPLE_OPTIMIZATIONS'),
         ('output_format', 'text'),
@@ -22,7 +30,7 @@ def minimize(code):
     response = conn.getresponse()
     data = response.read()
     conn.close()
-    if data.startswith("Error"):
+    if data.startswith(b"Error"):
         raise Exception(data)
-    print "%.3f seconds to compile" % (time.time() - t) 
+    print("%.3f seconds to compile" % (time.time() - t))
     return data

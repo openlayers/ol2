@@ -35,7 +35,7 @@ def minimize(data, exclude=None):
        functions. To add further compression algorithms, simply add
        functions whose names end in _helper which take a string as input 
        and return a more compressed string as output."""
-    for key, item in globals().iteritems():
+    for key, item in globals().items():
         if key.endswith("_helper"):
             func_key = key[:-7]
             if not exclude or not func_key in exclude:   
@@ -44,4 +44,4 @@ def minimize(data, exclude=None):
 
 if __name__ == "__main__":
     import sys
-    print minimize(open(sys.argv[1]).read())
+    print(minimize(open(sys.argv[1]).read()))

@@ -20,7 +20,7 @@ class Sorter(object):
     def _visit(self, key):
         if key not in self.visited:
             self.visited.add(key)
-            if not self.dependencies.has_key(key):
+            if not key in self.dependencies:
                 raise MissingDependency(key)
             for depends in self.dependencies[key]:
                 self._visit(depends)

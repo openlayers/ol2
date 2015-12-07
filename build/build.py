@@ -11,33 +11,33 @@ def build(config_file = None, output_file = None, options = None):
     try:
         import jsmin
         have_compressor.append("jsmin")
-    except ImportError:
-        print "No jsmin"
+    except ImportError as E:
+        print("No jsmin (%s)" % E)
     try:
         # tools/closure_library_jscompiler.py from: 
         #       http://code.google.com/p/closure-library/source/browse/trunk/closure/bin/build/jscompiler.py
         import closure_library_jscompiler as closureCompiler
         have_compressor.append("closure")
-    except Exception, E:
-        print "No closure (%s)" % E
+    except Exception as E:
+        print("No closure (%s)" % E)
     try:
         import closure_ws
         have_compressor.append("closure_ws")
-    except ImportError:
-        print "No closure_ws"
+    except ImportError as E:
+        print("No closure_ws (%s)" % E)
     
     try:
         import minimize
         have_compressor.append("minimize")
-    except ImportError:
-        print "No minimize"
+    except ImportError as E:
+        print("No minimize (%s)" % E)
 
     try:
         import uglify_js
         uglify_js.check_available()
         have_compressor.append("uglify-js")
-    except Exception, E:
-        print "No uglify-js (%s)" % E
+    except Exception as E:
+        print("No uglify-js (%s)" % E)
 
     use_compressor = None
     if options.compressor and options.compressor in have_compressor:
@@ -57,14 +57,14 @@ def build(config_file = None, output_file = None, options = None):
     if output_file:
         outputFilename = output_file
 
-    print "Merging libraries."
+    print("Merging libraries.")
     try:
         if use_compressor == "closure" or use_compressor == 'uglify-js':
             sourceFiles = mergejs.getNames(sourceDirectory, configFilename)
         else:
             merged = mergejs.run(sourceDirectory, None, configFilename)
-    except mergejs.MissingImport, E:
-        print "\nAbnormal termination."
+    except mergejs.MissingImport as E:
+        print("\nAbnormal termination.")
         sys.exit("ERROR: %s" % E)
 
     if options.amdname:
@@ -73,33 +73,33 @@ def build(config_file = None, output_file = None, options = None):
         options.amdname = ""
         
     if options.amd == 'pre':
-        print "\nAdding AMD function."
+        print("\nAdding AMD function.")
         merged = "define(%sfunction(){%sreturn OpenLayers;});" % (options.amdname, merged)
     
-    print "Compressing using %s" % use_compressor
+    print("Compressing using %s" % use_compressor)
     if use_compressor == "jsmin":
         minimized = jsmin.jsmin(merged)
     elif use_compressor == "minimize":
         minimized = minimize.minimize(merged)
     elif use_compressor == "closure_ws":
         if len(merged) > 1000000: # The maximum file size for this web service is 1000 KB.
-            print "\nPre-compressing using jsmin"
+            print("\nPre-compressing using jsmin")
             merged = jsmin.jsmin(merged)
-        print "\nIs being compressed using Closure Compiler Service."
+        print("\nIs being compressed using Closure Compiler Service.")
         try:
-            minimized = closure_ws.minimize(merged)
-        except Exception, E:
-            print "\nAbnormal termination."
+            minimized = closure_ws.minimize(merged).decode()
+        except Exception as E:
+            print("\nAbnormal termination.")
             sys.exit("ERROR: Closure Compilation using Web service failed!\n%s" % E)
         if len(minimized) <= 2:
-            print "\nAbnormal termination due to compilation errors."
+            print("\nAbnormal termination due to compilation errors.")
             sys.exit("ERROR: Closure Compilation using Web service failed!")
         else:
-            print "Closure Compilation using Web service has completed successfully."
+            print("Closure Compilation using Web service has completed successfully.")
     elif use_compressor == "closure":
         jscompilerJar = "../tools/closure-compiler.jar"
         if not os.path.isfile(jscompilerJar):
-            print "\nNo closure-compiler.jar; read README.txt!"
+            print("\nNo closure-compiler.jar; read README.txt!")
             sys.exit("ERROR: Closure Compiler \"%s\" does not exist! Read README.txt" % jscompilerJar)
         minimized = closureCompiler.Compile(
             jscompilerJar, 
@@ -109,37 +109,39 @@ def build(config_file = None, output_file = None, options = None):
                 "--jscomp_error",   "checkRegExp", # Also necessary to enable "undefinedVars"
                 "--jscomp_error",   "undefinedVars"
             ]
-        )
+        ).decode()
         if minimized is None:
-            print "\nAbnormal termination due to compilation errors." 
+            print("\nAbnormal termination due to compilation errors." )
             sys.exit("ERROR: Closure Compilation failed! See compilation errors.") 
-        print "Closure Compilation has completed successfully."
+        print("Closure Compilation has completed successfully.")
     elif use_compressor == "uglify-js":
         minimized = uglify_js.compile(sourceFiles)
+        if (sys.version_info > (3, 0)):
+            minimized = minimized.decode()
         if minimized is None:
-            print "\nAbnormal termination due to compilation errors."
+            print("\nAbnormal termination due to compilation errors.")
             sys.exit("ERROR: Uglify JS compilation failed! See compilation errors.")
 
-        print "Uglify JS compilation has completed successfully."
+        print("Uglify JS compilation has completed successfully.")
 
     else: # fallback
         minimized = merged 
 
     if options.amd == 'post':
-        print "\nAdding AMD function."
+        print("\nAdding AMD function.")
         minimized = "define(%sfunction(){%sreturn OpenLayers;});" % (options.amdname, minimized)
     
     if options.status:
-        print "\nAdding status file."
-        minimized = "// status: " + file(options.status).read() + minimized
+        print("\nAdding status file.")
+        minimized = "// status: " + open(options.status).read() + minimized
     
-    print "\nAdding license file."
-    minimized = file("license.txt").read() + minimized
+    print("\nAdding license file.")
+    minimized = open("license.txt").read() + minimized
 
-    print "Writing to %s." % outputFilename
-    file(outputFilename, "w").write(minimized)
+    print("Writing to %s." % outputFilename)
+    open(outputFilename, "w").write(minimized)
 
-    print "Done."
+    print("Done.")
 
 if __name__ == '__main__':
   opt = optparse.OptionParser(usage="%s [options] [config_file] [output_file]\n  Default config_file is 'full.cfg', Default output_file is 'OpenLayers.js'")
@@ -155,4 +157,4 @@ if __name__ == '__main__':
   elif len(args) == 2:
     build(args[0], args[1], options=options)
   else:
-    print "Wrong number of arguments"
+    print("Wrong number of arguments")
