@@ -1,7 +1,7 @@
 Format: 1.52
 
 
-Title: OpenLayers
+Title: OpenLayers 2
 SubTitle: JavaScript Mapping Library
 
 # You can add a footer to your documentation like this:
@@ -272,6 +272,7 @@ Group: OpenLayers  {
          File: WPSCapabilities  (no auto-title, OpenLayers/Format/WPSCapabilities.js)
          File: WPSCapabilities.v1_0_0  (no auto-title, OpenLayers/Format/WPSCapabilities/v1_0_0.js)
          File: WPSDescribeProcess  (no auto-title, OpenLayers/Format/WPSDescribeProcess.js)
+         File: WPSDescribeProcess.v1_0_0  (OpenLayers/Format/WPSDescribeProcess/v1_0_0.js)
          File: WPSExecute version 1.0.0  (no auto-title, OpenLayers/Format/WPSExecute.js)
          File: XLS  (no auto-title, OpenLayers/Format/XLS.js)
          File: XLS.v1  (no auto-title, OpenLayers/Format/XLS/v1.js)
