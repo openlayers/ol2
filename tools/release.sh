@@ -28,7 +28,7 @@ VERSION=$1
 wget -c http://closure-compiler.googlecode.com/files/compiler-latest.zip
 unzip compiler-latest.zip 
 
-wget -O release-${VERSION}.tar.gz https://github.com/openlayers/openlayers/tarball/release-${VERSION}
+wget -O release-${VERSION}.tar.gz https://github.com/openlayers/ol2/tarball/release-${VERSION}
 tar xvzf release-${VERSION}.tar.gz
 mv openlayers-openlayers-* OpenLayers-${VERSION}
 cd OpenLayers-${VERSION}/build

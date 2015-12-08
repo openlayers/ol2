@@ -9,7 +9,7 @@
   Includes compressed code under the following licenses:
 
   (For uncompressed versions of the code used, please see the
-  OpenLayers Github repository: <https://github.com/openlayers/openlayers>)
+  OpenLayers Github repository: <https://github.com/openlayers/ol2>)
 
 */
 
