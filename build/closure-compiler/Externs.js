@@ -1,12 +1,12 @@
 // ********************************************
-// This source file serves *ONLY* to avoid some compilation errors when the 
+// This source file serves *ONLY* to avoid some compilation errors when the
 //      compiler uses the flag:
 //          --jscomp_error undefinedVars
 //
-// In this source are declared all variables from other programs that use 
+// In this source are declared all variables from other programs that use
 //      OpenLayers. This avoids the error of undefined variable for these names.
 //
-// NOTE: The compiler does not include externs files like this in the 
+// NOTE: The compiler does not include externs files like this in the
 //      compilation result.
 // ********************************************
 
@@ -30,7 +30,7 @@
     var GSize = function(x, y){};
     var GPoint = function(x, y){};
     var GLatLng = function(lat, lon){};
-    
+
 // Multimap
     var MultimapViewer = function(div){};
     var MMLatLon = function(lat, lon){};
@@ -48,3 +48,5 @@
     var YCoordPoint = function(x, y){};
     var YSize = function(w, h){};
 
+// Gears
+    var GearsFactory = function(){};
