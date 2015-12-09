@@ -30,8 +30,8 @@ function test_Comparison_string(t) {
          "Property extracted from CQL text");
     t.eq(filter.value, 'B',
          "Value extracted from CQL text");
-         
-         
+
+
     t.eq(format.write(filter), test_cql, "write returned test cql");
 }
 
@@ -112,8 +112,8 @@ function test_Comparison_number(t) {
          "Property extracted from CQL text");
     t.eq(filter.value, 10,
          "Value extracted from CQL text");
-         
-         
+
+
     t.eq(format.write(filter), test_cql, "write returned test cql");
 }
 
@@ -212,7 +212,7 @@ function test_Parentheticals_write(t) {
 }
 
 function test_BBOX(t) {
-    t.plan(5);
+    t.plan(6);
     var format = new OpenLayers.Format.CQL(),
         cql = "BBOX(the_geom,1,2,3,4)",
         filter = format.read(cql);
@@ -224,9 +224,12 @@ function test_BBOX(t) {
          "Property name is as specified in CQL");
     t.eq(filter.value.toBBOX(), "1,2,3,4",
          "Value is as specified in CQL");
-
     t.eq(format.write(filter), cql, "write returned test cql");
 
+    var negCql = "BBOX(the_geom,-1,-2,3,4)"
+    filter = format.read(negCql)
+    t.eq(filter.value.toBBOX(), "-1,-2,3,4",
+         "Negative value is as specified in CQL");
 }
 
 function test_INTERSECTS(t) {
@@ -242,7 +245,7 @@ function test_INTERSECTS(t) {
          "Property name is as specified in CQL");
     t.ok(filter.value instanceof OpenLayers.Geometry,
          "Value is a geometry");
-    
+
     t.eq(format.write(filter), cql, "write returned test cql");
 
 }
