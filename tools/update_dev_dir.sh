@@ -2,27 +2,27 @@
 
 # check to see if the hosted examples or API docs need an update
 cd /osgeo/openlayers/repos/openlayers
-REMOTE_HEAD=`git ls-remote https://github.com/openlayers/openlayers/ | grep HEAD | awk '{print $1}'`
+REMOTE_HEAD=`git ls-remote https://github.com/openlayers/ol2/ | grep HEAD | awk '{print $1}'`
 LOCAL_HEAD=`git rev-parse HEAD`
 
 # if there's something different in the remote, update and build
 if [ ! o$REMOTE_HEAD = o$LOCAL_HEAD ]; then
-    
+
     git checkout master
     git clean -f
     git pull origin master
-    
+
     # copy everything over to the dev dir within the website (keep the clone clean)
     rsync -r --exclude=.git . /osgeo/openlayers/sites/openlayers.org/dev
-    
+
     # make examples use built lib
     cd /osgeo/openlayers/sites/openlayers.org/dev/tools
 
     python exampleparser.py /osgeo/openlayers/repos/openlayers/examples /osgeo/openlayers/sites/openlayers.org/dev/examples
-    
+
     if [ ! -f closure-compiler.jar ]; then
         wget -c http://closure-compiler.googlecode.com/files/compiler-latest.zip
-        unzip compiler-latest.zip 
+        unzip compiler-latest.zip
         mv compiler.jar closure-compiler.jar
     fi
 
@@ -58,15 +58,15 @@ LOCAL_HEAD=`git rev-parse HEAD`
 
 # if there's something different in the remote, update the clone
 if [ ! o$REMOTE_HEAD = o$LOCAL_HEAD ]; then
-    
+
     git checkout master
     git clean -f
     git pull origin master
-    
+
     # copy everything over to the website dir (keep the clone clean)
     # can't use --delete here because of nested dev dir from above
     rsync -r --exclude=.git . /osgeo/openlayers/sites/openlayers.org
-    
+
 fi
 
 # check to see if prose docs need an update
@@ -76,14 +76,14 @@ LOCAL_HEAD=`git rev-parse HEAD`
 
 # if there's something different in the remote, update the clone
 if [ ! o$REMOTE_HEAD = o$LOCAL_HEAD ]; then
-    
+
     git checkout master
     git clean -f
     git pull origin master
 
     mkdir -p /osgeo/openlayers/sites/docs.openlayers.org /tmp/ol/docs/build/doctrees
     sphinx-build -b html -d /tmp/ol/docs/build/doctrees . /osgeo/openlayers/sites/docs.openlayers.org
-    
+
 fi
 
 ## UPDATES FROM THE OLD SVN REPO
