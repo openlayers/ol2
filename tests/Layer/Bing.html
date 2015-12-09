@@ -2,11 +2,11 @@
 <head>
   <script src="../OLLoader.js"></script>
   <script type="text/javascript">
-    var map, layer; 
+    var map, layer;
 
     var layerType = 'Aerial';
-    var key = "AqTGBsziZHIJYYxgivLBf0hVdrAk9mWO5cQcb8Yux8sW5M8c8opEC2lZqKR1ZZXf";
-    
+    var key = "ApTJzdkyN1DdFKkRAE6QIDtzihNaf6IWJsT-nQ_2eMoO4PN__0Tzhl2-WgJtXFSp";
+
     var options = {
         type: layerType,
         key: key
@@ -14,7 +14,7 @@
 
     function test_constructor(t) {
         t.plan(3);
-                       
+
         var origProcessMetadata = OpenLayers.Layer.Bing.processMetadata;
         var log = [];
         OpenLayers.Layer.Bing.processMetadata = function(metadata) {
@@ -33,7 +33,7 @@
             layer.destroy();
         });
     }
-    
+
     function test_initLayer(t) {
         t.plan(2);
 
@@ -51,7 +51,7 @@
             }
         })]);
         map.zoomToMaxExtent();
-        
+
         var map2 = new OpenLayers.Map("map");
         var layer2 = new OpenLayers.Layer.Bing(OpenLayers.Util.extend({
             initLayer: function() {
@@ -67,7 +67,7 @@
             }
         })]);
         map2.zoomToMaxExtent();
-        
+
         t.delay_call(5, function() {
             origProcessMetadata.call(layer, meta[0]);
             t.eq(extent.toBBOX(), map.getExtent().toBBOX(), "layer extent correct for base layer with zoomMin == 1.");
@@ -81,10 +81,10 @@
             OpenLayers.Layer.Bing.processMetadata = origProcessMetadata;
         });
     }
-    
+
     function test_initLayer_notempty(t) {
         t.plan(1);
-        
+
         map = new OpenLayers.Map("map", {
             projection: "EPSG:3857",
             layers: [new OpenLayers.Layer("dummy", {isBaseLayer: true})]
@@ -94,22 +94,22 @@
             isBaseLayer: false
         }, options));
         map.addLayer(layer);
-        
+
         t.delay_call(5, function() {
             t.ok(layer.grid[0][0].url, "Tile not empty");
             map.destroy();
         });
     }
-    
+
     function test_attribution(t) {
         t.plan(3);
-        
+
         var log = [];
         var map = new OpenLayers.Map("map");
         layer = new OpenLayers.Layer.Bing(options);
         map.addLayer(layer);
         map.zoomToMaxExtent();
-        
+
         t.delay_call(2, function() {
             t.ok(OpenLayers.Util.indexOf(layer.attribution, 'olBingAttribution aerial') !== -1, "Attribution has the correct css class");
             t.ok(OpenLayers.Util.indexOf(layer.attribution, '<img src="">') == -1, "Attribution contains a logo");
@@ -120,7 +120,7 @@
 
     function test_attribution_notempty(t) {
         t.plan(1);
-        
+
         var log = [];
         var map = new OpenLayers.Map("map");
         layer = new OpenLayers.Layer.Bing(OpenLayers.Util.applyDefaults({type: 'Road'}, options));
@@ -136,17 +136,17 @@
             map.destroy();
         });
     }
-    
+
     function test_getXYZ(t) {
         t.plan(1);
-        
+
         var map = new OpenLayers.Map("map", {allOverlays: true});
         var osm = new OpenLayers.Layer.OSM();
         map.addLayer(osm);
         map.zoomToExtent(new OpenLayers.Bounds(11373579,-2445208,13628777,680760));
         layer = new OpenLayers.Layer.Bing(options);
         map.addLayer(layer);
-        
+
         t.delay_call(2, function() {
             var xyz = layer.getXYZ(layer.getTileBounds(new OpenLayers.Pixel(1,1)));
             t.eq(xyz.z, OpenLayers.Util.indexOf(layer.serverResolutions, map.getResolution()), "zoom level correct");
@@ -155,9 +155,9 @@
 
     function test_clone(t) {
         t.plan(1);
-        
+
         var clone;
-        
+
         layer = new OpenLayers.Layer.Bing(options);
         clone = layer.clone();
         t.ok(clone instanceof OpenLayers.Layer.Bing, "clone is a Layer.Bing instance");
@@ -171,7 +171,7 @@
         layer = new OpenLayers.Layer.Bing(options);
         map.addLayer(layer);
         map.zoomToMaxExtent();
-        
+
         t.delay_call(5, function() {
             t.ok(OpenLayers.Util.indexOf(layer.attribution, '<img src="//') != -1, "Attribution contains a logo with protocol //");
             t.ok(OpenLayers.Util.indexOf(layer.attribution, '<img src="http://') == -1, "Attribution logo does not have http:// protocol");

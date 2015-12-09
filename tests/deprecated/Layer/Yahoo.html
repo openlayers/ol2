@@ -4,7 +4,7 @@
   <script src="../../OLLoader.js"></script>
   <script src="../../../lib/deprecated.js"></script>
   <script type="text/javascript">
-    var layer; 
+    var layer;
 
     function test_Layer_Yahoo_constructor (t) {
         t.plan( 4 );
@@ -23,7 +23,7 @@
 
 
         g_Name = {};
-        g_Options = {};        
+        g_Options = {};
         var l = new OpenLayers.Layer.Yahoo(g_Name, g_Options);
 
         OpenLayers.Layer.EventPane.prototype.initialize = tempEventPane;
@@ -31,8 +31,12 @@
     }
 
     function test_Layer_Yahoo_loadMapObject(t) {
+        if (!window.YMap) {
+            t.plan(0);
+            return;
+        }
         t.plan(5);
-        
+
         var temp = YMap;
         YMap = OpenLayers.Class({
             initialize: function(div, type, size) {
@@ -44,12 +48,12 @@
                 t.ok(true, "disableKeyControls called on map object");
             }
         });
-        
+
         g_Div = {};
         g_Type = {};
         g_MapSize = {};
         g_YMapSize = {};
-        
+
         var l = new OpenLayers.Layer.Yahoo();
         l.div = g_Div;
         l.type = g_Type;
@@ -66,14 +70,18 @@
         l.loadMapObject();
 
         YMap = temp;
-    }    
+    }
 
     function test_Layer_Yahoo_onMapResize(t) {
+        if (!window.YMap) {
+            t.plan(0);
+            return;
+        }
         t.plan(2);
-        
+
         g_MapSize = {};
         g_YMapSize = {};
-        
+
         var l = new OpenLayers.Layer.Yahoo();
         l.mapObject = {
             'resizeTo': function(size) {
@@ -92,8 +100,12 @@
 
         l.onMapResize();
     }
-    
+
     function test_Layer_Yahoo_getMapObjectSizeFromOLSize(t) {
+        if (!window.YMap) {
+            t.plan(0);
+            return;
+        }
         t.plan(2);
         
         var temp = YSize;
@@ -101,12 +113,12 @@
             t.ok(w == g_Size.w, "correct width passed to YSize constructor");
             t.ok(h == g_Size.h, "correct height passed to YSize constructor");
         }
-        
+
         g_Size = {
             'w': {},
             'h': {}
         };
-        
+
         OpenLayers.Layer.Yahoo.prototype.getMapObjectSizeFromOLSize(g_Size);
 
         YSize = temp;
