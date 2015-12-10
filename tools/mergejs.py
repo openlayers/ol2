@@ -24,7 +24,7 @@
 #  This example will cause the script to walk the `Geo` and
 #  `CrossBrowser` directories--and subdirectories thereof--and import
 #  all `*.js` files encountered. The dependency declarations will be extracted
-#  and then the source code from imported files will be output to 
+#  and then the source code from imported files will be output to
 #  a file named `openlayers.js` in an order which fulfils the dependencies
 #  specified.
 #
@@ -43,10 +43,13 @@ import sys
 
 SUFFIX_JAVASCRIPT = ".js"
 
-RE_REQUIRE = "@requires?:?\s+(\S*)\s*\n" # TODO: Ensure in comment?
+RE_REQUIRE = "@requires?:?\s+(\S*)\s*\n"  # TODO: Ensure in comment?
+RE_INCLUDE = "@include?:?\s+(\S*)\s*\n"  # TODO: Ensure in comment?
+
 
 class MissingImport(Exception):
     """Exception raised when a listed import is not found in the lib."""
+
 
 class SourceFile:
     """
@@ -59,17 +62,26 @@ class SourceFile:
         self.filepath = filepath
         self.source = source
 
-        self.excludedFiles = [] 
-        self.requiredFiles = [] 
-        auxReq = re.findall(RE_REQUIRE, self.source) 
-        for filename in auxReq: 
-            if undesired(filename, cfgExclude): 
-                self.excludedFiles.append(filename) 
-            else: 
-                self.requiredFiles.append(filename) 
+        self.excludedFiles = []
+        self.requiredFiles = []
+        auxReq = re.findall(RE_REQUIRE, self.source)
+        for filename in auxReq:
+            if undesired(filename, cfgExclude):
+                self.excludedFiles.append(filename)
+            else:
+                self.requiredFiles.append(filename)
+
+        self.includeFiles = []
+        # All required files are included
+        self.includeFiles.extend(self.requiredFiles)
+        auxReq = re.findall(RE_INCLUDE, self.source)
+        for filename in auxReq:
+            if undesired(filename, cfgExclude):
+                self.excludedFiles.append(filename)
+            else:
+                self.includeFiles.append(filename)
 
         self.requiredBy = []
-
 
     def _getRequirements(self):
         """
@@ -80,6 +92,14 @@ class SourceFile:
 
     requires = property(fget=_getRequirements, doc="")
 
+    def _getIncludes(self):
+        """
+        Extracts the dependencies specified in the source code and returns
+        a list of them.
+        """
+        return self.includeFiles
+
+    includes = property(fget=_getIncludes, doc="")
 
 
 def usage(filename):
@@ -118,22 +138,23 @@ class Config:
     The files list in the `exclude` section will not be imported.
 
     Any text appearing after a # symbol indicates a comment.
-    
+
     """
 
     def __init__(self, filename):
         """
         Parses the content of the named file and stores the values.
         """
-        lines = [re.sub("#.*?$", "", line).strip() # Assumes end-of-line character is present
+        lines = [re.sub("#.*?$", "", line).strip()  # Assumes end-of-line character is present
                  for line in open(filename)
-                 if line.strip() and not line.strip().startswith("#")] # Skip blank lines and comments
+                 if line.strip() and not line.strip().startswith("#")]  # Skip blank lines and comments
 
         self.forceFirst = lines[lines.index("[first]") + 1:lines.index("[last]")]
 
         self.forceLast = lines[lines.index("[last]") + 1:lines.index("[include]")]
-        self.include =  lines[lines.index("[include]") + 1:lines.index("[exclude]")]
-        self.exclude =  lines[lines.index("[exclude]") + 1:]
+        self.include = lines[lines.index("[include]") + 1:lines.index("[exclude]")]
+        self.exclude = lines[lines.index("[exclude]") + 1:]
+
 
 def undesired(filepath, excludes):
     # exclude file if listed
@@ -149,12 +170,12 @@ def undesired(filepath, excludes):
     return exclude
 
 
-def getNames (sourceDirectory, configFile = None):
+def getNames(sourceDirectory, configFile=None):
     return run(sourceDirectory, None, configFile, True)
-            
 
-def run (sourceDirectory, outputFilename = None, configFile = None,
-                                                returnAsListOfNames = False):
+
+def run(sourceDirectory, outputFilename=None, configFile=None,
+        returnAsListOfNames=False):
     cfg = None
     if configFile:
         cfg = Config(configFile)
@@ -183,8 +204,8 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
     for filepath in allFiles:
         print "Importing: %s" % filepath
         fullpath = os.path.join(sourceDirectory, filepath).strip()
-        content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF?
-        files[filepath] = SourceFile(filepath, content, cfg.exclude) # TODO: Chop path?
+        content = open(fullpath, "U").read()  # TODO: Ensure end of line @ EOF?
+        files[filepath] = SourceFile(filepath, content, cfg.exclude)  # TODO: Chop path?
 
     print
 
@@ -198,36 +219,36 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
 
         ## Resolve the dependencies
         print "Resolution pass %s... " % resolution_pass
-        resolution_pass += 1 
+        resolution_pass += 1
 
         for filepath, info in files.items():
-            for path in info.requires:
-                if not files.has_key(path):
+            for path in info.includes:
+                if path not in files:
                     complete = False
                     fullpath = os.path.join(sourceDirectory, path).strip()
                     if os.path.exists(fullpath):
                         print "Importing: %s" % path
-                        content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF?
-                        files[path] = SourceFile(path, content, cfg.exclude) # TODO: Chop path?
+                        content = open(fullpath, "U").read()  # TODO: Ensure end of line @ EOF?
+                        files[path] = SourceFile(path, content, cfg.exclude)  # TODO: Chop path?
                     else:
                         raise MissingImport("File '%s' not found (required by '%s')." % (path, filepath))
-        
+
     # create dictionary of dependencies
     dependencies = {}
     for filepath, info in files.items():
         dependencies[filepath] = info.requires
 
     print "Sorting..."
-    order = toposort(dependencies) #[x for x in toposort(dependencies)]
+    order = toposort(dependencies)  # [x for x in toposort(dependencies)]
 
     ## Move forced first and last files to the required position
     if cfg:
         print "Re-ordering files..."
-        order = cfg.forceFirst + [item
-                     for item in order
-                     if ((item not in cfg.forceFirst) and
-                         (item not in cfg.forceLast))] + cfg.forceLast
-    
+        order = cfg.forceFirst + [
+            item for item in order if (
+                (item not in cfg.forceFirst) and (item not in cfg.forceLast)
+            )] + cfg.forceLast
+
     print
     ## Output the files in the determined order
     result = []
@@ -235,21 +256,21 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
     # Return as a list of filenames
     if returnAsListOfNames:
         for fp in order:
-            fName = os.path.normpath(os.path.join(sourceDirectory, fp)).replace("\\","/")
+            fName = os.path.normpath(os.path.join(sourceDirectory, fp)).replace("\\", "/")
             print "Append: ", fName
             f = files[fp]
-            for fExclude in f.excludedFiles: 
-                print "  Required file \"%s\" is excluded." % fExclude 
+            for fExclude in f.excludedFiles:
+                print "  Required file \"%s\" is excluded." % fExclude
             result.append(fName)
         print "\nTotal files: %d " % len(result)
         return result
-        
+
     # Return as merged source code
     for fp in order:
         f = files[fp]
         print "Exporting: ", f.filepath
-        for fExclude in f.excludedFiles: 
-            print "  Required file \"%s\" is excluded." % fExclude 
+        for fExclude in f.excludedFiles:
+            print "  Required file \"%s\" is excluded." % fExclude
         result.append(HEADER % f.filepath)
         source = f.source
         result.append(source)
@@ -267,7 +288,7 @@ if __name__ == "__main__":
     import getopt
 
     options, args = getopt.getopt(sys.argv[1:], "-c:")
-    
+
     try:
         outputFilename = args[0]
     except IndexError:
@@ -282,6 +303,6 @@ if __name__ == "__main__":
     configFile = None
     if options and options[0][0] == "-c":
         configFile = options[0][1]
-        print "Parsing configuration file: %s" % filename
+        print "Parsing configuration file: %s" % configFile
 
-    run( sourceDirectory, outputFilename, configFile )
+    run(sourceDirectory, outputFilename, configFile)
