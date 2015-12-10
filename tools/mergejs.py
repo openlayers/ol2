@@ -40,6 +40,7 @@
 import re
 import os
 import sys
+from collections import OrderedDict
 
 SUFFIX_JAVASCRIPT = ".js"
 
@@ -176,7 +177,7 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
     ## Header inserted at the start of each file in the output
     HEADER = "/* " + "=" * 70 + "\n    %s\n" + "   " + "=" * 70 + " */\n\n"
 
-    files = {}
+    files = OrderedDict()
 
     ## Import file source code
     ## TODO: Do import when we walk the directories above?
@@ -213,7 +214,7 @@ def run (sourceDirectory, outputFilename = None, configFile = None,
                         raise MissingImport("File '%s' not found (required by '%s')." % (path, filepath))
         
     # create dictionary of dependencies
-    dependencies = {}
+    dependencies = OrderedDict()
     for filepath, info in files.items():
         dependencies[filepath] = info.requires
 
