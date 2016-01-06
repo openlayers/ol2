@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var lon = 0;
+        var lat = 40;
+        var zoom = 4;
+        var control, callback;
+        OpenLayers.ProxyHost = "./proxy.cgi?url=";
+
+        init = function(){
+            var map = new OpenLayers.Map( 'map' );
+            var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic,points'}, {isBaseLayer:true, singleTile:true} );
+            map.addLayer(layer);
+            var layer2 = new OpenLayers.Layer.UTFGridWMS( "Utfgrid",
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'basic'}, {utfgridResolution: 4, singleTile:true} );
+            map.addLayer(layer2);
+            var layer3 = new OpenLayers.Layer.UTFGridWMS( "Utfgrid",
+                    "http://msgsoc.mapgears.com/cgi-bin/mapserv.cgi?map=/home/fdesjarlais/nemapfile/nemapfile.map&", {layers: 'points'}, {utfgridResolution: 4, singleTile:true} );
+            map.addLayer(layer3);
+            map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
+            map.addControls([new OpenLayers.Control.Scale(), new OpenLayers.Control.MousePosition()]);
+
+            callback = function(infoLookup) {
+                var msg = "";
+                if (infoLookup) {
+                    var layer, info;
+                    for (var idx in infoLookup) {
+                        layer = map.layers[idx];
+                        info = infoLookup[idx];
+                        if (info && info.data) {
+                            msg += "Feature ID: " + info.id + "<br>";
+                            for (var key in info.data) {
+                                msg += key + ": " + info.data[key] + "<br>";
+                            }
+                        }
+                    }
+                }
+                document.getElementById("attrs").innerHTML = msg;
+            };
+
+            var controls = {
+                move_country: new OpenLayers.Control.UTFGrid({
+                    callback: callback,
+                    layers: [layer2],
+                    handlerMode: "move"
+                }),
+                move_city: new OpenLayers.Control.UTFGrid({
+                    callback: callback,
+                    layers: [layer3],
+                    handlerMode: "move"
+                }),
+                move_both: new OpenLayers.Control.UTFGrid({
+                    callback: callback,
+                    layers: [layer2,layer3], // same as all map.layers
+                    handlerMode: "move"
+                })
+            };
+            for (var key in controls) {
+                map.addControl(controls[key]);
+            }
+            
+            toggleControl = function(el) {
+                for (var c in controls) {
+                    controls[c].deactivate();
+                }
+                controls[el.value].activate();
+            }
+            toggleControl({value: "move_country"});
+        }
+    </script>
+  </head>
+  <body onload="init()">
+    <h1 id="title">OpenLayers UTFGridWMS Demo</h1>
+
+    <div id="tags">
+        wms, layer, singletile
+    </div>
+    <p id="shortdesc">
+        This page demonstrates the use of the OpenLayers UTFGridWMS.
+    </p>
+
+    <div id="map" class="smallmap"></div>
+    <ul id="controlToggle">
+        <li>
+            <input type="radio" name="type" value="move_country" id="moveHandler" 
+            onclick="toggleControl(this);" checked="checked" />
+            <label for="moveHandler">View country</label>
+        </li>
+        <li>
+            <input type="radio" name="type" value="move_city" id="hoverHandler" 
+            onclick="toggleControl(this);" />
+            <label for="hoverHandler">View cities</label>
+        </li>
+        <li>
+            <input type="radio" name="type" value="move_both" id="clickHandler" 
+            onclick="toggleControl(this);" />
+            <label for="clickHandler">View both</label>
+        </li>
+    </ul>
+    <div id="docs">
+        <p><strong id="attrs">&nbsp;</strong></p>    
+        <p> This exemple demostrates the use of UTFGridWMS. It allows high interaction maps with WMS. It can be used with the same functionalities that UTFGrid has.</p> 
+    </div>
+  </body>
+</html>
