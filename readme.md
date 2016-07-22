@@ -7,11 +7,11 @@ OpenLayers is a JavaScript library for building map applications
 on the web. OpenLayers is made available under a BSD-license.
 Please see license.txt in this distribution for more details.
 
-## Getting OpenLayers
+## Getting OpenLayers 2
 
 OpenLayers lives at http://www.openlayers.org/two/.  Find details on downloading stable releases or the development version the [development site](http://trac.osgeo.org/openlayers/wiki/HowToDownload).
 
-## Installing OpenLayers
+## Installing OpenLayers 2
 
 You can use OpenLayers as-is by copying build/OpenLayers.js and the
 entire theme/ and img/ directories up to your webserver and putting them
@@ -42,14 +42,14 @@ As an example, using bash (with the release files in ~/openlayers):
     $ cp -R ~/openlayers/theme ./
     $ cp -R ~/openlayers/img ./
 
-## Alternate OpenLayers Versions in this Release
+## Alternate OpenLayers 2 Versions in this Release
 
-The following versions of OpenLayers single file builds are included in this release
+The following versions of OpenLayers 2single file builds are included in this release
 and can be used in place of OpenLayers.js in any of the above instructions:
 
 1. OpenLayers.js - full build --> Includes everything except the alternate language
     translations and deprecated classes.
-2. OpenLayers.mobile.js - a mobile focused build --> Includes a subset of the OpenLayers
+2. OpenLayers.mobile.js - a mobile focused build --> Includes a subset of the OpenLayers 2
     library to serve common mobile web app use cases. This build provides access to
     OpenStreetMap, Bing, WMS, WFS and vector layers; touch optimized controls; geolocation;
     vector editing and interaction tools. The examples tagged ``mobile`` can use this build.
@@ -59,7 +59,7 @@ and can be used in place of OpenLayers.js in any of the above instructions:
     vector layers; basic map controls; and vector interaction tools. The examples
     tagged ``light`` can use this build.
 
-## Using OpenLayers in Your Own Website
+## Using OpenLayers 2 in Your Own Website
 
 The [examples directory](http://dev.openlayers.org/examples/) is full of useful examples.
 
@@ -72,7 +72,7 @@ As an example, using bash (with the release files in ~/openlayers):
 
 Information on changes in the API is available in release notes found in the notes folder.
 
-## Contributing to OpenLayers
+## Contributing to OpenLayers 2
 
 Please join the email lists at http://trac.osgeo.org/openlayers/wiki/MailingLists
 Patches are welcome!
