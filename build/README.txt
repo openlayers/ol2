@@ -46,6 +46,12 @@ The options available for compression are:
  * none
    None will leave the Javascript uncompressed.
 
+The script can also generate AMD-compatible output, suitable for use
+with libraries such as require.js.  This is enabled with the options
+--amd=pre or --amd=post: the difference is whether the module
+definition is added before or after compilation.  Using --amd=pre may
+enable the compiler to optimise more aggressively and generate smaller
+file sizes.
 
 For more information on the build script and custom build profiles,
 see http://docs.openlayers.org/library/deploying.html

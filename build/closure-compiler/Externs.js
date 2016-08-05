@@ -16,6 +16,9 @@
 // Check the console when using Firebug Lite
     var console;
 
+// AMD:
+    var define = function(){};
+
 // Proj4js
     var Proj4js = {Proj: function(){}};
 
