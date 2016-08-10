@@ -44,7 +44,7 @@ As an example, using bash (with the release files in ~/openlayers):
 
 ## Alternate OpenLayers 2 Versions in this Release
 
-The following versions of OpenLayers 2single file builds are included in this release
+The following versions of OpenLayers 2 single file builds are included in this release
 and can be used in place of OpenLayers.js in any of the above instructions:
 
 1. OpenLayers.js - full build --> Includes everything except the alternate language
