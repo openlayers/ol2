@@ -20,7 +20,7 @@ def run():
                 cls = "OpenLayers.%s" % filepath.strip(".js").replace("/", ".")
                 allFiles.append([cls, parents])
     return allFiles
-print """
+print(""")
 digraph name {
   fontname = "Helvetica"
   fontsize = 8
@@ -34,10 +34,10 @@ digraph name {
 """
 
 for i in run():
-    print i[0].replace(".", "_")
+    print(i[0].replace(".", "_"))
     for item in i[1]:
         if not item: continue
-        print "%s -> %s" % (i[0].replace(".","_"), item.replace(".", "_"))
-    print "; "
+        print("%s -> %s" % (i[0].replace(".","_"), item.replace(".", "_")))
+    print("; ")
 
-print """}"""
+print("""}""")

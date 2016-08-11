@@ -31,7 +31,7 @@ def _GetJavaVersion():
   proc = subprocess.Popen(['java', '-version'], stderr=subprocess.PIPE)
   unused_stdoutdata, stderrdata = proc.communicate()
   version_line = stderrdata.splitlines()[0]
-  return _VERSION_REGEX.search(version_line).group(1)
+  return _VERSION_REGEX.search(version_line.decode()).group(1)
 
 
 def Compile(compiler_jar_path, source_paths, flags=None):

@@ -29,7 +29,7 @@ if __name__ == "__main__":
     try:
         sourceFilename = sys.argv[1]
     except:
-        print "Usage: %s (<source filename>|-)" % sys.argv[0]
+        print("Usage: %s (<source filename>|-)" % sys.argv[0])
         raise SystemExit
 
     if sourceFilename == "-":
@@ -51,4 +51,4 @@ Content-Type: application/x-javascript
 """ % (BOUNDARY_MARKER, sourceFilename, sourceCode))
 
     ## Deliver the result
-    print urllib2.urlopen(request).read(),
+    print(urllib2.urlopen(request).read(),)
