@@ -1,0 +1,12 @@
+{
+    "name": "openlayers/ol2",
+    "description": "OpenLayers is a JavaScript library for building map applications on the web.",
+    "type": "library",
+    "license": "BSD-2-Clause",
+    "minimum-stability": "stable",
+    "keywords": [
+        "openlayers",
+        "maps"
+    ],
+    "require": {}
+}
