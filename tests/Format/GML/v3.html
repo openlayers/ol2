@@ -17,7 +17,7 @@
             "v3/multicurve-singular.xml", "v3/multicurve-curve.xml",
             "v3/multipolygon-singular.xml", "v3/multipolygon-plural.xml",
             "v3/multisurface-singular.xml", "v3/multisurface-plural.xml",
-            "v3/multisurface-surface.xml"
+            "v3/multisurface-surface.xml", "v3/curve-members.xml"
         ];
 
         var len = files.length;
@@ -823,6 +823,18 @@
         </medford:zoning>
     </gml:featureMembers>
 </wfs:FeatureCollection>
--->
+--></div>
+<div id="v3/curve-members.xml"><!--
+<gml:MultiCurve xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:curveMembers>
+        <gml:LineString>
+            <gml:posList srsDimension="2">10 20 11 21 12 22 13 23 14 24</gml:posList>
+        </gml:LineString>
+        <gml:LineString>
+            <gml:posList srsDimension="2">110 120 111 121 112 122 113 123 114 124</gml:posList>
+        </gml:LineString>
+    </gml:curveMembers>
+</gml:MultiCurve>
+--></div>
 </body>
 </html>
