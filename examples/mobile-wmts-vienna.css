@@ -12,8 +12,9 @@ html, body, #map {
 #title, #tags, #shortdesc {
     display: none;
 }
-div.olMapViewport {
+div.olMap {
     -ms-touch-action: none;
+    touch-action: none;
 }
 
 /* Turn on GPU support where available */
