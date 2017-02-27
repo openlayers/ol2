@@ -53,7 +53,7 @@
         
     }
     function test_events(t) {
-        t.plan(35);
+        t.plan(40);
         
         var map = new OpenLayers.Map('map');
         var control = new OpenLayers.Control();
@@ -64,8 +64,8 @@
  
         // list below events that should be handled (events) and those
         // that should not be handled (nonevents) by the handler
-        var events = ["mousedown", "mouseup", "mousemove", "click", "dblclick", "touchstart", "touchmove"];
-        var nonevents = ["mouseout", "resize", "focus", "blur", "touchend"];
+        var events = ["mousedown", "mouseup", "mousemove", "click", "dblclick", "touchstart", "touchmove", "touchend"];
+        var nonevents = ["mouseout", "resize", "focus", "blur"];
         map.events.registerPriority = function(type, obj, func) {
             var output = func();
             // Don't listen for setEvent handlers (#902)
@@ -95,6 +95,102 @@
         var activated = handler.activate();
  
     }
+    
+    function test_touchEvents(t) {
+    	t.plan(14);
+        
+        var map = new OpenLayers.Map('map', {controls: []});
+        var control = new OpenLayers.Control();
+        map.addControl(control);
+        var layer = new OpenLayers.Layer();
+        map.addLayer(layer);
+ 
+        var callbacks = {};
+        var numCallbacks = 0;
+        callbacks.click = callbacks.clickout = function() {numCallbacks++;};
+        var newFeature = new OpenLayers.Feature.Vector();
+        newFeature.layer = layer;
+        var px11 = new OpenLayers.Pixel(1, 1);
+        var px22 = new OpenLayers.Pixel(2, 2);
+        var px1010 = new OpenLayers.Pixel(10, 10);
+        var evtPx = {xy: px11, touches: ['foo']};
+
+        // override the layer's getFeatureFromEvent func so that it always
+        // returns newFeature
+        layer.getFeatureFromEvent = function(evt) { return newFeature; };
+        
+        var handler = new OpenLayers.Handler.Feature(control, layer, callbacks);
+        handler.activate();
+
+        // test touch event complex with no movement and callback on touchstart
+        evtPx.type = "touchstart";
+        map.events.triggerEvent("touchstart", evtPx);
+        t.eq(numCallbacks, 1, "1 callback in response to touchstart with callbackOnTouchend == false");
+    	t.eq(handler.EVENTMAP.touchstart.in, "click", "Touchstart correctly assigned to be like click");
+    	t.eq(handler.EVENTMAP.touchend.out, null, "Touchend correctly assigned to generate no callback");
+    	numCallbacks = 0;
+    	evtPx.type = "touchend";
+    	map.events.triggerEvent("touchend", evtPx);
+    	t.eq(numCallbacks, 0, "No callback in response to touchend with callbackOnTouchend == false after no touchmoves");
+    	numCallbacks = 0;
+   	
+    	// test touch event complex with no movement and callback on touchend
+    	handler.callbackOnTouchend = true;
+    	evtPx.type = "touchstart";
+    	map.events.triggerEvent("touchstart", evtPx);
+    	t.eq(numCallbacks, 0, "No callback in response to touchstart with callbackOnTouchend == true");
+    	t.eq(handler.EVENTMAP.touchend.in, "click", "Touchend correctly assigned to be like click");
+    	t.eq(handler.EVENTMAP.touchstart.out, null, "Touchstart correctly assigned to generate no callback");
+    	numCallbacks = 0;
+    	evtPx.type = "touchend";
+    	map.events.triggerEvent("touchend", evtPx);
+    	t.eq(numCallbacks, 1, "1 callback in response to touchend with callbackOnTouchend == true after no touchmoves");
+    	numCallbacks = 0;
+    	
+    	// test touch event complex with movement and callback on touchstart
+    	handler.callbackOnTouchend = false;
+    	evtPx.type = "touchstart";
+    	map.events.triggerEvent("touchstart", evtPx);
+    	t.eq(numCallbacks, 1, "1 callback in response to touchstart with callbackOnTouchend == false");
+    	numCallbacks = 0;
+    	evtPx.type = "touchmove";
+    	evtPx.xy = px22;
+    	map.events.triggerEvent("touchmove", evtPx);
+    	evtPx.type = "touchend";
+    	map.events.triggerEvent("touchend", evtPx);
+    	t.eq(numCallbacks, 0, "No callback in response to touchend with callbackOnTouchend == false after a touchmove within the pixel tolerance");
+    	numCallbacks = 0;
+    	
+    	// test touch event complex with small movement and callback on touchend
+    	handler.callbackOnTouchend = true;
+    	evtPx.xy = px11;
+    	evtPx.type = "touchstart";
+    	map.events.triggerEvent("touchstart", evtPx);
+    	t.eq(numCallbacks, 0, "No callback in response to touchstart with callbackOnTouchend == true");
+    	numCallbacks = 0;
+    	evtPx.type = "touchmove";
+    	evtPx.xy = px22;
+    	map.events.triggerEvent("touchmove", evtPx);
+    	evtPx.type = "touchend";
+    	map.events.triggerEvent("touchend", evtPx);
+    	t.eq(numCallbacks, 1, "1 callback in response to touchend with callbackOnTouchend == true after a touchmove within the pixel tolerance");
+    	numCallbacks = 0;
+    	
+    	// test touch event complex with large movement and callback on touchend
+    	handler.callbackOnTouchend = true;
+    	evtPx.xy = px11;
+    	evtPx.type = "touchstart";
+    	map.events.triggerEvent("touchstart", evtPx);
+    	t.eq(numCallbacks, 0, "No callback in response to touchstart with callbackOnTouchend == true");
+    	numCallbacks = 0;
+    	evtPx.type = "touchmove";
+    	evtPx.xy = px1010;
+    	map.events.triggerEvent("touchmove", evtPx);
+    	evtPx.type = "touchend";
+    	map.events.triggerEvent("touchend", evtPx);
+    	t.eq(numCallbacks, 0, "No callback in response to touchend with callbackOnTouchend == false after a touchmove outside the pixel tolerance");
+    	numCallbacks = 0;
+   }
  
     function test_geometrytype_limit(t) {
         t.plan(1);
