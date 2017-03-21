@@ -10,14 +10,14 @@
             "v2/linestring-coord.xml", "v2/linestring-coordinates.xml",
             "v2/multipoint-coord.xml", "v2/multipoint-coordinates.xml",
             "v2/multilinestring-coord.xml", "v2/multilinestring-coordinates.xml",
-            "v3/point.xml", "v3/linestring.xml", "v3/linestring3d.xml",
-            "v3/curve.xml", "v3/polygon.xml", "v3/surface.xml",
-            "v3/multipoint-singular.xml", "v3/multipoint-plural.xml",
-            "v3/multilinestring-singular.xml", "v3/multilinestring-plural.xml",
-            "v3/multicurve-singular.xml", "v3/multicurve-curve.xml",
-            "v3/multipolygon-singular.xml", "v3/multipolygon-plural.xml",
-            "v3/multisurface-singular.xml", "v3/multisurface-plural.xml",
-            "v3/multisurface-surface.xml"
+            "v3/point.xml", "v3/point-z.xml", "v3/linestring.xml", "v3/linestring3d.xml", "v3/linestring-z.xml", "v3/curve.xml", "v3/curve-z.xml",
+            "v3/polygon.xml", "v3/polygon-z.xml", "v3/surface.xml", "v3/surface-z.xml",
+            "v3/multipoint-singular.xml", "v3/multipoint-singular-z.xml", "v3/multipoint-plural.xml", "v3/multipoint-plural-z.xml",
+            "v3/multilinestring-singular.xml", "v3/multilinestring-singular-z.xml", "v3/multilinestring-plural.xml", "v3/multilinestring-plural-z.xml",
+            "v3/multicurve-singular.xml", "v3/multicurve-singular-z.xml", "v3/multicurve-curve.xml", "v3/multicurve-curve-z.xml",
+            "v3/multipolygon-singular.xml", "v3/multipolygon-singular-z.xml", "v3/multipolygon-plural.xml", "v3/multipolygon-plural-z.xml",
+            "v3/multisurface-singular.xml", "v3/multisurface-singular-z.xml", "v3/multisurface-plural.xml", "v3/multisurface-plural-z.xml",
+            "v3/multisurface-surface.xml", "v3/multisurface-surface-z.xml"
         ];
 
         var len = files.length;
@@ -105,17 +105,29 @@
         // we only care to write the 'pos' and 'posList' variants of GML 3 - conforming with simple features profile
         var files = [
             {path: "v3/point.xml"},
+            {path: "v3/point-z.xml"},
             {path: "v3/linestring.xml"},
+            {path: "v3/linestring-z.xml"},
             {path: "v3/curve.xml", options: {curve: true}},
+            {path: "v3/curve-z.xml", options: {curve: true}},
             {path: "v3/polygon.xml"},
+            {path: "v3/polygon-z.xml"},
             {path: "v3/surface.xml", options: {surface: true}},
+            {path: "v3/surface-z.xml", options: {surface: true}},
             {path: "v3/multipoint-singular.xml"},
+            {path: "v3/multipoint-singular-z.xml"},
             {path: "v3/multilinestring-singular.xml", options: {multiCurve: false}},
+            {path: "v3/multilinestring-singular-z.xml", options: {multiCurve: false}},
             {path: "v3/multicurve-singular.xml"},
+            {path: "v3/multicurve-singular-z.xml"},
             {path: "v3/multicurve-curve.xml", options: {curve: true}},
+            {path: "v3/multicurve-curve-z.xml", options: {curve: true}},
             {path: "v3/multipolygon-singular.xml", options: {multiSurface: false}},
+            {path: "v3/multipolygon-singular-z.xml", options: {multiSurface: false}},
             {path: "v3/multisurface-singular.xml"},
-            {path: "v3/multisurface-surface.xml", options: {surface: true}}
+            {path: "v3/multisurface-singular-z.xml"},
+            {path: "v3/multisurface-surface.xml", options: {surface: true}},
+            {path: "v3/multisurface-surface-z.xml", options: {surface: true}}
         ];
 
         var len = files.length;
@@ -332,6 +344,11 @@
   <gml:posList>1 2 3 4</gml:posList>
 </gml:LineString>
 --></div>
+<div id="v3/linestring-z.xml"><!--
+<gml:LineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+  <gml:posList dimension="3">1 2 3 3 4 5</gml:posList>
+</gml:LineString>
+--></div>
 <div id="v3/linestring3d.xml"><!--
 <gml:LineString xmlns:gml="http://www.opengis.net/gml" srsName="foo" srsDimension="3">
   <gml:posList>1 2 3 4 5 6</gml:posList>
@@ -346,6 +363,15 @@
     </gml:segments>
 </gml:Curve>
 --></div>
+<div id="v3/curve-z.xml"><!--
+<gml:Curve xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:segments>
+        <gml:LineStringSegment>
+            <gml:posList dimension="3">1 2 3 3 4 5</gml:posList>
+        </gml:LineStringSegment>
+    </gml:segments>
+</gml:Curve>
+--></div>
 <div id="v3/multilinestring-plural.xml"><!--
 <gml:MultiLineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:lineStringMembers>
@@ -354,6 +380,18 @@
         </gml:LineString>
         <gml:LineString>
             <gml:posList>3 4 4 5</gml:posList>
+        </gml:LineString>
+    </gml:lineStringMembers>
+</gml:MultiLineString>
+--></div>
+<div id="v3/multilinestring-plural-z.xml"><!--
+<gml:MultiLineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:lineStringMembers>
+        <gml:LineString>
+            <gml:posList dimension="3">1 2 3 2 3 4</gml:posList>
+        </gml:LineString>
+        <gml:LineString>
+            <gml:posList dimension="3">3 4 5 4 5 6</gml:posList>
         </gml:LineString>
     </gml:lineStringMembers>
 </gml:MultiLineString>
@@ -372,6 +410,20 @@
     </gml:lineStringMember>
 </gml:MultiLineString>
 --></div>
+<div id="v3/multilinestring-singular-z.xml"><!--
+<gml:MultiLineString xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:lineStringMember>
+        <gml:LineString>
+            <gml:posList dimension="3">1 2 3 2 3 4</gml:posList>
+        </gml:LineString>
+    </gml:lineStringMember>
+    <gml:lineStringMember>
+        <gml:LineString>
+            <gml:posList dimension="3">3 4 5 4 5 6</gml:posList>
+        </gml:LineString>
+    </gml:lineStringMember>
+</gml:MultiLineString>
+--></div>
 <div id="v3/multicurve-singular.xml"><!--
 <gml:MultiCurve xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:curveMember>
@@ -382,6 +434,20 @@
     <gml:curveMember>
         <gml:LineString>
             <gml:posList>3 4 4 5</gml:posList>
+        </gml:LineString>
+    </gml:curveMember>
+</gml:MultiCurve>
+--></div>
+<div id="v3/multicurve-singular-z.xml"><!--
+<gml:MultiCurve xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:curveMember>
+        <gml:LineString>
+            <gml:posList dimension="3">1 2 3 2 3 4</gml:posList>
+        </gml:LineString>
+    </gml:curveMember>
+    <gml:curveMember>
+        <gml:LineString>
+            <gml:posList dimension="3">3 4 5 4 5 6</gml:posList>
         </gml:LineString>
     </gml:curveMember>
 </gml:MultiCurve>
@@ -408,6 +474,28 @@
     </gml:curveMember>
 </gml:MultiCurve>
 --></div>
+<div id="v3/multicurve-curve-z.xml"><!--
+<gml:MultiCurve xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:curveMember>
+        <gml:Curve>
+            <gml:segments>
+                <gml:LineStringSegment>
+                    <gml:posList dimension="3">1 2 3 2 3 4</gml:posList>
+                </gml:LineStringSegment>
+            </gml:segments>
+        </gml:Curve>
+    </gml:curveMember>
+    <gml:curveMember>
+        <gml:Curve>
+            <gml:segments>
+                <gml:LineStringSegment>
+                    <gml:posList dimension="3">3 4 5 4 5 6</gml:posList>
+                </gml:LineStringSegment>
+            </gml:segments>
+        </gml:Curve>
+    </gml:curveMember>
+</gml:MultiCurve>
+--></div>
 <div id="v3/multipoint-plural.xml"><!--
 <gml:MultiPoint xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:pointMembers>
@@ -419,6 +507,21 @@
         </gml:Point>
         <gml:Point>
             <gml:pos>3 4</gml:pos>
+        </gml:Point>
+    </gml:pointMembers>
+</gml:MultiPoint>
+--></div>
+<div id="v3/multipoint-plural-z.xml"><!--
+<gml:MultiPoint xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:pointMembers>
+        <gml:Point>
+            <gml:pos dimension="3">1 2 3</gml:pos>
+        </gml:Point>
+        <gml:Point>
+            <gml:pos dimension="3">2 3 4</gml:pos>
+        </gml:Point>
+        <gml:Point>
+            <gml:pos dimension="3">3 4 5</gml:pos>
         </gml:Point>
     </gml:pointMembers>
 </gml:MultiPoint>
@@ -438,6 +541,25 @@
     <gml:pointMember>
         <gml:Point>
             <gml:pos>3 4</gml:pos>
+        </gml:Point>
+    </gml:pointMember>
+</gml:MultiPoint>
+--></div>
+<div id="v3/multipoint-singular-z.xml"><!--
+<gml:MultiPoint xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:pointMember>
+        <gml:Point>
+            <gml:pos dimension="3">1 2 3</gml:pos>
+        </gml:Point>
+    </gml:pointMember>
+    <gml:pointMember>
+        <gml:Point>
+            <gml:pos dimension="3">2 3 4</gml:pos>
+        </gml:Point>
+    </gml:pointMember>
+    <gml:pointMember>
+        <gml:Point>
+            <gml:pos dimension="3">3 4 5</gml:pos>
         </gml:Point>
     </gml:pointMember>
 </gml:MultiPoint>
@@ -466,6 +588,36 @@
             <gml:exterior>
                 <gml:LinearRing>
                     <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                </gml:LinearRing>
+            </gml:exterior>
+        </gml:Polygon>
+    </gml:polygonMembers>
+</gml:MultiPolygon>
+--></div>
+<div id="v3/multipolygon-plural-z.xml"><!--
+<gml:MultiPolygon xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:polygonMembers>
+        <gml:Polygon>
+            <gml:exterior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
+                </gml:LinearRing>
+            </gml:exterior>
+            <gml:interior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
+                </gml:LinearRing>
+            </gml:interior>    
+            <gml:interior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
+                </gml:LinearRing>
+            </gml:interior>
+        </gml:Polygon>
+        <gml:Polygon>
+            <gml:exterior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
         </gml:Polygon>
@@ -504,6 +656,38 @@
     </gml:polygonMember>
 </gml:MultiPolygon>
 --></div>
+<div id="v3/multipolygon-singular-z.xml"><!--
+<gml:MultiPolygon xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:polygonMember>
+        <gml:Polygon>
+            <gml:exterior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
+                </gml:LinearRing>
+            </gml:exterior>
+            <gml:interior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
+                </gml:LinearRing>
+            </gml:interior>    
+            <gml:interior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
+                </gml:LinearRing>
+            </gml:interior>
+        </gml:Polygon>
+    </gml:polygonMember>
+    <gml:polygonMember>
+        <gml:Polygon>
+            <gml:exterior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
+                </gml:LinearRing>
+            </gml:exterior>
+        </gml:Polygon>
+    </gml:polygonMember>
+</gml:MultiPolygon>
+--></div>
 <div id="v3/multisurface-plural.xml"><!--
 <gml:MultiSurface xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:surfaceMembers>
@@ -528,6 +712,36 @@
             <gml:exterior>
                 <gml:LinearRing>
                     <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                </gml:LinearRing>
+            </gml:exterior>
+        </gml:Polygon>
+    </gml:surfaceMembers>
+</gml:MultiSurface>
+--></div>
+<div id="v3/multisurface-plural-z.xml"><!--
+<gml:MultiSurface xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:surfaceMembers>
+        <gml:Polygon>
+            <gml:exterior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
+                </gml:LinearRing>
+            </gml:exterior>
+            <gml:interior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
+                </gml:LinearRing>
+            </gml:interior>    
+            <gml:interior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
+                </gml:LinearRing>
+            </gml:interior>
+        </gml:Polygon>
+        <gml:Polygon>
+            <gml:exterior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
         </gml:Polygon>
@@ -560,6 +774,38 @@
             <gml:exterior>
                 <gml:LinearRing>
                     <gml:posList>1 2 3 4 5 6 1 2</gml:posList>
+                </gml:LinearRing>
+            </gml:exterior>
+        </gml:Polygon>
+    </gml:surfaceMember>
+</gml:MultiSurface>
+--></div>
+<div id="v3/multisurface-singular-z.xml"><!--
+<gml:MultiSurface xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:surfaceMember>
+        <gml:Polygon>
+            <gml:exterior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
+                </gml:LinearRing>
+            </gml:exterior>
+            <gml:interior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
+                </gml:LinearRing>
+            </gml:interior>    
+            <gml:interior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
+                </gml:LinearRing>
+            </gml:interior>
+        </gml:Polygon>
+    </gml:surfaceMember>
+    <gml:surfaceMember>
+        <gml:Polygon>
+            <gml:exterior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
                 </gml:LinearRing>
             </gml:exterior>
         </gml:Polygon>
@@ -606,9 +852,54 @@
     </gml:surfaceMember>
 </gml:MultiSurface>
 --></div>
+<div id="v3/multisurface-surface-z.xml"><!--
+<gml:MultiSurface xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:surfaceMember>
+        <gml:Surface>
+            <gml:patches>
+                <gml:PolygonPatch interpolation="planar">
+                    <gml:exterior>
+                        <gml:LinearRing>
+                            <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
+                        </gml:LinearRing>
+                    </gml:exterior>
+                    <gml:interior>
+                        <gml:LinearRing>
+                            <gml:posList dimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
+                        </gml:LinearRing>
+                    </gml:interior>    
+                    <gml:interior>
+                        <gml:LinearRing>
+                            <gml:posList dimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
+                        </gml:LinearRing>
+                    </gml:interior>
+                </gml:PolygonPatch>
+            </gml:patches>
+        </gml:Surface>
+    </gml:surfaceMember>
+    <gml:surfaceMember>
+        <gml:Surface>
+            <gml:patches>
+                <gml:PolygonPatch interpolation="planar">
+                    <gml:exterior>
+                        <gml:LinearRing>
+                            <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
+                        </gml:LinearRing>
+                    </gml:exterior>
+                </gml:PolygonPatch>
+            </gml:patches>
+        </gml:Surface>
+    </gml:surfaceMember>
+</gml:MultiSurface>
+--></div>
 <div id="v3/point.xml"><!--
 <gml:Point xmlns:gml="http://www.opengis.net/gml" srsName="foo">
   <gml:pos>1 2</gml:pos>
+</gml:Point>
+--></div>
+<div id="v3/point-z.xml"><!--
+<gml:Point xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+  <gml:pos dimension="3">1 2 3</gml:pos>
 </gml:Point>
 --></div>
 <div id="v3/polygon.xml"><!--
@@ -630,6 +921,25 @@
     </gml:interior>    
 </gml:Polygon>
 --></div>
+<div id="v3/polygon-z.xml"><!--
+<gml:Polygon xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:exterior>
+        <gml:LinearRing>
+            <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
+        </gml:LinearRing>
+    </gml:exterior>
+    <gml:interior>
+        <gml:LinearRing>
+            <gml:posList dimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
+        </gml:LinearRing>
+    </gml:interior>    
+    <gml:interior>
+        <gml:LinearRing>
+            <gml:posList dimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
+        </gml:LinearRing>
+    </gml:interior>    
+</gml:Polygon>
+--></div>
 <div id="v3/surface.xml"><!--
 <gml:Surface xmlns:gml="http://www.opengis.net/gml" srsName="foo">
     <gml:patches>
@@ -647,6 +957,29 @@
             <gml:interior>
                 <gml:LinearRing>
                     <gml:posList>3 4 5 6 7 8 3 4</gml:posList>
+                </gml:LinearRing>
+            </gml:interior>
+        </gml:PolygonPatch>
+    </gml:patches>
+</gml:Surface>
+--></div>
+<div id="v3/surface-z.xml"><!--
+<gml:Surface xmlns:gml="http://www.opengis.net/gml" srsName="foo">
+    <gml:patches>
+        <gml:PolygonPatch interpolation="planar">
+            <gml:exterior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">1 2 3 3 4 5 5 6 7 1 2 3</gml:posList>
+                </gml:LinearRing>
+            </gml:exterior>
+            <gml:interior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">2 3 4 4 5 6 6 7 8 2 3 4</gml:posList>
+                </gml:LinearRing>
+            </gml:interior>    
+            <gml:interior>
+                <gml:LinearRing>
+                    <gml:posList dimension="3">3 4 5 5 6 7 7 8 9 3 4 5</gml:posList>
                 </gml:LinearRing>
             </gml:interior>
         </gml:PolygonPatch>
