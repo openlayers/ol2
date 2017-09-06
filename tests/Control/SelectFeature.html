@@ -214,6 +214,29 @@
         t.ok(firesBoxselectionend,"selectBox fires boxselectionend event");
         t.eq(afterSelectingNumberOfFeatures,1,"boxselectionend fires after feature selected");
     }
+    function test_selectBox_toggle(t) {
+		 t.plan(2);
+		 var map = new OpenLayers.Map("map");
+		 var layer1 = new OpenLayers.Layer.Vector();
+		 map.addLayer(layer1);
+		 map.setBaseLayer(layer1);
+		 var layer2 = new OpenLayers.Layer.Vector();
+		 map.addLayer(layer2);
+		 map.setCenter(new OpenLayers.LonLat(1,1));
+		 var feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(1,1));
+		 layer1.addFeatures([feature]);
+		 var control = new OpenLayers.Control.SelectFeature(layer1, {toggle: true, multiple: true});
+		 control.setMap(map);
+		 map.getLonLatFromPixel = function(arg) {
+			 return new OpenLayers.LonLat(arg.x, arg.y);
+		 };
+		 control.activate();
+		 var bounds = new OpenLayers.Bounds(-1,-1,2,2);
+		 control.selectBox(bounds);
+		 t.eq(layer1.selectedFeatures.length, 1, "selectBox toggles the selected item.");
+		 control.selectBox(bounds);
+		 t.eq(layer1.selectedFeatures.length, 0, "selectBox toggles the selected item.");
+	 }
     function test_Control_SelectFeature_activate(t) {
         t.plan(4);
         var map = new OpenLayers.Map("map");
