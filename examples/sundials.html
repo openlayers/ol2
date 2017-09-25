@@ -34,7 +34,7 @@
                 "http://vmap0.tiles.osgeo.org/wms/vmap0",
                 {layers: 'basic'}
             );
-
+            
             var sundials = new OpenLayers.Layer.Vector("KML", {
                 projection: map.displayProjection,
                 strategies: [new OpenLayers.Strategy.Fixed()],
@@ -46,8 +46,24 @@
                     })
                 })
             });
+
+            var kmlUrl = "kml/overlay_wrapper.kml";
+            var groundOverlay = new OpenLayers.Layer.Vector("KML2", {
+                renderers: location.search.indexOf('Canvas') >= 0 ? ['Canvas', 'SVG', 'VML'] : ['SVG', 'VML', 'Canvas'],
+                projection: map.displayProjection,
+                strategies: [new OpenLayers.Strategy.Fixed()],
+                protocol: new OpenLayers.Protocol.HTTP({
+                    url: kmlUrl,
+                    format: new OpenLayers.Format.KML({
+                        maxDepth: 1,
+                        baseUrl: kmlUrl,
+                        extractStyles: true,
+                        extractAttributes: true
+                    })
+                })
+            });
             
-            map.addLayers([wms, sundials]);
+            map.addLayers([wms, groundOverlay, sundials]);
             
             select = new OpenLayers.Control.SelectFeature(sundials);
             

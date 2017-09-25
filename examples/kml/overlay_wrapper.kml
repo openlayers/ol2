@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+  <Document>
+    <NetworkLink>
+      <open>1</open>
+      <refreshVisibility>0</refreshVisibility>
+      <flyToView>1</flyToView>
+      <Link>
+        <!-- relative link without './' -->
+        <href>overlay_inner.kml</href>
+      </Link>
+    </NetworkLink>
+  </Document>
+</kml>
