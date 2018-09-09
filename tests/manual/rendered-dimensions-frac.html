@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <div id="out"></div>
+        <hr>
+        <p>Visual example of the effect of fractional sizes using IE9 on not compatibility-mode.</p>
+        <div style="width:42.4px;">
+            <div style="background-color:#af6;">a 1 a 1</div>
+        </div>
+        <br>
+        <div style="width:42px;">
+            <div style="background-color:#faf;">a 1 a 1</div>
+        </div>
+        
+        <script src="../../lib/OpenLayers.js"></script>
+        <script>
+            // To use the same syntax as in "\tests"
+            var out = document.getElementById("out");  
+            var t = {eq: function(a, b, msg) {
+                    if (a == b) {
+                        out.innerHTML += "<br/>ok " + msg;
+                    }
+                    else {
+                        out.innerHTML += "<br/><span style=\"color:red\">Fail (" + a + " not eq " + b + "): " + msg + "<span>";
+                    }   
+                }
+            };
+            // Test
+            var content = "<div>a 1 a 1</div>";
+            var testName,
+                finalSize,
+                initialSize = OpenLayers.Util.getRenderedDimensions(content, null),
+                safeHeight = OpenLayers.Util.getRenderedDimensions(content, {w:100}).h;
+            testName = "Frational width: ";
+            finalSize = OpenLayers.Util.getRenderedDimensions(content, {h: initialSize.h});
+            t.eq(finalSize.h, safeHeight, 
+                        testName + "safe height " + safeHeight + "px is maintained.");
+            t.eq(finalSize.h, initialSize.h, 
+                        testName + "initial height " + initialSize.h + "px is maintained.");
+            t.eq(finalSize.w, initialSize.w, 
+                        testName + "initial width " + initialSize.w + "px is maintained.");
+        </script>
+    </body>
+</html>
