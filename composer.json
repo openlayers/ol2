@@ -1,0 +1,23 @@
+{
+    "name": "openlayers/openlayers",
+    "version": "2.13.1",
+    "type": "library",
+    "description": "OpenLayers: Free Maps for the Web",
+    "keywords": [
+      "openlayers",
+      "map"
+    ],
+    "homepage": "http://openlayers.org/",
+    "license": [
+      "Apache-2.0",
+      "MIT",
+      "BSD-2-Clause"
+    ],
+    "authors": [
+        {
+            "name": "Community",
+            "homepage": "https://github.com/openlayers/openlayers/blob/master/authors.txt"
+        }
+    ],
+
+}
