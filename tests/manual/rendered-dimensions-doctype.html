@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+    .testDims p{
+        padding: 20px; 
+    }
+    .ol_overflowAuto {
+        overflow: auto;
+    }
+</style>
+<script src="../../lib/OpenLayers.js"></script>
+<script>
+function run() {
+    var out = document.getElementById("out");    
+    var t = {
+        eq: function(a, b, msg) {
+            if (a == b) {
+                out.innerHTML += "<br/>ok " + msg;
+            } else {
+                out.innerHTML += "<br/><span style=\"color:red\">Fail (" + a + " not eq " + b + "): " + msg + "<span>";
+            }
+        },
+        ok: function(a, msg) {
+            if (a) {
+                out.innerHTML += "<br/>ok " + msg;
+            } else {
+                out.innerHTML += "<br/><span style=\"color:red\">Fail: " + msg + "<span>";
+            }
+        }
+    };
+
+    var size = OpenLayers.Util.getRenderedDimensions("<p>Content</p>");
+    var bigger = OpenLayers.Util.getRenderedDimensions("<p>Content</p>", null, {displayClass: 'testDims'});
+    var overflow = OpenLayers.Util.getRenderedDimensions("<p style='overflow:auto'>Content</p>");
+    var width = OpenLayers.Util.getRenderedDimensions("<p>Content</p>", new OpenLayers.Size(250, null));
+    var height = OpenLayers.Util.getRenderedDimensions("<p>Content</p>", new OpenLayers.Size(null, 40));
+    t.ok((size.w + 40) == bigger.w && (size.h + 40) == bigger.h, "bigger Pass:  " + size + ", " + bigger);
+    t.ok(size.w == overflow.w && size.h == overflow.h, "overflow Pass:  " + size + ", " + overflow);
+    t.ok(width.w == 250 && width.h == size.h, "width Pass:  " + size + ", " + width);
+    t.ok(height.h == 40 && height.w == size.w, "height Pass:  " + size + ", " + height);
+
+    // displayClass with "overflow: auto"
+    var testName, content, initialSize, finalSize,
+        options = {displayClass:"ol_overflowAuto"};
+    // overflowAuto using max-width
+    testName = "overflowAuto using max-width: ";
+    content = "<div style=\"max-width: 40px;\">" + (new Array(10)).join("foo foo foo ") + "</div>";
+    initialSize = OpenLayers.Util.getRenderedDimensions(content, null, options);
+    finalSize = OpenLayers.Util.getRenderedDimensions(content, {h: 15}, options);
+    t.eq(finalSize.h, 15, testName + "got the fixed height to 15px");
+    t.eq(finalSize.w, initialSize.w, 
+            testName + "initial width  " + initialSize.w + "px is maintained");
+    // overflowAuto using <br>
+    testName = "overflowAuto using br: ";
+    content = "<div>" + (new Array(10)).join("foo foo foo <br>") + "</div>";
+    initialSize = OpenLayers.Util.getRenderedDimensions(content, null, options);
+    finalSize = OpenLayers.Util.getRenderedDimensions(content, {h: 15}, options);
+    t.eq(finalSize.h, 15, testName + "got the fixed height to 15px");
+    t.eq(finalSize.w, initialSize.w, 
+            testName + "initial width  " + initialSize.w + "px is maintained");
+} 
+</script>
+</head>
+<body onload="run()">
+<div id="out"></div>
+</body>
+</html>
