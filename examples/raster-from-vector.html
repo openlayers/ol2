@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <title>Rasterize Feature Example</title>
+        
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <style type="text/css">
+            #controls {
+                width: 512px;
+            }
+            #controlToggle {
+                padding-left: 1em;
+            }
+            #controlToggle li {
+                list-style: none;
+            }
+        </style>
+        <script src="../OpenLayers.js"></script>
+        <script type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <h1 id="title">Rasterize Feature Example</h1>
+
+        <div id="tags">
+            raster, feature
+        </div>
+
+        <p id="shortdesc">
+            Demonstrates the rasterization of vector features.
+        </p>
+
+        <div id="map" class="smallmap"></div>
+        
+        <div id="controls">
+            <ul id="controlToggle">
+                <li>
+                    <input type="radio" name="type" value="none" id="noneToggle"
+                           onclick="toggleControl(this);" checked="checked" />
+                    <label for="noneToggle">navigate</label>
+                </li>
+                <li>
+                    <input type="radio" name="type" value="polygon" id="polygonToggle" onclick="toggleControl(this);" />
+                    <label for="polygonToggle">draw polygon</label>
+                </li>
+                <li>
+                    <input type="radio" name="type" value="drag" id="dragToggle"
+                           onclick="toggleControl(this);" />
+                    <label for="dragToggle">drag feature</label>
+                </li>
+            </ul>
+        </div>
+
+        <div id="docs"></div>
+        <script src="raster-from-vector.js"></script>
+    </body>
+</html>

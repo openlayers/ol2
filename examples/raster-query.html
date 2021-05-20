@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OpenLayers Raster Query Example</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <script src="../OpenLayers.js"></script>
+        <style>
+            em {
+                font-style: italic;
+            }
+            div.docs p {
+                padding-top: 1em;
+                width: 512px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="title">Query Grid Data</h1>
+        <div id="tags">
+            Raster, Grid, Query
+        </div>
+        <p id="shortdesc">This demo shows querying of raster data.</p>
+        <div id="map" class="smallmap"></div>
+        <p>
+            <strong>Landcover Type</strong>
+            <span id="landcover"><em>none</em></span>
+        </p>
+        <p>
+            <strong>Elevation</strong>
+            <span id="elevation"><em>none</em></span>
+        </p>
+        <div class="docs">
+            <p>
+                This example uses two hidden layers to pull in landcover and elevation
+                data.  Raster composites are generated from these layers and queried 
+                with each move of the mouse.
+            </p><p>
+                See the <a href="raster-query.js" target="_blank">raster-query.js</a> 
+                source for details on how this is done.
+            </p>
+        </div>
+        <script src="raster-query.js"></script>
+    </body>
+</html>

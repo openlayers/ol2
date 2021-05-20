@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OpenLayers Raster Download Example</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <script src="../OpenLayers.js"></script>
+        <style>
+            div.docs p {
+                padding-top: 1em;
+                width: 512px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="title">Download Raster</h1>
+        <div id="tags">
+            Raster, Grid, Download
+        </div>
+        <p id="shortdesc">This demo shows how raster data can be downloaded.</p>
+        <div id="map" class="smallmap"></div>
+        <p>
+            Download links:
+            <ul>
+                <li><a id="png-link" href="#" download="raster.png" title="Download PNG">PNG</a></li>
+                <li><a id="gif-link" href="#" download="raster.gif" title="Download GIF">GIF</a></li>
+                <li><a id="jpg-link" href="#" download="raster.jpg" title="Download JPEG">JPEG</a></li>
+            </ul>
+        </p>
+        <div class="docs">
+            <p>
+                This example creates a raster composite from a WMS layer.  The data from the 
+                raster composite can be used to generate download links in various different formats.
+            </p><p>
+                See the <a href="raster-download.js" target="_blank">raster-download.js</a> 
+                source for details on how this is done.
+            </p>
+        </div>
+        <script src="raster-download.js"></script>
+    </body>
+</html>
