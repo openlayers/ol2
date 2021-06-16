@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>OpenLayers WFSDescribeFeatureType Parser Example</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script src="../OpenLayers.js"></script>
+    <script type="text/javascript">
+        function parseData(req) {
+            format = new OpenLayers.Format.WFSDescribeFeatureType();
+            html = "<br>";
+            resp = format.read(req.responseText);
+            var featureTypes = resp.featureTypes;
+            for (var i = 0; i < featureTypes.length; i++) {
+                html += "typeName: " + featureTypes[i].typeName;
+                for (var j = 0; j < featureTypes[i].properties.length; j++) {
+                    html += "<ul>";
+                    html += "<li>name: " + featureTypes[i].properties[j].name + "</li>";
+                    html += "<li>localType: " + featureTypes[i].properties[j].localType + "</li>";
+                    html += "<li>nillable: " + featureTypes[i].properties[j].nillable + "</li>";
+                    html += "</ul>"
+                }
+            }
+            document.getElementById('output').innerHTML = html;
+        }
+        function load() {
+            OpenLayers.Request.GET({
+                url: "xml/wfsdescribefeaturetype.xml",
+                success: parseData
+            });
+        }
+    </script>
+</head>
+<body onload="load()">
+<h1 id="title">WFSDescribeFeatureType Parser Example</h1>
+
+<div id="tags">
+    wfsdescribefeaturetype, parser, cleanup
+</div>
+
+<p id="shortdesc">
+    Demonstrate the operation of the WFSDescribeFeatureType parser.
+</p>
+
+<div id="output"></div>
+
+<div id="docs">
+    <p>This script reads data from a file and parses out attributes on a typeName,
+        appending them to a HTML string with markup tags. This markup is
+        dumped to an element in the page.</p>
+</div>
+</body>
+</html>
