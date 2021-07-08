@@ -571,6 +571,26 @@
         map.destroy();
     }
 
+    function test_removeLayer(t) {
+        t.plan(1);
+        var map = new OpenLayers.Map("map");
+        var layer1 = new OpenLayers.Layer.Vector();
+        var layer2 = new OpenLayers.Layer.Vector();
+        map.addLayers([layer1, layer2]);
+        // initialize it with multiple layers
+        var control = new OpenLayers.Control.SelectFeature([layer1, layer2]);
+        map.addControl(control);
+        control.activate();
+
+        // remove layer 2
+        map.removeLayer(layer2);
+
+        t.eq(control.layers.length, 1, 
+            "When a layer is removed from a map it is removed from the control.")
+
+        map.destroy();
+    }
+
     function test_destroy(t) {
         t.plan(1);
         var map = new OpenLayers.Map("map");
