@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>OpenLayers Dynamic Clusters with Selection Example</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <style type="text/css">
+        p {
+            width: 500px;
+        }
+    </style>
+    <script src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var map, vectorLayer, clusterStrategy, controls;
+
+        function init(){
+            map = new OpenLayers.Map('map');
+            var layer = new OpenLayers.Layer.XYZ('OpenStreetMap','http://tile.openstreetmap.org/${z}/${x}/${y}.png',
+                {projection: 'EPSG:3857'}
+            );
+            map.addLayer(layer);
+
+            clusterStrategy = new OpenLayers.Strategy.DynamicCluster();
+            clusterStrategy.threshold = 2;
+
+            var defaultStyle = new OpenLayers.Style({
+                pointRadius: "${radius}",
+                fillColor: "#ffcc66",
+                fillOpacity: 0.8,
+                strokeColor: "#cc6633",
+                strokeWidth: "${width}",
+                strokeOpacity: 0.8,
+
+                fontColor: '#ffffff',
+                fontSize: '12px',
+                fontWeight: '${fontweight}',
+                labelAlign: 'cm',
+                labelOutlineColor: 'rgba(0,0,0,0.6)',
+                labelOutlineWidth: 1,
+                label : '${count}'
+            }, {
+                context: {
+                    width: function(feature) {
+                        return (feature.cluster) ? 2 : 1;
+                    },
+                    fontweight: function(feature) {
+                        return (feature.cluster) ? 'bold' : 'normal';
+                    },
+                    radius: function(feature) {
+                        var pix = 3;
+                        if(feature.cluster) {
+                            pix = Math.min(feature.attributes.count, 7) + 2;
+                        }
+                        return pix;
+                    },
+                    count: function(feature) {
+                        if (feature.attributes.count) {
+                            return feature.attributes.count;
+                        }
+                        if (feature.attributes.name) {
+                            return feature.attributes.name;
+                        }
+                        return '';
+                    }
+                }
+            });
+
+
+            vectorLayer = new OpenLayers.Layer.Vector("Simple Geometry",{
+                strategies: [ clusterStrategy ],
+                styleMap: new OpenLayers.StyleMap({
+                    'default': defaultStyle,
+                    })
+            });
+
+            vectorLayer.events.on({
+                'featureselected': function(feature) {
+                    document.getElementById('counter').innerHTML = this.selectedFeatures.length;
+                },
+                'featureunselected': function(feature) {
+                    document.getElementById('counter').innerHTML = this.selectedFeatures.length;
+                }
+            });
+
+            map.addLayer(vectorLayer);
+            map.setCenter(new OpenLayers.LonLat(0,0), 2);
+
+
+            controls = {
+                point: new OpenLayers.Control.DrawFeature(
+                    vectorLayer, OpenLayers.Handler.Point
+                ),
+                select: new OpenLayers.Control.SelectFeature(
+                    vectorLayer,
+                    {
+                        clickout: false, toggle: false,
+                        multiple: false, hover: false,
+                        toggleKey: "ctrlKey", // ctrl key removes from selection
+                        multipleKey: "shiftKey", // shift key adds to selection
+                    }
+                ),
+                selectbox: new OpenLayers.Control.SelectFeature(
+                    vectorLayer,
+                    {
+                        clickout: false, toggle: false,
+                        multiple: false, hover: false,
+                        toggleKey: "ctrlKey", // ctrl key removes from selection
+                        multipleKey: "shiftKey", // shift key adds to selection
+                        box: true
+                    }
+                ),
+                selecthover: new OpenLayers.Control.SelectFeature(
+                    vectorLayer,
+                    {
+                        multiple: false, hover: true,
+                        toggleKey: "ctrlKey", // ctrl key removes from selection
+                        multipleKey: "shiftKey" // shift key adds to selection
+                    }
+                )
+            };
+
+            for(var key in controls) {
+                map.addControl(controls[key]);
+            }
+
+
+            // Create some moving points (in EPSG:3857).
+            var radius = 500000;
+            var angleDelta = 2;
+            var delay = 50;
+            var k = 0;
+            for (var lon = -1000000; lon <= 1000000; lon += 250000) {
+                for (var lat = -1000000; lat <= 1000000; lat += 250000) {
+
+                    var geom  = new OpenLayers.Geometry.Point(lon+radius,lat);
+                    var pivot = new OpenLayers.Geometry.Point(lon,lat);
+                    var movingPoint = new OpenLayers.Feature.Vector(geom,{name:'P' + ++k});
+
+                    vectorLayer.addFeatures([movingPoint]);
+
+                    var interval = window.setInterval((function(a,f,g){
+                        return function() {
+                            f.geometry.rotate(a, g);
+
+                            // Note that we cannot use f.layer.drawFeature(),
+                            //   because feature.layer might be null if
+                            //   the feature has been added but is not
+                            //   visible because it's inside a cluster.
+                            vectorLayer.drawFeature(f);
+
+                        }})(angleDelta, movingPoint, pivot)
+                    , delay);
+
+                    movingPoint.attributes.interval = interval;
+
+                    delay += 1;    // Each point will rotate a bit slower than previous
+                }
+            }
+
+
+            var radius = 500000;
+            var delay = 50;
+            var lon = 3000000;
+            var lat = 1000000;
+            for (var angleDelta = -2; angleDelta <= 2; angleDelta += .5) {
+
+                var geom  = new OpenLayers.Geometry.Point(lon+radius,lat);
+                var pivot = new OpenLayers.Geometry.Point(lon,lat);
+                var movingPoint = new OpenLayers.Feature.Vector(geom,{name:'C' + ++k});
+
+                vectorLayer.addFeatures([movingPoint]);
+
+                var interval = window.setInterval((function(a,f,g){
+                    return function() {
+                        f.geometry.rotate(a, g);
+
+                        // Note that we cannot use f.layer.drawFeature(),
+                        //   because feature.layer might be null if
+                        //   the feature has been added but is not
+                        //   visible because it's inside a cluster.
+                        vectorLayer.drawFeature(f);
+
+                    }})(angleDelta, movingPoint, pivot)
+                , delay);
+
+                movingPoint.attributes.interval = interval;
+            }
+        }
+
+
+        // Delete one feature
+        function deleteFeature(){
+
+            // Cannot delete something if there's nothing there
+            if (clusterStrategy.features === 0){
+                return;
+            }
+
+            var feature = clusterStrategy.features[0];
+
+            // We need to clear the interval that rotates the feature,
+            //   or else we'll call vectorLayer.drawFeature() with a non-checked
+            //   feature, and cause glitches.
+            if (feature.attributes.interval) {
+                window.clearInterval( feature.attributes.interval );
+            }
+
+            vectorLayer.removeFeatures([ feature ]);
+        }
+
+
+
+        var gridPoints = [];
+        for (var lon = -1000000; lon <= 1000000; lon += 50000) {
+            for (var lat = -1000000; lat <= 1000000; lat += 50000) {
+                var geom  = new OpenLayers.Geometry.Point(lon,lat);
+                var point = new OpenLayers.Feature.Vector(geom);
+                gridPoints.push(point);
+            }
+        }
+
+        var gridPointsVisible = false;
+        function toggleGridPoints(){
+
+            gridPointsVisible = !gridPointsVisible;
+            if (gridPointsVisible) {
+                vectorLayer.addFeatures(gridPoints);
+            } else {
+                vectorLayer.removeFeatures(gridPoints);
+            }
+
+        }
+
+        function toggleControl(element) {
+            for(key in controls) {
+                var control = controls[key];
+                if(element.value == key && element.checked) {
+                    control.activate();
+                } else {
+                    control.deactivate();
+                }
+            }
+        }
+
+
+        var interval = window.setInterval(
+            function() {
+
+                var str = '';
+                str += '<p>Visible features in layer: ' + vectorLayer.features.length + '</p>';
+                str += '<p>Features in cluster cache: ' + clusterStrategy.features.length  + '</p>';
+                str += '<p>Cluster candidates: ' + clusterStrategy.clusters.length  + '</p>';
+
+                document.getElementById('stats').innerHTML = str;
+
+            }, 500);
+
+
+
+
+    </script>
+  </head>
+  <body onload="init()">
+    <h1 id="title">Dynamic clusters with selection</h1>
+
+    <div id="tags">
+        vector, cluster, rotate, dynamic, select
+    </div>
+  <p id="shortdesc">
+      Dynamic clusters example
+  </p>
+
+    <div id="map" style="width:100%; height:500px;"></div>
+
+    <button onclick="deleteFeature()">Delete one feature</button>
+    <button onclick="toggleGridPoints()">Add/remove 1600 points</button>
+
+    <ul id="controlToggle">
+        <li>
+            <input type="radio" name="type" value="none" id="noneToggle"
+                   onclick="toggleControl(this);" checked="checked" />
+            <label for="noneToggle">Navigate</label>
+        </li>
+        <li>
+            <input type="radio" name="type" value="point" id="pointToggle"
+                   onclick="toggleControl(this);" />
+            <label for="pointToggle">Draw point</label>
+        </li>
+        <li>
+            <input type="radio" name="type" value="select" id="selectToggle"
+                   onclick="toggleControl(this);" />
+            <label for="selectToggle">Select feature on click (<span id="counter">0</span> features selected)</label>
+        </li>
+        <li>
+            <input type="radio" name="type" value="selectbox" id="boxToggle"
+                   onclick="toggleControl(this);" />
+            <label for="boxToggle">Select feature on box</label>
+        </li>
+        <li>
+            <input type="radio" name="type" value="selecthover" id="hoverToggle"
+                   onclick="toggleControl(this);" />
+            <label for="hoverToggle">Select feature on hover</label>
+        </li>
+    </ul>
+    <div id="stats"></div>
+    <div id="docs"><p>This example shows how the dynamic cluster strategy freezes features when selected. Selected clusters will stay visible even if features move out of it, and selected features will not be clustered. On zoom in/out, the features are not removed from the layer. This allows pop-ups and other functionality to keep working OK on modified clusters or moving features.</p></div>
+  </body>
+</html>
