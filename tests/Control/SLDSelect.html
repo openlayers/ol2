@@ -12,7 +12,7 @@
         control = new OpenLayers.Control.SLDSelect(OpenLayers.Handler.RegularPolygon, {handlerOptions: {irregular: true}});
         t.eq(control.handler instanceof OpenLayers.Handler.RegularPolygon, true, "RegularPolygon handler created");
         t.eq(control.handler.irregular, true, "RegularPolygon handler is irregular");
-        t.eq(control.handler.persist, false, "RegularPolygon handler is not persistant");
+        t.eq(control.handler.persist, false, "RegularPolygon handler is not persistent");
         t.ok(control.handler.callbacks["done"] === control.select, "Done callback correctly set");
         control.destroy();
         control = new OpenLayers.Control.SLDSelect(OpenLayers.Handler.Polygon);

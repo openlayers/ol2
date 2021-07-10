@@ -85,16 +85,16 @@
 
         // test with an abstract class (i.e. a class that doesn't have an initialize
         // method) as the parent class
-        var Vehicule = OpenLayers.Class({
+        var Vehicle = OpenLayers.Class({
             numWheels: null
         });
-        var Bike = OpenLayers.Class(Vehicule, {
+        var Bike = OpenLayers.Class(Vehicle, {
             initialize: function() {
                 this.numWheels = 2;
             }
         });
         var b = new Bike();
-        t.ok(b instanceof Vehicule, "a bike is a vehicule");
+        t.ok(b instanceof Vehicle, "a bike is a vehicle");
         
         // test inheritance with something that has a non-function initialize property
         var P = OpenLayers.Class({

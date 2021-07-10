@@ -245,11 +245,11 @@
         
         var log = [];
 
-    //make sure null bounds doesnt cause script error. 
+    //make sure null bounds don't cause script error.
     // no test necessary, just action
         map.getExtent = function() { return null; }
         layer.singleTile = false;
-        layer.moveTo(); //checks to make sure null bounds doesnt break us
+        layer.moveTo(); //checks to make sure null bounds don't break us
   
 
       //observing globals
