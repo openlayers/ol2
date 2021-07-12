@@ -4,7 +4,7 @@
   <script type="text/javascript">
 
     function test_Kinetic (t) {
-        t.plan(17);
+        t.plan(19);
         var finish = false;
         var results = {
             110: {x: -2.7, y: -3.6, end: false},
@@ -42,14 +42,18 @@
 
         // fake timer id    
         kinetic.timerId = 0;
+        var running = false;
         kinetic.move(measure, function(x, y, end) {
             var result = results[new Date().getTime()];
             t.eq(Math.round(x * 1000) / 1000, result.x, "correct x");
             t.eq(Math.round(y * 1000) / 1000, result.y, "correct y");
             t.eq(end, result.end, "correct end");
+            running = kinetic.isRunning();
             finish = end;
         });
-        
+        t.eq(running, true, 'isRunning() correct when running.')
+        t.eq(kinetic.isRunning(), false, 'isRunning() correct when idle');
+
         Date.prototype.getTime = originalGetTime;
         OpenLayers.Animation.start = originalLoopAnimation;
     }
