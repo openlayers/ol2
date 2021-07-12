@@ -1,3 +1,7 @@
+# OpenLayers 2 is deprecated!
+
+## Please go to https://github.com/openlayers/openlayers for the maintained successor.
+
 # OpenLayers 2
 
 Copyright (c) 2005-2015 OpenLayers Contributors. See authors.txt for
