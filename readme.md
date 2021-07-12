@@ -1,4 +1,4 @@
-# OpenLayers 2 is deprecated!
+# OpenLayers v2 is deprecated!
 
 ## Please go to https://github.com/openlayers/openlayers for the maintained successor.
 
