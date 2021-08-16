@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>OpenLayers Dynamic Clusters Example</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <style type="text/css">
+        p {
+            width: 500px;
+        }
+    </style>
+    <script src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var map, vectorLayer, clusterStrategy;
+
+        function init(){
+            map = new OpenLayers.Map('map');
+            var layer = new OpenLayers.Layer.XYZ('OpenStreetMap','http://tile.openstreetmap.org/${z}/${x}/${y}.png',
+                {projection: 'EPSG:3857'}
+            );
+            map.addLayer(layer);
+
+            clusterStrategy = new OpenLayers.Strategy.DynamicCluster();
+            clusterStrategy.threshold = 2;
+
+            var style = new OpenLayers.Style({
+                pointRadius: "${radius}",
+                fillColor: "#ffcc66",
+                fillOpacity: 0.8,
+                strokeColor: "#cc6633",
+                strokeWidth: "${width}",
+                strokeOpacity: 0.8,
+
+                fontColor: '#ffffff',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                labelAlign: 'cm',
+                labelOutlineColor: 'rgba(0,0,0,0.6)',
+                labelOutlineWidth: 2,
+                label : '${count}'
+            }, {
+                context: {
+                    width: function(feature) {
+                        return (feature.cluster) ? 2 : 1;
+                    },
+                    radius: function(feature) {
+                        var pix = 3;
+                        if(feature.cluster) {
+                            pix = Math.min(feature.attributes.count, 7) + 2;
+                        }
+                        return pix;
+                    },
+                    count: function(feature) {
+                        if (feature.attributes.count) {
+                            return feature.attributes.count;
+                        }
+                        return '';
+                    }
+                }
+            });
+
+            vectorLayer = new OpenLayers.Layer.Vector("Simple Geometry",{
+                strategies: [ clusterStrategy ],
+                styleMap: new OpenLayers.StyleMap({'default': style})
+            });
+
+            map.addLayer(vectorLayer);
+            map.setCenter(new OpenLayers.LonLat(0,0), 2);
+
+
+            var drawControl = new OpenLayers.Control.DrawFeature(vectorLayer,
+                OpenLayers.Handler.Point);
+            map.addControl(drawControl);
+            drawControl.activate();
+
+
+            // Create some moving points (in EPSG:3857).
+            var radius = 500000;
+            var angleDelta = 2;
+            var delay = 50;
+            for (var lon = -1000000; lon <= 1000000; lon += 250000) {
+                for (var lat = -1000000; lat <= 1000000; lat += 250000) {
+
+                    var geom  = new OpenLayers.Geometry.Point(lon+radius,lat);
+                    var pivot = new OpenLayers.Geometry.Point(lon,lat);
+                    var movingPoint = new OpenLayers.Feature.Vector(geom);
+
+                    vectorLayer.addFeatures([movingPoint]);
+
+                    var interval = window.setInterval((function(f,g){
+                        return function() {
+                            f.geometry.rotate(angleDelta, g);
+
+                            // Note that we cannot use f.layer.drawFeature(),
+                            //   because feature.layer might be null if
+                            //   the feature has been added but is not
+                            //   visible because it's inside a cluster.
+                            vectorLayer.drawFeature(f);
+
+                        }})(movingPoint, pivot)
+                    , delay);
+
+                    movingPoint.attributes.interval = interval;
+
+                    delay += 1;    // Each point will rotate a bit slower than previous
+                }
+            }
+        }
+
+
+        // Delete one feature
+        function deleteFeature(){
+
+            // Cannot delete something if there's nothing there
+            if (clusterStrategy.features === 0){
+                return;
+            }
+
+            var feature = clusterStrategy.features[0];
+
+            // We need to clear the interval that rotates the feature,
+            //   or else we'll call vectorLayer.drawFeature() with a non-checked
+            //   feature, and cause glitches.
+            if (feature.attributes.interval) {
+                window.clearInterval( feature.attributes.interval );
+            }
+
+            vectorLayer.removeFeatures([ feature ]);
+        }
+
+
+
+        var gridPoints = [];
+        for (var lon = -1000000; lon <= 1000000; lon += 50000) {
+            for (var lat = -1000000; lat <= 1000000; lat += 50000) {
+                var geom  = new OpenLayers.Geometry.Point(lon,lat);
+                var point = new OpenLayers.Feature.Vector(geom);
+                gridPoints.push(point);
+            }
+        }
+
+        var gridPointsVisible = false;
+        function toggleGridPoints(){
+
+            gridPointsVisible = !gridPointsVisible;
+            if (gridPointsVisible) {
+                vectorLayer.addFeatures(gridPoints);
+            } else {
+                vectorLayer.removeFeatures(gridPoints);
+            }
+
+        }
+
+    </script>
+  </head>
+  <body onload="init()">
+    <h1 id="title">Dynamic clusters</h1>
+
+    <div id="tags">
+        vector, cluster, rotate, dynamic
+    </div>
+  <p id="shortdesc">
+      Dynamic clusters example
+  </p>
+
+    <div id="map" style="width:100%; height:500px;"></div>
+    <button onclick="deleteFeature()">Delete one feature</button>
+    <button onclick="toggleGridPoints()">Toggle grid</button>
+    <div id="docs"><p>This example shows the dynamic cluster strategy. When a feature is added, removed or moved within a layer with this strategy, only the clusters around that feature will be changed.</p>
+    <p>Click anywhere in the map to add a new point feature.</p></div>
+  </body>
+</html>
