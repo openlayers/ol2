@@ -1,0 +1,274 @@
+<html>
+<head>
+  <script src="../OLLoader.js"></script>
+  <script type="text/javascript">
+    var polygon;
+    var components = [new OpenLayers.Geometry.Point(10,14,10), new OpenLayers.Geometry.Point(5,3,2)];
+    var components2 = [new OpenLayers.Geometry.Point(12,15,17), new OpenLayers.Geometry.Point(2,3,4), new OpenLayers.Geometry.Point(10,0,1), new OpenLayers.Geometry.Point(10,10,20)];
+    var linearRing = new OpenLayers.Geometry.LinearRing(components);
+    var linearRing2 = new OpenLayers.Geometry.LinearRing(components2);
+    
+    function test_Polygon_constructor (t) {
+        t.plan( 3 );
+        polygon = new OpenLayers.Geometry.Polygon();
+        t.ok( polygon instanceof OpenLayers.Geometry.Polygon, "new OpenLayers.Geometry.Polygon returns polygon object" );
+        t.eq( polygon.CLASS_NAME, "OpenLayers.Geometry.Polygon", "polygon.CLASS_NAME is set correctly");
+        t.eq( polygon.components.length, 0, "polygon.components is set correctly");
+    }
+
+    function test_Polygon_constructor (t) {
+        t.plan( 3 );
+        polygon = new OpenLayers.Geometry.Polygon([linearRing]);
+        t.ok( polygon instanceof OpenLayers.Geometry.Polygon, "new OpenLayers.Geometry.Polygon returns polygon object" );
+        t.eq( polygon.CLASS_NAME, "OpenLayers.Geometry.Polygon", "polygon.CLASS_NAME is set correctly");
+        t.eq( polygon.components.length, 1, "polygon.components.length is set correctly");
+    }
+    
+    function test_Polygon_constructor (t) {
+        t.plan( 3 );
+        polygon = new OpenLayers.Geometry.Polygon([linearRing, linearRing2]);
+        t.ok( polygon instanceof OpenLayers.Geometry.Polygon, "new OpenLayers.Geometry.Polygon returns polygon object" );
+        t.eq( polygon.CLASS_NAME, "OpenLayers.Geometry.Polygon", "polygon.CLASS_NAME is set correctly");
+        t.eq( polygon.components.length, 2, "polygon.components.length is set correctly");
+    }
+    
+    function test_Polygon_transform_getBounds (t) {
+        t.plan(3);
+
+        var components = [new OpenLayers.Geometry.Point(10,14,15), new OpenLayers.Geometry.Point(5,3,2)];
+        var linearRing = new OpenLayers.Geometry.LinearRing(components);
+        polygon = new OpenLayers.Geometry.Polygon([linearRing.clone()]);
+        polygon.calculateBounds();
+        t.ok( polygon.bounds != null, "bounds calculated by calcBounds" );
+        polygon.transform(new OpenLayers.Projection("EPSG:4326"), 
+                        new OpenLayers.Projection("EPSG:900913"));
+        t.eq(polygon.bounds, null, "Point bounds cleared after transform");
+        t.eq(polygon.getBounds().toBBOX(), "556597.453889,334111.171355,1113194.907778,1574216.547942", "Bounds are correct")
+    }
+
+    function test_Polygon_transform_string (t) {
+        t.plan(3);
+
+        var components = [new OpenLayers.Geometry.Point(10,14,15), new OpenLayers.Geometry.Point(5,3,2)];
+        var linearRing = new OpenLayers.Geometry.LinearRing(components);
+        polygon = new OpenLayers.Geometry.Polygon([linearRing.clone()]);
+        polygon.calculateBounds();
+        t.ok( polygon.bounds != null, "bounds calculated by calcBounds" );
+        polygon.transform("EPSG:4326", "EPSG:900913");
+        t.eq(polygon.bounds, null, "Point bounds cleared after transform");
+        t.eq(polygon.getBounds().toBBOX(), "556597.453889,334111.171355,1113194.907778,1574216.547942", "Bounds are correct")
+    }
+
+    function test_Polygon_getArea(t) {
+        t.plan( 5 );
+
+      //no components
+        var polygon = new OpenLayers.Geometry.Polygon();
+        t.eq(polygon.getArea(), 0, "getArea empty polygon is 0");
+
+        var createSquareRing = function(area) {
+            var points = [
+                new OpenLayers.Geometry.Point(0, 0, 0),
+                new OpenLayers.Geometry.Point(0, area, area),
+                new OpenLayers.Geometry.Point(area, area, area),
+                new OpenLayers.Geometry.Point(area, 0, 0)
+            ];
+            var ring = new OpenLayers.Geometry.LinearRing(points);
+            return ring;
+        };
+    
+
+      //simple polygon
+        var comps = [ createSquareRing(2) ];
+        
+        var polygon = new OpenLayers.Geometry.Polygon(comps);
+        t.eq(polygon.getArea(), 4, "getArea simple polygon works lovely");
+
+      //polygon with holes
+        comps = [ createSquareRing(10),
+                           createSquareRing(2),
+                           createSquareRing(3),
+                           createSquareRing(4)
+                         ];
+
+        var polygon = new OpenLayers.Geometry.Polygon(comps);
+        t.eq(polygon.getArea(), 71, "getArea polygon with holes works lovely");
+        
+      //simple polygon negative
+        comps = [ createSquareRing(-2) ];
+        
+        var polygon = new OpenLayers.Geometry.Polygon(comps);
+        t.eq(polygon.getArea(), 4, "getArea simple polygon negative works lovely");
+
+      //polygon with holes negative
+        comps = [ createSquareRing(-10),
+                           createSquareRing(-2),
+                           createSquareRing(-3),
+                           createSquareRing(-4)
+                         ];
+        
+        var polygon = new OpenLayers.Geometry.Polygon(comps);
+        t.eq(polygon.getArea(), 71, "getArea negative polygon with holes works lovely");
+        
+    }
+    
+    function test_Polygon_move(t) {
+        t.plan(6);
+        
+        polygon = new OpenLayers.Geometry.Polygon([linearRing, linearRing2]);
+        
+        var x = linearRing.components[0].x;
+        var y = linearRing.components[0].y;
+        var z = linearRing.components[0].z;
+        var x2 = linearRing2.components[0].x;
+        var y2 = linearRing2.components[0].y;
+        var z2 = linearRing2.components[0].z;
+        
+        var dx = 10 * Math.random();
+        var dy = 10 * Math.random();
+
+        polygon.move(dx, dy);
+
+        t.eq(polygon.components[0].components[0].x, x + dx, "move() correctly modifies first x");
+        t.eq(polygon.components[0].components[0].y, y + dy, "move() correctly modifies first y");
+        t.eq(polygon.components[0].components[0].z, z, "move() leaves first z untouched");
+        t.eq(polygon.components[1].components[0].x, x2 + dx, "move() correctly modifies second x");
+        t.eq(polygon.components[1].components[0].y, y2 + dy, "move() correctly modifies second y");
+        t.eq(polygon.components[1].components[0].z, z2, "move() leaves second z untouched");
+    }
+
+    
+
+    function test_Polygon_createRegular(t) {
+        t.plan(22);
+        var sides = 40;
+        var poly = OpenLayers.Geometry.Polygon.createRegularPolygon(new OpenLayers.Geometry.Point(5,0,2), 6, sides);
+        var polyBounds = poly.getBounds();
+        t.eq(polyBounds.toBBOX(), "-0.981504,-5.981504,10.981504,5.981504", sides + " sided figure generates correct bbox.");
+        t.eq(poly.components.length, 1, "Poly has one linear ring");
+        t.eq(poly.components[0].components.length, sides + 1, "ring has 41 components");
+        t.eq(poly.components[0].components[0].id, poly.components[0].components[sides].id, "ring starts and ends with same geom");
+        t.eq(Math.round(poly.getArea()), Math.round(Math.PI * 36), "area of "+sides+" sided poly rounds to same area as a circle.");
+        
+        var sides = 3;
+        var poly = OpenLayers.Geometry.Polygon.createRegularPolygon(new OpenLayers.Geometry.Point(5,0,2), 6, sides);
+        var polyBounds = poly.getBounds();
+        t.eq(polyBounds.toBBOX(), "-0.196152,-3,10.196152,6", sides + " sided figure generates correct bbox.");
+        t.eq(poly.components.length, 1, "Poly has one linear ring");
+        t.eq(poly.components[0].components.length, sides + 1, "ring has  correct count of  components");
+        t.eq(poly.components[0].components[0].id, poly.components[0].components[sides].id, "ring starts and ends with same geom");
+        t.eq(Math.round(poly.getArea()), 47, "area of 3 sided poly is correct");
+        
+        var sides = 3;
+        var poly3 = OpenLayers.Geometry.Polygon.createRegularPolygon(new OpenLayers.Geometry.Point(10,0,4), 15, sides);
+        var polyBounds = poly3.getBounds();
+        t.eq(polyBounds.toBBOX(), "-2.990381,-7.5,22.990381,15", sides + " sided figure generates correct bbox.");
+        t.eq(Math.round(polyBounds.getCenterLonLat().lon), 10, "longitude of center of bounds is same as origin");
+        t.eq(poly3.components.length, 1, "Poly has one linear ring");
+        t.eq(poly3.components[0].components.length, sides + 1, "ring has  correct count of  components");
+        t.eq(poly3.components[0].components[0].id, poly3.components[0].components[sides].id, "ring starts and ends with same geom");
+        t.ok(poly3.getArea() > poly.getArea(), "area with radius 15 > poly with radius 6"); 
+        
+        var sides = 4;
+        var poly4 = OpenLayers.Geometry.Polygon.createRegularPolygon(new OpenLayers.Geometry.Point(10,0,4), 15, sides);
+        var polyBounds = poly4.getBounds();
+        t.eq(polyBounds.toBBOX(), "-0.606602,-10.606602,20.606602,10.606602", sides + " sided figure generates correct bbox.");
+        t.eq(Math.round(polyBounds.getCenterLonLat().lon), 10, "longitude of center of bounds is same as origin");
+        t.eq(poly4.components.length, 1, "Poly has one linear ring");
+        t.eq(poly4.components[0].components.length, sides + 1, "ring has  correct count of  components");
+        t.eq(poly4.components[0].components[0].id, poly4.components[0].components[sides].id, "ring starts and ends with same geom");
+        t.ok(poly4.getArea() > poly3.getArea(), "square with radius 15 > triangle with radius 15"); 
+    }
+
+        
+    function test_Polygon_equals(t) {
+        t.plan(4);
+        
+        var x0 = Math.random() * 100;
+        var y0 = Math.random() * 100;
+        var z0 = Math.random() * 100;
+        var x1 = Math.random() * 100;
+        var y1 = Math.random() * 100;
+        var z1 = Math.random() * 100;
+        var x2 = Math.random() * 100;
+        var y2 = Math.random() * 100;
+        var z2 = Math.random() * 100;
+        var point0 = new OpenLayers.Geometry.Point(x0, y0);
+        var point1 = new OpenLayers.Geometry.Point(x1, y1);
+        var point2 = new OpenLayers.Geometry.Point(x2, y2);
+        var pointX = new OpenLayers.Geometry.Point(x0 + 1, y0);
+        var pointY = new OpenLayers.Geometry.Point(x0, y0 + 1);
+        var pointZ = new OpenLayers.Geometry.Point(x0, y0, z0 +1);
+        var geometry = new OpenLayers.Geometry.Polygon([
+                            new OpenLayers.Geometry.LinearRing([point0, point1, point2])]);
+        var equal = new OpenLayers.Geometry.Polygon([
+                            new OpenLayers.Geometry.LinearRing([point0, point1, point2])]);
+        var offX = new OpenLayers.Geometry.Polygon([
+                            new OpenLayers.Geometry.LinearRing([pointX, point1, point2])]);
+        var offY = new OpenLayers.Geometry.Polygon([
+                            new OpenLayers.Geometry.LinearRing([pointY, point1, point2])]);
+        var offZ = new OpenLayers.Geometry.Polygon([
+                            new OpenLayers.Geometry.LinearRing([point0, point1, pointZ])]);
+        t.ok(geometry.equals(equal),
+             "equals() returns true for a geometry with equivalent coordinates");
+        t.ok(!geometry.equals(offX),
+             "equals() returns false for a geometry with offset x");
+        t.ok(!geometry.equals(offY),
+             "equals() returns false for a geometry with offset y");
+        t.ok(!geometry.equals(offZ),
+             "equals() returns false for a geometry with offset z");
+    }
+    
+
+    function test_getVertices(t) {
+        t.plan(6);
+        
+        var points = [
+            new OpenLayers.Geometry.Point(10, 20, 30),
+            new OpenLayers.Geometry.Point(20, 30, 40),
+            new OpenLayers.Geometry.Point(30, 40, 50),
+            new OpenLayers.Geometry.Point(40, 50, 60)
+        ];
+        var polygon = new OpenLayers.Geometry.Polygon([
+            new OpenLayers.Geometry.LinearRing(points)
+        ]);
+        
+        var verts = polygon.getVertices();
+        t.ok(verts instanceof Array, "got back an array");
+        t.eq(verts.length, points.length, "of correct length length");
+        t.geom_eq(verts[0], points[0], "0: correct geometry");
+        t.geom_eq(verts[1], points[1], "1: correct geometry");
+        t.geom_eq(verts[2], points[2], "2: correct geometry");
+        t.geom_eq(verts[3], points[3], "3: correct geometry");
+        
+    }
+
+    function test_Polygon_clone(t) {
+        t.plan(2);
+        
+        var x0 = Math.random() * 100;
+        var y0 = Math.random() * 100;
+        var z0 = Math.random() * 100;
+        var x1 = Math.random() * 100;
+        var y1 = Math.random() * 100;
+        var z1 = Math.random() * 100;
+        var x2 = Math.random() * 100;
+        var y2 = Math.random() * 100;
+        var z2 = Math.random() * 100;
+        var point0 = new OpenLayers.Geometry.Point(x0, y0, z0);
+        var point1 = new OpenLayers.Geometry.Point(x1, y1, z1);
+        var point2 = new OpenLayers.Geometry.Point(x2, y2, z2);
+        var geometry = new OpenLayers.Geometry.Polygon([
+                            new OpenLayers.Geometry.LinearRing([point0, point1, point2])]);
+        var clone = geometry.clone();
+        t.ok(clone instanceof OpenLayers.Geometry.Polygon,
+             "clone() creates an OpenLayers.Geometry.Polygon");
+        t.ok(geometry.equals(clone), "clone has equivalent coordinates");
+    }
+    
+
+  </script>
+</head>
+<body>
+</body>
+</html>
