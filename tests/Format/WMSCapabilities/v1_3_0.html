@@ -143,7 +143,7 @@
     }
 
     function test_contactinfo(t) {
-        t.plan(14);
+        t.plan(17);
 
         var xml = document.getElementById("ogcsample").firstChild.nodeValue;
         var doc = new OpenLayers.Format.XML().read(xml);
@@ -183,6 +183,11 @@
         t.eq(contactinfo.email,
              "user@host.com",
              "ContactElectronicMailAddress parsed correctly");
+
+        t.eq(service.name, "WMS", "name parsed correctly");
+        t.eq(service.title, "Acme Corp. Map Server", "title parsed correctly");
+        t.eq(service.abstract, "Map Server maintained by Acme Corporation.  Contact: webmaster@wmt.acme.com.  High-quality maps showing roadrunner nests and possible ambush locations.", "abstract parsed correctly");
+
     }
 
     function test_feesAndConstraints(t) {
