@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var control, callback;
+        // UTF grid use httprequest you could need a proxy or other fix for CORS
+        //OpenLayers.ProxyHost = "./proxy.cgi?url=";
+
+        init = function() {
+            var world = new OpenLayers.Bounds(
+                -20037508.34, -20037508.34, 20037508.34, 20037508.34
+            );            
+            var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
+                    "http://demo.geo-solutions.it/geoserver/topp/wms?", {layers: 'topp:states'}, {isBaseLayer:true, singleTile:true} );
+            var utfGridWMSLayer = new OpenLayers.Layer.UTFGridWMS( "Utfgrid",
+                    "http://demo.geo-solutions.it/geoserver/topp/wms?", {format:"application/json;type=utfgrid",layers: 'topp:states'}, {utfgridResolution: 4, singleTile:true} );
+            var utfGridWMTSLayer = new OpenLayers.Layer.UTFGrid({
+                url: "http://demo.geo-solutions.it/geoserver/gwc/service/wmts/?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=topp:states&STYLE=_null&TILEMATRIXSET=EPSG:900913&TILEMATRIX=EPSG:900913:${z}&TILEROW=${y}&TILECOL=${x}&FORMAT=application/json;type=utfgrid",
+                utfgridResolution: 4
+            });
+
+            var map = new OpenLayers.Map({
+                div: "map",
+                projection: "EPSG:900913",
+                numZoomLevels: 18,
+                maxResolution: world.getWidth() / 256, // world two tiles wide
+                //maxExtent: world,
+                //restrictedExtent: world,
+                controls: [new OpenLayers.Control.Navigation(),new OpenLayers.Control.Zoom(),new OpenLayers.Control.Scale(), new OpenLayers.Control.MousePosition()],
+                layers: [layer,utfGridWMSLayer,utfGridWMTSLayer],
+                center: new OpenLayers.LonLat(-11500000, 4700000),
+                zoom: 0
+
+            });
+
+            callback = function(infoLookup) {
+                var msg = "";
+                if (infoLookup) {
+                    var layer, info;
+                    for (var idx in infoLookup) {
+                        layer = map.layers[idx];
+                        info = infoLookup[idx];
+                        if (info && info.data) {
+                            msg += "Feature ID: " + info.id + "<br>";
+                            for (var key in info.data) {
+                                msg += key + ": " + info.data[key] + "<br>";
+                            }
+                        }
+                    }
+                }
+                document.getElementById("attrs").innerHTML = msg;
+            };
+
+            var controls = {
+                utf_wms: new OpenLayers.Control.UTFGrid({
+                    callback: callback,
+                       layers: [utfGridWMSLayer],
+                    handlerMode: "move"
+                }),
+                utf_wmts: new OpenLayers.Control.UTFGrid({
+                    callback: callback,
+                     layers: [utfGridWMTSLayer],
+                    handlerMode: "move"
+                })
+            };
+            for (var key in controls) {
+                map.addControl(controls[key]);
+            }
+            
+            toggleControl = function(el) {
+                for (var c in controls) {
+                    controls[c].deactivate();
+                }
+                controls[el.value].activate();
+            }
+            toggleControl({value: "utf_wms"});
+        }
+    </script>
+  </head>
+  <body onload="init()">
+    <h1 id="title">OpenLayers UTFGridWMS Demo</h1>
+
+    <div id="tags">
+        wms, layer, singletile
+    </div>
+    <p id="shortdesc">
+        This page demonstrates the use of the OpenLayers UTFGridWMS.
+    </p>
+
+    <div id="map" class="smallmap"></div>
+    <ul id="controlToggle">
+        <li>
+            <input type="radio" name="type" value="utf_wms" id="wmsHandler"
+            onclick="toggleControl(this);" checked="checked" />
+            <label for="wmsHandler">UTF GRID WMS</label>
+        </li>
+        <li>
+            <input type="radio" name="type" value="utf_wmts" id="wmtsHandler"
+            onclick="toggleControl(this);" />
+            <label for="wmtsHandler">UTF GRID using WMTS</label>
+        </li>
+    </ul>
+    <div id="docs">
+        <p><strong id="attrs">&nbsp;</strong></p>    
+        <p> This exemple demostrates the use of UTFGridWMS. It allows high interaction maps with WMS. It can be used with the same functionalities that UTFGrid has.</p> 
+    </div>
+  </body>
+</html>
