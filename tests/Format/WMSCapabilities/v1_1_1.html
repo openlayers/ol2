@@ -231,7 +231,7 @@
         t.eq(elevation.units, "EPSG:5030", "Dimension units parsed correctly");
         t.eq(elevation["default"], "0", "Default elevation value parsed correctly");
         t.eq(elevation.nearestVal, true, "NearestValue parsed correctly");
-        t.eq(elevation.multipleVal, false, "Absense of MultipleValues handled correctly");
+        t.eq(elevation.multipleVal, false, "Absence of MultipleValues handled correctly");
         t.eq(elevation.values,
              ["0","1000","3000","5000","10000"],
              "Parsing of comma-separated values done correctly");

@@ -342,7 +342,7 @@
         t.eq(OpenLayers.Util.getParameterString({chars: "~!*()'"}), "chars=~!*()'", "~!*()' are unreserved or have no reserved purpose in a URI component");
         
 
-        // Parameters which are a list should end up being a comma-seperated
+        // Parameters which are a list should end up being a comma-separated
         // list of the URL encoded strings
         var params = { foo: ["bar,baz"] };
         t.eq( OpenLayers.Util.getParameterString(params), "foo=bar%2Cbaz", "getParameterString encodes , correctly in arrays");    
@@ -1120,7 +1120,7 @@
         t.ok(ret == null, "if all functions throw exceptions, null returned");
 
         var ret = OpenLayers.Util.Try(func1, func2, func3, func4);
-        t.ok(ret == g_TestVal3, "try returns first sucessfully executed function's return");
+        t.ok(ret == g_TestVal3, "try returns first successfully executed function's return");
 
     }
     
