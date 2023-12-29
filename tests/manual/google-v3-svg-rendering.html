@@ -1,0 +1,91 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Google v3 and webkit svg rendering</title>
+    <link rel="stylesheet" href="../../theme/default/style.css"
+          type="text/css"/>
+    <link rel="stylesheet" href="../../examples/style.css" type="text/css"/>
+    <script src="http://maps.google.com/maps/api/js?sensor=false&amp;v=3.14"></script>
+    <script src="../../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var map, proj;
+
+        function init() {
+
+            // google maps layer
+            var gmap = new OpenLayers.Layer.Google('gmap', {
+                isBaseLayer: true
+            });
+
+            // projection
+            proj = new OpenLayers.Projection('EPSG:4326');
+
+            // map object
+            map = new OpenLayers.Map('map', {
+                layers: [gmap]
+            });
+            resetCenter();
+
+            // random array of points around the map center
+            var points = [
+                (new OpenLayers.Geometry.Point(-3.389282, 51.582563)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-3.158569, 51.637144)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-3.018494, 51.56464)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-2.956696, 51.627768)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-2.889404, 51.640554)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-2.92923, 51.515954)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-2.945709, 51.41243)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-3.186035, 51.409861)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-3.332977, 51.474915)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-3.485413, 51.474059)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-3.466187, 51.592802)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-3.389282, 51.419282)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-3.300018, 51.396153)).transform(proj, map.getProjectionObject()),
+                (new OpenLayers.Geometry.Point(-3.026733, 51.63203).transform(proj, map.getProjectionObject()))
+            ];
+
+            var geometry = new OpenLayers.Geometry.LinearRing(points);
+            var vectorLayer = new OpenLayers.Layer.Vector('shape', {
+                styleMap: new OpenLayers.StyleMap({
+                    'default': new OpenLayers.Style({
+                        cursor: "pointer",
+                        fillColor: "#ffffff",
+                        fillOpacity: 0.6,
+                        fontColor: "#000000",
+                        fontSize: 10,
+                        strokeColor: "#ff0000",
+                        strokeOpacity: 0.8,
+                        strokeWidth: 5
+                    })
+                })
+            });
+            vectorLayer.addFeatures([new OpenLayers.Feature.Vector(geometry)]);
+            map.addLayer(vectorLayer);
+        }
+
+        function resetCenter() {
+            map.setCenter(new OpenLayers.LonLat(-3.22694, 51.49604).transform(proj, map.getProjectionObject()), 10);
+        }
+    </script>
+</head>
+<body onload="init()">
+<h1 id="title">Google V3 SVG issue</h1>
+
+<div id="tags"></div>
+
+<p id="shortdesc">
+<ol>
+    <li>Pan the map so that the polygon is half outside the viewport</li>
+    <li>Click <button onclick="resetCenter()">Reset</button></li>
+    <li>You may need to repeat the steps 1 and 2 a couple of times</li>
+</ol>
+</p>
+
+<p>The polygon sometimes doesn't render properly leaving parts of it broken. If you
+then continue to pan, it renders correctly. It is only apparent on Webkit based
+browsers (including recent Chrome's blink), but is not a problem in older webkit
+engines (namely Safari 5.x)</p>
+
+<div id="map" style="width: 750px; height: 400px"></div>
+
+</body>
+</html>
